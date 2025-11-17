@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYMIER CLOSING</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7ffec; 
+            min-height: 10vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        #sheet-data-table th, #sheet-data-table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+        }
+        .modal {
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        } 
+        .modal-active .modal-content {
+            transform: scale(1);
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.3s ease-out;
+        }
+        .unmapped-row {
+            background-color: #fecaca !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 1px 3px 0 rgba(220, 38, 38, 0.3), 0 1px 2px 0 rgba(220, 38, 38, 0.2) !important;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .unmapped-row:hover {
+            background-color: #fca5a5 !important;
+            transform: scale(1.005);
+        }
+        table {
+            table-layout: auto !important;
+            width: 100%;
+        }
+        table th,
+        table td {
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: none !important;
+        }
+        .mapping-key, .mapping-value {
+            max-width: 120px;
+        }
+        .copy-btn {
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        .filter-section {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .filter-dropdown {
+            width: 100%;
+            max-width: 300px;
+        }
+        .filter-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .multi-select {
+            height: 120px;
+        }
+        .hidden-row {
+            display: none;
+        }
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: white;
+            cursor: pointer;
+        }
+        .pagination-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .pagination-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .filter-collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+        .filter-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .filter-content.expanded {
+            max-height: 500px;
+        }
+        .check-cross-btn {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .check-cross-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+<script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script><script type="text/javascript" src="https://tiiny.host/ad-script.js"></script><meta property="og:url" content="https://paymier-closing.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ></head>
+<body>
+    <div id="app-container" class="w-full max-w-5xl bg-white p-6 md:p-10 rounded-xl shadow-2xl border border-gray-100 relative">
+        
+        <button onclick="toggleMappingModal(true)" 
+            title="Manage Mappings" 
+            class="absolute top-4 right-4 p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition duration-300 shadow-lg z-10 hover:rotate-90">
+            
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37zM15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+        
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4 text-center">
+            PAYMIER CLOSING TOOL
+        </h1>
+        
+        <div class="grid md:grid-cols-3 gap-4 mb-8">
+            
+            <div class="border-2 border-dashed border-indigo-300 rounded-lg p-4 bg-indigo-50 hover:bg-indigo-100 transition duration-300">
+                <p class="font-semibold text-indigo-700 mb-2">Scrap</p>
+                <input type="file" id="fileInput1" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file1')">
+                <label for="fileInput1" class="block w-full text-center py-2 px-3 bg-indigo-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-indigo-700 transition duration-300 shadow-md">Select File</label>
+                <p id="file1-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
+            </div>
+            
+            <div class="border-2 border-dashed border-purple-300 rounded-lg p-4 bg-purple-50 hover:bg-purple-100 transition duration-300">
+                <p class="font-semibold text-purple-700 mb-2">Deposit</p>
+                <input type="file" id="fileInput2" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file2')">
+                <label for="fileInput2" class="block w-full text-center py-2 px-3 bg-purple-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-purple-700 transition duration-300 shadow-md">Select File</label>
+                <p id="file2-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
+            </div>
+            
+            <div class="border-2 border-dashed border-green-300 rounded-lg p-4 bg-green-50 hover:bg-green-100 transition duration-300">
+                <p class="font-semibold text-green-700 mb-2">STATEMENT</p>
+
+                <input type="file" id="fileInput3" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file3')" multiple>
+                <label for="fileInput3" class="block w-full text-center py-2 px-3 bg-green-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-green-700 transition duration-300 shadow-md">Select File(s)</label>
+                <p id="file3-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
+            </div>
+        </div>
+        
+        <div id="selector-container" class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 hidden">
+            <label for="fileSelector" class="block text-sm font-medium text-gray-700 mb-2">
+                Select Active File for Viewing:
+            </label>
+            <select id="fileSelector" onchange="handleFileSwitch(event)" 
+                class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <option value="" disabled selected>-- Select a loaded file --</option>
+            </select>
+        </div>
+        
+        <div id="file-info" class="space-y-4">
+            
+            <div id="search-container" class="mb-4 p-4 bg-white rounded-lg border border-gray-200 hidden">
+                <label for="searchQuery" class="block text-sm font-medium text-gray-700 mb-2">
+                    Search Table Content:
+                </label>
+                <input type="text" id="searchQuery" oninput="handleSearchInput()" 
+                    class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Type to search within the current file's data...">
+            </div>
+
+            <!-- Display Options -->
+            <div id="table-controls" class="mb-4 p-4 bg-white rounded-lg border border-gray-200 hidden">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <!-- Display Options -->
+                    <div class="flex items-center gap-2">
+                        <label for="rowsPerPage" class="text-sm font-medium text-gray-700">Show:</label>
+                        <select id="rowsPerPage" onchange="handleRowsPerPageChange()" 
+                            class="py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="500">500</option>
+                        </select>
+                        <span class="text-sm text-gray-500">records per page</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="data-table-container" class="bg-white p-4 rounded-lg border border-gray-200 hidden overflow-x-auto shadow-inner">
+                
+            </div>
+            <div id="no-file-message" class="text-center p-4 text-gray-400">
+            </div>
+        </div>
+    </div>
+    
+    <div id="mappingModal" class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
+         onclick="if(event.target.id === 'mappingModal') toggleMappingModal(false)">
+        <div class="modal-content bg-white w-full max-w-4xl p-8 rounded-xl shadow-2xl relative">
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Setting</h2>
+            
+            <button onclick="toggleMappingModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="grid md:grid-cols-1 gap-6">
+                
+                <div id="rhb-mapping-settings" class="p-4 bg-green-50 rounded-xl border border-green-200">
+                    <h3 class="text-xl font-bold text-green-800 mb-3 border-b border-green-300 pb-2">Paymier Bank</h3>
+                    
+                    <div class="flex items-center space-x-2 mb-2 text-xs font-bold uppercase text-green-700">
+                        <span class="flex-1">Keyword</span>
+                        <span class="flex-1">Bank</span>
+                        <span class="w-4"></span>
+                    </div>
+                    
+                    <div id="rhbMappingRowsContainer" class="space-y-2 mb-4 max-h-56 overflow-y-auto pr-2">
+                        
+                    </div>
+                    <button onclick="addMappingRow('rhbMappingRowsContainer')" class="w-full py-2 px-4 text-green-700 font-semibold text-sm rounded-lg border border-green-300 bg-green-200 hover:bg-green-300 transition duration-300 shadow-sm">
+                        + Add New Rule
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-4 border-t border-gray-300 flex justify-between items-center">
+                <p id="mappingStatus" class="text-sm text-gray-600 font-medium">Please apply changes.</p>
+                <button onclick="applyAllMappingsAndClose()" class="py-2 px-8 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md">
+                    Apply Changes & Close
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="overrideModal" class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
+         onclick="if(event.target.id === 'overrideModal') toggleOverrideModal(false)">
+        <div class="modal-content bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl relative">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Edit Scrap Reference Override</h3>
+            <p class="text-sm text-gray-600 mb-4">Transaction Ref: <span id="modalTxnRefDisplay" class="font-mono font-semibold text-indigo-700 break-all"></span></p>
+            <label for="overrideInput" class="block text-sm font-medium text-gray-700 mb-1">New Override Value (e.g., LPK001):</label>
+            <input type="text" id="overrideInput" class="w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm mb-4" placeholder="Enter new reference here">
+            <div class="flex justify-end space-x-3">
+                <button onclick="saveOverrideFromModal()" class="py-2 px-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-300 shadow-md">
+                    Save
+                </button>
+                <button onclick="toggleOverrideModal(false)" class="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition duration-300 shadow-md">
+                    Cancel
+                </button>
+            </div>
+            
+            <input type="hidden" id="modalTxnRefContext" >
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        const MAX_ROWS = 100;
+        const ROWS_PER_PAGE = 50;
+        const RHB_MAP_KEY = 'rhb-map-summary';
+        const REVIEW_KEY = 'review-summary';
+        const UNMAPPED_KEY_SCRAP = 'No Match'; 
+        const UNMAPPED_RHB_KEY = 'N/A (No Prefix Match)'; 
+        const FILE_CONFIG = [
+            { key: 'file1', label: 'Scrap', filter: { index: 3, values: ['RM', 'MYR'] } },
+            { key: 'file2', label: 'Deposit', filter: null },
+            { key: 'file3', label: 'RHB BANK STATEMENT', filter: { index: 4, type: 'numeric' } }
+        ];
+
+        const fileState = FILE_CONFIG.reduce((acc, config) => {
+            acc[config.key] = { data: null, name: `${config.label} (Unloaded)`, metadata: null };
+            return acc; 
+        }, {});
+        let depositMappingData = {}; 
+        let rhbMappingData = {};     
+        let rhbScrapOverrideMap = {}; 
+
+        // Add filter state management
+        let scrapFilterState = {
+            status: {},
+            paymierBank: {},
+            checkStatus: { 'cross': true, 'check': false } // Default: show only cross (false)
+        };
+
+        // Add search state management
+        let searchState = {
+            [RHB_MAP_KEY]: '',
+            [REVIEW_KEY]: '',
+            'file1': '',
+            'file2': '', 
+            'file3': ''
+        };
+
+        // Add pagination state
+        let paginationState = {
+            [RHB_MAP_KEY]: { currentPage: 1 },
+            [REVIEW_KEY]: { currentPage: 1 },
+            'file1': { currentPage: 1 },
+            'file2': { currentPage: 1 },
+            'file3': { currentPage: 1 }
+        };
+
+        // CHANGED: Change from row visibility to check/cross state
+        let scrapCheckState = {}; // Use unique keys instead of indexes
+
+        // Add rows per page state
+        let rowsPerPageState = {
+            [RHB_MAP_KEY]: 50,
+            [REVIEW_KEY]: 50,
+            'file1': 50,
+            'file2': 50,
+            'file3': 50
+        };
+
+        // NEW: Track filter dropdown state
+        let filterDropdownState = {
+            expanded: false
+        };
+
+        const INITIAL_RHB_MAPS = {
+            'RHB (Paymier)': ['TAN'], 'RHB2 (Paymier)': ['XPOWER'], 'RHB3 (Paymier)': ['JT'], 'RHB4 (Paymier)': ['HL'], 
+            'RHB5 (Paymier)': ['DS'], 'RHB6 (Paymier)': ['ANGIE'], 'RHB7 (Paymier)': ['JH'], 'RHB8 (Paymier)': ['MG'], 
+            'RHB9 (Paymier)': ['DAILY'], 'RHB10 (Paymier)': ['KSC'], 'RHB11 (Paymier)': ['HELMI'], 'RHB12 (Paymier)': ['HLT'], 
+            'PBB (Paymier)': ['OUTLET']
+        };
+
+        const toggleModal = (id, show, txnRef = null, currentValue = '') => {
+            const modal = document.getElementById(id);
+            const isMapping = id === 'mappingModal';
+            if (show) {
+                modal.classList.remove('invisible', 'opacity-0');
+                modal.classList.add('modal-active');
+                if (!isMapping) {
+                    document.getElementById('modalTxnRefContext').value = txnRef;
+                    document.getElementById('modalTxnRefDisplay').textContent = txnRef;
+                    document.getElementById('overrideInput').value = currentValue;
+                    document.getElementById('overrideInput').focus();
+                }
+            } else {
+                modal.classList.remove('modal-active');
+                modal.classList.add('opacity-0', 'invisible');
+                if (!isMapping) {
+                    document.getElementById('modalTxnRefContext').value = '';
+                }
+            }
+        };
+        const toggleMappingModal = (show) => toggleModal('mappingModal', show);
+        const toggleOverrideModal = (show, txnRef, currentValue) => toggleModal('overrideModal', show, txnRef, currentValue);
+        const saveOverrideFromModal = () => {
+            const txnRef = document.getElementById('modalTxnRefContext').value;
+            const value = document.getElementById('overrideInput').value;
+            setRhbOverride(txnRef, value);
+            toggleOverrideModal(false);
+        };
+        const setRhbOverride = (txnRef, value) => {
+            const upperTxnRef = txnRef.toUpperCase();
+            if (value && value.trim()) {
+                rhbScrapOverrideMap[upperTxnRef] = value.trim();
+            } else {
+                delete rhbScrapOverrideMap[upperTxnRef];
+            }
+            if (fileState.activeFile === 'file3' || fileState.activeFile === RHB_MAP_KEY || fileState.activeFile === REVIEW_KEY) {
+                renderData(fileState.activeFile);
+            }
+        };
+        
+        const createMappingRow = (containerId, initialKey = '', initialValue = '') => {
+            const container = document.getElementById(containerId);
+            const id = Date.now() + Math.random(); 
+            const color = 'green';
+            const row = document.createElement('div');
+            row.id = `row-${id}`;
+            row.className = 'flex items-center space-x-2';
+            row.innerHTML = `
+                <input type="text" value="${initialKey}" placeholder="Prefix Keyword" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-key"/>
+                <input type="text" value="${initialValue}" placeholder="Category" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-value"/>
+                <button type="button" onclick="document.getElementById('row-${id}').remove()" title="Remove mapping rule" class="text-red-500 hover:text-red-700 font-bold p-1 w-4 h-4 flex items-center justify-center transition duration-150">×</button>
+            `;
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        };
+        const addMappingRow = (containerId) => createMappingRow(containerId);
+        const readMappingInputs = (containerId) => {
+            const mapping = {};
+            document.getElementById(containerId).querySelectorAll('.flex.items-center.space-x-2').forEach(row => {
+                const rawKey = row.querySelector('.mapping-key').value.trim();
+                const value = row.querySelector('.mapping-value').value.trim();
+                if (rawKey && value) {
+                    mapping[rawKey.toUpperCase()] = value;
+                }
+            });
+            return mapping;
+        };
+        const initializeMappingInputs = () => {
+            const rhbContainer = document.getElementById('rhbMappingRowsContainer');
+            rhbContainer.innerHTML = '';
+            Object.keys(INITIAL_RHB_MAPS).forEach(category => {
+                INITIAL_RHB_MAPS[category].forEach(key => createMappingRow('rhbMappingRowsContainer', key, category));
+            });
+        };
+        const updateDepositMapping = () => { depositMappingData = {}; }; // Remove deposit mapping
+        const updateRHBMapping = () => { rhbMappingData = readMappingInputs('rhbMappingRowsContainer'); };
+        const applyAllMappingsAndClose = () => {
+            updateDepositMapping();
+            updateRHBMapping();
+            document.getElementById('mappingStatus').textContent = `Applied ${Object.keys(rhbMappingData).length} RHB (Prefix) rules.`;
+            toggleMappingModal(false);
+            if (fileState.activeFile) {
+                renderData(fileState.activeFile);
+            }
+        };
+        
+        const handleSearchInput = () => {
+            if (fileState.activeFile) {
+                searchState[fileState.activeFile] = document.getElementById('searchQuery').value;
+                paginationState[fileState.activeFile].currentPage = 1; // Reset to first page on search
+                renderData(fileState.activeFile);
+            }
+        };
+
+        const handlePageChange = (page) => {
+            if (fileState.activeFile === REVIEW_KEY) {
+                paginationState[REVIEW_KEY].currentPage = page;
+                renderReviewTableOnly(); // Use optimized render for review table
+            } else if (fileState.activeFile) {
+                paginationState[fileState.activeFile].currentPage = page;
+                renderData(fileState.activeFile);
+            }
+        };
+
+        // NEW: Function to update only the specific row appearance
+        const updateSingleRowAppearance = (rowId) => {
+            const isChecked = scrapCheckState[rowId] === true;
+            
+            // Find the row in the current DOM
+            const rows = document.querySelectorAll('#scrap-review-table tbody tr');
+            const rowIndex = rowId % rowsPerPageState[REVIEW_KEY]; // Get index within current page
+            
+            if (rows[rowIndex]) {
+                const row = rows[rowIndex];
+                
+                // Update row background
+                if (isChecked) {
+                    row.className = "bg-green-100 border-b border-green-200 hover:bg-green-200";
+                } else {
+                    row.className = "bg-white border-b border-gray-100 hover:bg-gray-50";
+                }
+                
+                // Update check/cross icon
+                const button = row.querySelector('.check-cross-btn');
+                if (button) {
+                    const iconHtml = isChecked 
+                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    button.innerHTML = iconHtml;
+                }
+            }
+        };
+
+        // CHANGED: Toggle between check and cross with proper re-render
+        const toggleScrapCheckState = (uniqueKey) => {
+            scrapCheckState[uniqueKey] = !scrapCheckState[uniqueKey];
+            
+            // Force a full re-render of the review table to ensure proper filtering
+            if (fileState.activeFile === REVIEW_KEY) {
+                renderReviewTableOnly();
+            }
+        };
+
+        const toggleFilterSection = (sectionId) => {
+            const content = document.getElementById(`${sectionId}-content`);
+            const arrow = document.getElementById(`${sectionId}-arrow`);
+            content.classList.toggle('expanded');
+            arrow.textContent = content.classList.contains('expanded') ? '▼' : '▶';
+            
+            // NEW: Save filter dropdown state
+            filterDropdownState.expanded = content.classList.contains('expanded');
+        };
+
+        // NEW: Function to handle rows per page change
+        const handleRowsPerPageChange = () => {
+            const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+            if (fileState.activeFile) {
+                rowsPerPageState[fileState.activeFile] = rowsPerPage;
+                paginationState[fileState.activeFile].currentPage = 1; // Reset to first page
+                renderData(fileState.activeFile);
+            }
+        };
+
+        // NEW: Function to get paginated rows based on current rows per page setting
+        const getPaginatedRows = (rows, currentPage) => {
+            const rowsPerPage = rowsPerPageState[fileState.activeFile] || ROWS_PER_PAGE;
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            return rows.slice(startIndex, endIndex);
+        };
+
+        // NEW: Function to render pagination with first/last page buttons
+        const renderPagination = (totalRows, currentPage, tableId) => {
+            const rowsPerPage = rowsPerPageState[fileState.activeFile] || ROWS_PER_PAGE;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            if (totalPages <= 1) return '';
+
+            let paginationHtml = `
+                <div class="flex justify-center items-center mt-4 space-x-2">
+                    <button onclick="handlePageChange(1)" class="pagination-btn ${currentPage === 1 ? 'active' : ''}" ${currentPage === 1 ? 'disabled' : ''}>First</button>
+            `;
+
+            // Show previous pages
+            const startPage = Math.max(2, currentPage - 2);
+            const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+            if (startPage > 2) {
+                paginationHtml += `<span class="px-2">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `<button onclick="handlePageChange(${i})" class="pagination-btn ${currentPage === i ? 'active' : ''}">${i}</button>`;
+            }
+
+            if (endPage < totalPages - 1) {
+                paginationHtml += `<span class="px-2">...</span>`;
+            }
+
+            if (totalPages > 1) {
+                paginationHtml += `<button onclick="handlePageChange(${totalPages})" class="pagination-btn ${currentPage === totalPages ? 'active' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>`;
+            }
+
+            paginationHtml += `</div>`;
+
+            return paginationHtml;
+        };
+        
+        const updateFileSelector = () => {
+            const selector = document.getElementById('fileSelector');
+            const container = document.getElementById('selector-container');
+            selector.innerHTML = '<option value="" disabled selected>-- Select a loaded file --</option>';
+            let loadedCount = 0;
+            FILE_CONFIG.forEach(config => {
+                const state = fileState[config.key];
+                if (state.data) {
+                    const option = document.createElement('option');
+                    option.value = config.key;
+                    option.textContent = state.metadata ? state.metadata.name : config.label;
+                    selector.appendChild(option);
+                    loadedCount++;
+                }
+            });
+            if (fileState.file3.data) {
+                const rhbMapOption = document.createElement('option');
+                rhbMapOption.value = RHB_MAP_KEY;
+                rhbMapOption.textContent = 'KEY SUMMURAY';
+                selector.appendChild(rhbMapOption);
+                loadedCount++; 
+            }
+            if (fileState.file1.data && fileState.file2.data && fileState.file3.data) {
+                const reviewOption = document.createElement('option');
+                reviewOption.value = REVIEW_KEY;
+                reviewOption.textContent = 'CHECK UNMATCHED';
+                selector.appendChild(reviewOption);
+                loadedCount++;
+            }
+            container.classList.toggle('hidden', loadedCount === 0);
+        };
+        
+        const parseFile = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = (e) => {
+                try {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const aoaData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true });
+                    const cleanedAoA = aoaData.map(row => {
+                        return row.map(cell => {
+                            if (typeof cell === 'string') {
+                                return cell.trim().replace(/'/g, '');
+                            }
+                            return cell;
+                        });
+                    });
+                    resolve(cleanedAoA);
+                } catch (error) {
+                    reject(new Error(`Failed to parse file ${file.name}: ${error.message}`));
+                }
+            };
+            reader.onerror = () => reject(new Error(`Error reading file ${file.name}.`));
+        });
+
+        const applyFilter = (fileKey, dataRows) => {
+            const config = FILE_CONFIG.find(c => c.key === fileKey);
+            let filteredRows = dataRows;
+            let filterDescription = ' (raw data)';
+            if (!config || !config.filter) return { filteredRows, filterDescription };
+            if (config.key === 'file1') { 
+                filteredRows = dataRows.filter(row => {
+                    const cellValue = row[config.filter.index];
+                    return typeof cellValue === 'string' && config.filter.values.includes(cellValue.trim().toUpperCase());
+                });
+                filterDescription = ' (filtered by Column D = RM/MYR)';
+            } else if (config.key === 'file3') { 
+                filteredRows = dataRows.filter(row => {
+                    const cellValue = row[config.filter.index];
+                    return cellValue !== undefined && cellValue !== null && !isNaN(parseFloat(cellValue)) && isFinite(cellValue);
+                });
+                filterDescription = ' (filtered by Column E is numeric)';
+            }
+            return { filteredRows, filterDescription };
+        };
+        const handleFileSwitch = (event) => {
+            const fileKey = event.target.value;
+            document.getElementById('searchQuery').value = searchState[fileKey] || '';
+            renderData(fileKey);
+        };
+        
+        async function handleFileSelect(event, fileKey) {
+            const files = Array.from(event.target.files);
+            const nameDisplay = document.getElementById(fileKey + '-name');
+            const slotName = FILE_CONFIG.find(c => c.key === fileKey).label;
+            if (files.length === 0) {
+                fileState[fileKey] = { data: null, name: `${slotName} (Unloaded)`, metadata: null };
+                nameDisplay.textContent = 'No file loaded.';
+                updateFileSelector();
+                renderData(fileState.activeFile); 
+                return;
+            }
+            try {
+                let aoaData = [];
+                if (fileKey === 'file3' && files.length > 0) {
+                    const results = await Promise.all(files.map(parseFile));
+                    if (results.length > 0 && results[0].length > 0) {
+                        aoaData.push(...results[0].slice(0, 1)); 
+                        results.forEach(data => aoaData.push(...data.slice(1)));
+                    }
+                    if (aoaData.length > 1) {
+                        const uniqueTxnRefs = new Set();
+                        const uniqueDataRows = aoaData.slice(1).filter(row => {
+                            const txnRef = String(row[1] || '').trim().toUpperCase(); 
+                            if (txnRef && !uniqueTxnRefs.has(txnRef)) {
+                                uniqueTxnRefs.add(txnRef);
+                                return true;
+                            }
+                            return false;
+                        });
+                        aoaData = [aoaData[0], ...uniqueDataRows];
+                        nameDisplay.textContent = `${uniqueDataRows.length} unique records from ${files.length} RHB file(s).`;
+                        fileState[fileKey].metadata = { name: ` RHB BANK STATEMENT` };
+                    } else {
+                        nameDisplay.textContent = `RHB file(s) loaded.`;
+                        fileState[fileKey].metadata = { name: `RHB Files (Combined)` };
+                    }
+                } else {
+                    aoaData = await parseFile(files[0]);
+                    fileState[fileKey].name = files[0].name;
+                    nameDisplay.textContent = files[0].name;
+                    fileState[fileKey].metadata = { name: files[0].name };
+                }
+                fileState[fileKey].data = aoaData;
+                updateFileSelector();
+                document.getElementById('fileSelector').value = fileKey;
+                document.getElementById('searchQuery').value = searchState[fileKey] || '';
+                renderData(fileKey);
+            } catch (error) {
+                console.error(`Error processing file(s) for ${slotName}:`, error);
+                nameDisplay.textContent = `Error loading file(s)!`;
+                fileState[fileKey].data = null; 
+                updateFileSelector();
+                document.getElementById('fileSelector').value = ''; 
+                renderData(null); 
+            }
+        }
+        
+        const generateDepositSummary = (aoaData) => {
+            const dataRows = aoaData.slice(1);
+            const compoundSummary = {}; 
+            const [COL_STATUS, COL_AMOUNT, COL_DIRECT_VALUE, COL_BANK_CODE] = [8, 6, 4, 5];
+            
+            const rhbMappingEntries = Object.entries(rhbMappingData);
+            
+            dataRows.filter(row => String(row[COL_STATUS] || '').trim().toUpperCase() === 'SUCCESS' && !isNaN(parseFloat(row[COL_AMOUNT]))).forEach(row => {
+                const amount = parseFloat(row[COL_AMOUNT]);
+                const directValue = String(row[COL_DIRECT_VALUE] || '').trim();
+                const bankCodeValue = String(row[COL_BANK_CODE] || '').trim().toUpperCase();
+                let bankMappingResult = 'N/A';
+                let bestMatchLength = -1;
+                
+                for (const [key, value] of rhbMappingEntries) { 
+                    if (bankCodeValue.includes(key) && key.length > bestMatchLength) {
+                        bestMatchLength = key.length;
+                        bankMappingResult = value;
+                    }
+                }
+                
+                const compoundKey = `${directValue} | ${bankMappingResult}`;
+                compoundSummary[compoundKey] = (compoundSummary[compoundKey] || 0) + amount;
+            });
+            
+            let summaryAoA = [['Stall', 'Bank', 'Deposit Amount']];
+            let grandTotal = 0;
+            
+            Object.keys(compoundSummary).sort().forEach(key => {
+                const total = compoundSummary[key];
+                grandTotal += total;
+                const [stall, bank] = key.split(' | '); 
+                summaryAoA.push([stall, bank, total.toFixed(2)]);
+            });
+            
+            summaryAoA.push(['', '']); 
+            summaryAoA.push(['GRAND TOTAL', '', grandTotal.toFixed(2)]);
+            
+            return { 
+                data: summaryAoA, 
+                title: `Deposit Summary`,
+                totalRows: Object.keys(compoundSummary).length 
+            };
+        };
+
+ const generateRHBMappingSummary = (aoaData) => {
+    const dataRows = aoaData.slice(1);
+    const { filteredRows } = applyFilter('file3', dataRows);
+    const scrapLookupMap = prepareScrapLookupMap(fileState.file1.data);
+    const isScrapLookupActive = Object.keys(scrapLookupMap).length > 0;
+    const [COL_OUTLET_NAME, COL_SALES_AMOUNT, COL_RHB_TXN_REF] = [3, 4, 1];
+    const mappedCategories = new Map();
+    const rhbMappingEntries = Object.entries(rhbMappingData);
+    let grandTotal = 0;
+    let noMatchGrandTotal = 0;
+    
+    filteredRows.forEach(row => {
+        const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase(); 
+        const amount = parseFloat(row[COL_SALES_AMOUNT]);
+        const txnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase();
+        if (isNaN(amount)) return;
+        
+        let rhbMapCategory = UNMAPPED_RHB_KEY;
+        let bestMatchLength = -1;
+        for (const [key, value] of rhbMappingEntries) { 
+            if (description.includes(key) && key.length > bestMatchLength) {
+                bestMatchLength = key.length;
+                rhbMapCategory = value;
+            }
+        }
+        
+        // Check if this row has "No Match" in Override Scrap Ref
+        const effectiveRef = getEffectiveScrapRef(txnRef, scrapLookupMap, isScrapLookupActive);
+        const isNoMatch = effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef.toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase();
+        
+        const categoryTotals = mappedCategories.get(rhbMapCategory) || { total: 0, noMatchTotal: 0 };
+        categoryTotals.total += amount;
+        if (isNoMatch) {
+            categoryTotals.noMatchTotal += amount;
+            noMatchGrandTotal += amount;
+        }
+        mappedCategories.set(rhbMapCategory, categoryTotals);
+        grandTotal += amount;
+    });
+    
+    let summaryAoA = [['Bank', 'Total Amount', 'No Match Total']];
+    
+    Array.from(mappedCategories.keys())
+    .sort((a, b) => {
+        const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+        const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+        if (a.startsWith('RHB') && b.startsWith('RHB')) {
+            return numA - numB;
+        }
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    })
+    .forEach(key => {
+        const totals = mappedCategories.get(key);
+        summaryAoA.push([key, totals.total.toFixed(2), totals.noMatchTotal.toFixed(2)]);
+    });
+    
+    summaryAoA.push(['', '', '']);
+    summaryAoA.push(['GRAND TOTAL', grandTotal.toFixed(2), noMatchGrandTotal.toFixed(2)]);
+
+    return { data: summaryAoA, title: `Bank Summary`, totalRows: mappedCategories.size };
+};
+
+        const generateDepositUnmatchedSummary = () => {
+            const depositData = fileState.file2.data;
+            const scrapData = fileState.file1.data;
+            if (!depositData || !scrapData) {
+                return { data: [], header: [], title: `Deposit Records for Review (Unmatched & Success)`, totalRows: 0 };
+            }
+            
+            const scrapRefSet = new Set();
+            if (scrapData.length > 1) {
+                scrapData.slice(1).forEach(row => {
+                    const ref = String(row[8] || '').trim().toUpperCase();
+                    if (ref) scrapRefSet.add(ref);
+                });
+            }
+            
+            const headerRow = depositData[0];
+            const depositRows = depositData.slice(1);
+            const DEPOSIT_FIRST_COL = 0;
+            const DEPOSIT_STATUS_COL = 8;
+            const DEPOSIT_DATE_COL = 1;
+            
+            const rowsForReview = [];
+            depositRows.forEach(row => {
+                const depositFirstColValue = String(row[DEPOSIT_FIRST_COL] || '').trim().toUpperCase();
+                const status = String(row[DEPOSIT_STATUS_COL] || '').trim().toUpperCase();
+                
+                if (status === 'SUCCESS' && !scrapRefSet.has(depositFirstColValue)) {
+                    const formattedRow = [...row];
+                    const dateSerial = row[DEPOSIT_DATE_COL];
+                    if (typeof dateSerial === 'number' && dateSerial > 1) {
+                        try {
+                            const excelEpoch = new Date(1899, 11, 30);
+                            const jsDate = new Date(excelEpoch.getTime() + dateSerial * 86400000);
+                            
+                            const year = jsDate.getFullYear();
+                            const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(jsDate.getDate()).padStart(2, '0');
+                            const hours = String(jsDate.getHours()).padStart(2, '0');
+                            const minutes = String(jsDate.getMinutes()).padStart(2, '0');
+                            const seconds = String(jsDate.getSeconds()).padStart(2, '0');
+                            
+                            formattedRow[DEPOSIT_DATE_COL] = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                        } catch (e) {
+                            console.error('Error formatting date:', e);
+                            formattedRow[DEPOSIT_DATE_COL] = String(dateSerial);
+                        }
+                    }
+                    
+                    rowsForReview.push({
+                        data: formattedRow,
+                        status: status,
+                        type: 'Deposit'
+                    });
+                }
+            });
+            
+            const reviewHeader = [...headerRow, 'STATUS', 'Type'];
+            return {
+                data: rowsForReview,
+                header: reviewHeader,
+                title: `Deposit Records for Review (SUCCESS status but not found in Scrap Col I)`,
+                totalRows: rowsForReview.length
+            };
+        };
+
+        const generateScrapUnmatchedSummary = () => {
+            const scrapData = fileState.file1.data;
+            const rhbData = fileState.file3.data;
+            if (!scrapData || !rhbData) {
+                return { data: [], header: [], title: `Scrap Records for Review (Unmatched in RHB)`, totalRows: 0 };
+            }
+            
+            const rhbTxnRefSet = new Set();
+            if (rhbData.length > 1) {
+                rhbData.slice(1).forEach(row => {
+                    const ref = String(row[1] || '').trim().toUpperCase();
+                    if (ref) rhbTxnRefSet.add(ref);
+                });
+            }
+            
+            const headerRow = scrapData[0];
+            const scrapRows = scrapData.slice(1);
+            const SCRAP_TXN_REF_COL = 9;
+            const SCRAP_SEVENTH_COL = 6;
+            
+            const scrapLast8Map = new Map();
+            scrapRows.forEach(row => {
+                const scrapTxnRef = String(row[SCRAP_TXN_REF_COL] || '').trim().toUpperCase();
+                if (scrapTxnRef && scrapTxnRef.length >= 8) {
+                    const last8 = scrapTxnRef.slice(-8);
+                    if (!scrapLast8Map.has(last8)) {
+                        scrapLast8Map.set(last8, []);
+                    }
+                    scrapLast8Map.get(last8).push({
+                        ref: scrapTxnRef,
+                        row: row
+                    });
+                }
+            });
+            
+            const rowsForReview = [];
+            const rhbMappingEntries = Object.entries(rhbMappingData);
+            
+            scrapRows.forEach(row => {
+                const scrapTxnRef = String(row[SCRAP_TXN_REF_COL] || '').trim().toUpperCase();
+                if (!scrapTxnRef) return;
+                
+                let status = 'NOT IN RHB';
+                let shouldInclude = false;
+                
+                if (!rhbTxnRefSet.has(scrapTxnRef)) {
+                    shouldInclude = true;
+                }
+                
+                if (scrapTxnRef.length >= 8) {
+                    const last8 = scrapTxnRef.slice(-8);
+                    const scrapEntries = scrapLast8Map.get(last8) || [];
+                    if (scrapEntries.length > 1) {
+                        shouldInclude = true;
+                        status = 'Duplicate';
+                    }
+                }
+                
+                const seventhColValue = String(row[SCRAP_SEVENTH_COL] || '').trim().toUpperCase();
+                let paymierBankResult = 'N/A';
+                let bestMatchLength = -1;
+                
+                for (const [key, value] of rhbMappingEntries) { 
+                    if (seventhColValue.includes(key) && key.length > bestMatchLength) {
+                        bestMatchLength = key.length;
+                        paymierBankResult = value;
+                    }
+                }
+                
+                if (shouldInclude) {
+                    rowsForReview.push({
+                        data: row,
+                        status: status,
+                        type: 'Scrap',
+                        paymierBank: paymierBankResult
+                    });
+                }
+            });
+            
+            const reviewHeader = [...headerRow.slice(0, 10), 'STATUS', 'Paymier Bank', 'Type', 'Check'];
+            
+            return {
+                data: rowsForReview,
+                header: reviewHeader,
+                title: `Scrap Records for Review (Not Found in RHB or Similar/Duplicate Last 8 Characters within Scrap)`,
+                totalRows: rowsForReview.length
+            };
+        };
+
+        const generateUnifiedReviewSummary = () => {
+            const depositReview = generateDepositUnmatchedSummary();
+            const scrapReview = generateScrapUnmatchedSummary();
+            
+            const depositHeader = depositReview.header;
+            const scrapHeader = scrapReview.header;
+            
+            const finalHeader = [...depositHeader.slice(0, -2), 'Match Status (RHB Col B / Deposit Col G)', 'Paymier Bank', 'Type'];
+            
+            return {
+                data: [...depositReview.data, ...scrapReview.data],
+                header: finalHeader,
+                title: 'CHECK UNMATCH',
+                totalRows: depositReview.data.length + scrapReview.data.length
+            };
+        };
+
+      const styleSummaryTable = (tableId, isDeposit) => {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const [headerBg, headerTextColor] = isDeposit ? ['bg-purple-50', 'text-purple-700'] : ['bg-green-50', 'text-green-700'];
+    const [bgColor, textColor, borderColor] = isDeposit ? ['bg-purple-100', 'text-purple-800', 'border-purple-500'] : ['bg-green-100', 'text-green-800', 'border-green-500'];
+    table.className = "w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md";
+    table.querySelectorAll('tr').forEach((tr, index) => {
+        tr.className = index === 0 
+            ? `${headerBg} border-b border-gray-300 ${headerTextColor} uppercase font-semibold text-xs sticky top-0 shadow-sm`
+            : "bg-white border-b border-gray-100 hover:bg-gray-50";
+        tr.querySelectorAll('td, th').forEach(cell => cell.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-center'));
+    });
+    if (table.rows.length > 0) {
+        const totalRow = table.rows[table.rows.length - 1];
+        if (String(totalRow.cells[0]?.textContent).trim() === 'GRAND TOTAL') {
+            totalRow.className = `${bgColor} ${textColor} font-bold border-t-4 ${borderColor}`;
+            totalRow.cells[0].classList.add('text-lg', 'text-center');
+            totalRow.cells[0].classList.remove('text-left');
+            for(let i = 1; i < totalRow.cells.length; i++) {
+                totalRow.cells[i].classList.add('text-lg', 'text-right');
+            }
+        }
+    }
+};
+
+        const getEffectiveScrapRef = (rhbTxnRef, scrapLookupMap, isScrapLookupActive) => {
+            const currentOverride = rhbScrapOverrideMap[rhbTxnRef] || '';
+            if (currentOverride) return currentOverride.toUpperCase();
+            if (isScrapLookupActive) return scrapLookupMap[rhbTxnRef] || UNMAPPED_KEY_SCRAP;
+            return 'Requires Scrap File';
+        };
+
+        const prepareScrapLookupMap = (scrapData) => {
+            const map = {};
+            if (scrapData && scrapData.length > 1) {
+                const txnRefToScrapRefs = {};
+                scrapData.slice(1).forEach(row => {
+                    const txnRefKey = String(row[9] || '').trim().toUpperCase();
+                    const scrapRefValue = String(row[8] || '').trim();
+                    if (txnRefKey) {
+                        if (!txnRefToScrapRefs[txnRefKey]) {
+                            txnRefToScrapRefs[txnRefKey] = [];
+                        }
+                        txnRefToScrapRefs[txnRefKey].push(scrapRefValue);
+                    }
+                });
+                for (const [txnRef, refs] of Object.entries(txnRefToScrapRefs)) {
+                    const nonBlankRefs = refs.filter(ref => ref !== '');
+                    if (nonBlankRefs.length > 0) {
+                        map[txnRef] = nonBlankRefs[0];
+                    } else if (refs.length > 0) {
+                        map[txnRef] = '';
+                    }
+                }
+            }
+            return map;
+        };
+
+        const processRhbDataForRendering = () => {
+            const aoaData = fileState.file3.data;
+            const headerRow = aoaData[0];
+            const dataRows = aoaData.slice(1);
+            let { filteredRows, filterDescription } = applyFilter('file3', dataRows);
+            const rhbMappingEntries = Object.entries(rhbMappingData);
+            const [COL_OUTLET_NAME, COL_RHB_TXN_REF] = [3, 1];
+            const scrapLookupMap = prepareScrapLookupMap(fileState.file1.data);
+            const isScrapLookupActive = Object.keys(scrapLookupMap).length > 0;
+            if (isScrapLookupActive) filterDescription += " and Scrap Ref Lookup applied";
+            else filterDescription += " and Scrap Ref Lookup applied (Scrap file required)"; 
+            let processedRows = filteredRows.map(row => {
+                const rhbTxnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase(); 
+                let rhbMapCategory = UNMAPPED_RHB_KEY;
+                let bestMatchLength = -1;
+                const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase(); 
+                for (const [key, value] of rhbMappingEntries) { 
+                    if (description.includes(key) && key.length > bestMatchLength) {
+                        bestMatchLength = key.length;
+                        rhbMapCategory = value;
+                    }
+                }
+                const effectiveRef = getEffectiveScrapRef(rhbTxnRef, scrapLookupMap, isScrapLookupActive);
+                return { data: row, txnRef: rhbTxnRef, effectiveRef, rhbMapCategory };
+            });
+            const searchQuery = searchState['file3'] || '';
+            if (searchQuery) {
+                processedRows = processedRows.filter(item => item.data.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
+                filterDescription += ` and searched for "${searchQuery}"`;
+            }
+            return { headerRow, processedRows, filterDescription, isScrapLookupActive };
+        };
+
+        // Add filter management functions
+        const updateScrapFilterState = (scrapData) => {
+            // Initialize status filters with all available statuses
+            const allStatuses = [...new Set(scrapData.map(item => item.status))];
+            allStatuses.forEach(status => {
+                if (scrapFilterState.status[status] === undefined) {
+                    scrapFilterState.status[status] = true;
+                }
+            });
+            
+            // Initialize Paymier Bank filters with all available banks
+            const allBanks = [...new Set(scrapData.map(item => item.paymierBank || 'N/A'))];
+            allBanks.forEach(bank => {
+                if (scrapFilterState.paymierBank[bank] === undefined) {
+                    scrapFilterState.paymierBank[bank] = true;
+                }
+            });
+        };
+
+        const applyScrapFilters = (scrapData) => {
+            return scrapData.filter((item, index) => {
+                // Apply status filter - only show if status filter is enabled
+                if (!scrapFilterState.status[item.status]) {
+                    return false;
+                }
+                
+                // Apply Paymier Bank filter - only show if bank filter is enabled
+                const bank = item.paymierBank || 'N/A';
+                if (!scrapFilterState.paymierBank[bank]) {
+                    return false;
+                }
+                
+                // Apply check status filter - use unique key for check state lookup
+                const uniqueKey = `scrap_${item.data[9]}_${item.status}_${item.paymierBank}`;
+                const isChecked = scrapCheckState[uniqueKey] === true;
+                
+                if (scrapFilterState.checkStatus['check'] && scrapFilterState.checkStatus['cross']) {
+                    // Show both checked and crossed
+                    return true;
+                } else if (scrapFilterState.checkStatus['check'] && !scrapFilterState.checkStatus['cross']) {
+                    // Show only checked rows
+                    return isChecked;
+                } else if (!scrapFilterState.checkStatus['check'] && scrapFilterState.checkStatus['cross']) {
+                    // Show only crossed rows (default)
+                    return !isChecked;
+                } else {
+                    // No check status selected, show none
+                    return false;
+                }
+            });
+        };
+
+        const renderScrapFilterControls = (scrapData) => {
+            // Get unique status values and Paymier Bank values
+            const statusValues = [...new Set(scrapData.map(item => item.status))].sort();
+            const bankValues = [...new Set(scrapData.map(item => item.paymierBank || 'N/A'))].sort();
+            
+            let statusFiltersHtml = '';
+            statusValues.forEach(status => {
+                const isChecked = scrapFilterState.status[status] !== false;
+                statusFiltersHtml += `
+                    <div class="filter-option">
+                        <input type="checkbox" id="status-${status.replace(/\s+/g, '-')}" class="filter-checkbox" ${isChecked ? 'checked' : ''} 
+                               onchange="handleScrapFilterCheckboxChange('status', '${status}', this.checked)">
+                        <label for="status-${status.replace(/\s+/g, '-')}" class="text-sm">${status}</label>
+                    </div>
+                `;
+            });
+            
+            let bankFiltersHtml = '';
+            bankValues.forEach(bank => {
+                const isChecked = scrapFilterState.paymierBank[bank] !== false;
+                bankFiltersHtml += `
+                    <div class="filter-option">
+                        <input type="checkbox" id="bank-${bank.replace(/\s+/g, '-')}" class="filter-checkbox" ${isChecked ? 'checked' : ''} 
+                               onchange="handleScrapFilterCheckboxChange('paymierBank', '${bank}', this.checked)">
+                        <label for="bank-${bank.replace(/\s+/g, '-')}" class="text-sm">${bank}</label>
+                    </div>
+                `;
+            });
+            
+            // Check status filters
+            const isCrossChecked = scrapFilterState.checkStatus['cross'] !== false;
+            const isCheckChecked = scrapFilterState.checkStatus['check'] !== false;
+            
+            let checkStatusFiltersHtml = `
+                <div class="filter-option">
+                    <input type="checkbox" id="check-status-cross" class="filter-checkbox" ${isCrossChecked ? 'checked' : ''} 
+                           onchange="handleScrapFilterCheckboxChange('checkStatus', 'cross', this.checked)">
+                    <label for="check-status-cross" class="text-sm">Cross Only (Default)</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="check-status-check" class="filter-checkbox" ${isCheckChecked ? 'checked' : ''} 
+                           onchange="handleScrapFilterCheckboxChange('checkStatus', 'check', this.checked)">
+                    <label for="check-status-check" class="text-sm">Check Only</label>
+                </div>
+            `;
+            
+            // Apply saved filter dropdown state
+            const filterContentClass = filterDropdownState.expanded ? 'filter-content expanded' : 'filter-content';
+            
+            return `
+                <div class="filter-section">
+                    <div class="filter-collapsible flex items-center justify-between" onclick="toggleFilterSection('scrap-filters')">
+                        <h4 class="font-semibold text-gray-700">Filters</h4>
+                        <span id="scrap-filters-arrow">${filterDropdownState.expanded ? '▼' : '▶'}</span>
+                    </div>
+                    <div id="scrap-filters-content" class="${filterContentClass}">
+                        <div class="mt-3 grid grid-cols-3 gap-4">
+                            <div>
+                                <h5 class="font-medium text-gray-600 mb-2">Filter by STATUS:</h5>
+                                <div class="space-y-1 max-h-40 overflow-y-auto">
+                                    ${statusFiltersHtml}
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-600 mb-2">Filter by Paymier Bank:</h5>
+                                <div class="space-y-1 max-h-40 overflow-y-auto">
+                                    ${bankFiltersHtml}
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-600 mb-2">Filter by Check Status:</h5>
+                                <div class="space-y-1">
+                                    ${checkStatusFiltersHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const handleScrapFilterCheckboxChange = (type, value, isChecked) => {
+            if (type === 'status') {
+                scrapFilterState.status[value] = isChecked;
+            } else if (type === 'paymierBank') {
+                scrapFilterState.paymierBank[value] = isChecked;
+            } else if (type === 'checkStatus') {
+                scrapFilterState.checkStatus[value] = isChecked;
+            }
+            
+            // Use optimized render for filter changes only
+            if (fileState.activeFile === REVIEW_KEY) {
+                renderReviewTableOnly();
+            }
+        };
+
+        // NEW: Optimized function to only update the table rows without rebuilding the entire UI
+        const renderReviewTableOnly = () => {
+            if (fileState.activeFile !== REVIEW_KEY) return;
+            
+            const scrapReviewData = generateScrapUnmatchedSummary();
+            const searchQuery = searchState[REVIEW_KEY] || '';
+            const currentPage = paginationState[REVIEW_KEY].currentPage;
+            
+            let filteredRows = scrapReviewData.data;
+            
+            if (searchQuery) {
+                filteredRows = filteredRows.filter(item => item.data.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
+            }
+            
+            // Apply scrap-specific filters
+            filteredRows = applyScrapFilters(filteredRows);
+            
+            const totalFiltered = filteredRows.length;
+            const paginatedRows = getPaginatedRows(filteredRows, currentPage);
+            
+            // Update only the table body
+            const tableBody = document.querySelector('#scrap-review-table tbody');
+            if (tableBody) {
+                const tableRowsHtml = paginatedRows.map((item, index) => {
+                    const { data: row, status, type: itemType, paymierBank } = item;
+                    
+                    // Create a unique key based on row data
+                    const uniqueKey = `scrap_${row[9]}_${status}_${paymierBank}`;
+                    
+                    const isChecked = scrapCheckState[uniqueKey] === true;
+                    
+                    const rowClass = isChecked 
+                        ? "bg-green-100 border-b border-green-200 hover:bg-green-200" 
+                        : "bg-white border-b border-gray-100 hover:bg-gray-50";
+                    
+                    let rowHtml = `<tr class="${rowClass}">`;
+
+                    const dataColumns = [];
+                    for (let i = 0; i < 10; i++) {
+                        dataColumns[i] = row[i] !== undefined ? row[i] : '';
+                    }
+                    
+                    const dataCells = dataColumns.map(cell => `<td class="px-4 py-2 whitespace-nowrap">${cell}</td>`).join('');
+                    rowHtml += dataCells;
+
+                    const statusValue = status || '';
+                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
+                                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
+                                  'bg-gray-50 text-gray-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
+
+                    const paymierBankValue = paymierBank || 'N/A';
+                    const paymierBankClass = paymierBank !== 'N/A' ? 'bg-green-100 text-green-800' : 'bg-gray-50 text-gray-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${paymierBankClass}">${paymierBankValue}</td>`;
+
+                    const typeClass = 'bg-indigo-100 text-indigo-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">Scrap</td>`;
+                    
+                    const checkCrossIcon = isChecked 
+                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
+                        <button onclick="toggleScrapCheckState('${uniqueKey}')" 
+                                class="check-cross-btn p-1 rounded-full hover:bg-gray-100 transition duration-150">
+                            ${checkCrossIcon}
+                        </button>
+                    </td>`;
+                    
+                    rowHtml += `</tr>`;
+                    return rowHtml;
+                }).join('');
+                
+                tableBody.innerHTML = tableRowsHtml;
+                
+                // Update pagination and summary text
+                const paginationHtml = renderPagination(totalFiltered, currentPage, 'scrap-review-table');
+                const paginationContainer = document.querySelector('#scrap-review-table').closest('.mb-8').querySelector('.flex.justify-center.items-center');
+                if (paginationContainer) {
+                    paginationContainer.outerHTML = paginationHtml;
+                }
+                
+                const summaryText = document.querySelector('#scrap-review-table').closest('.mb-8').querySelector('.text-sm.text-center.text-gray-500');
+                if (summaryText) {
+                    const truncationMessage = totalFiltered === 0
+                        ? `<p class="text-sm text-center text-green-700 pt-3 border-t mt-3 border-gray-200">No scrap records require review.</p>`
+                        : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[REVIEW_KEY])} (${totalFiltered} total scrap review rows).</p>`;
+                    summaryText.outerHTML = truncationMessage;
+                }
+            }
+        };
+
+        const renderReviewTable = (data, title, tableId, type) => {
+            const { data: rows, header, totalRows } = data;
+            const searchQuery = searchState[REVIEW_KEY] || '';
+            const currentPage = paginationState[REVIEW_KEY].currentPage;
+            
+            let filteredRows = rows;
+            
+            if (searchQuery) {
+                filteredRows = rows.filter(item => item.data.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
+            }
+            
+            // Apply scrap-specific filters only for Scrap type
+            if (type === 'Scrap') {
+                // Update filter state with current data
+                updateScrapFilterState(filteredRows);
+                
+                // Apply filters
+                filteredRows = applyScrapFilters(filteredRows);
+            }
+            
+            const totalFiltered = filteredRows.length;
+            const paginatedRows = getPaginatedRows(filteredRows, currentPage);
+            
+            // Create different headers for Scrap vs Deposit
+            let headerHtml = '';
+            if (type === 'Scrap') {
+                headerHtml = `
+                    <tr class="bg-gray-50 border-b border-gray-300 text-gray-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">
+                        ${header.slice(0, 10).map((h, index) => 
+                            `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`
+                        ).join('')}
+                        <th class="px-4 py-2 whitespace-nowrap">STATUS</th>
+                        <th class="px-4 py-2 whitespace-nowrap">Paymier Bank</th>
+                        <th class="px-4 py-2 whitespace-nowrap">Type</th>
+                        <th class="px-4 py-2 whitespace-nowrap">Check</th>
+                    </tr>
+                `;
+            } else {
+                // For Deposit, use the original header without Paymier Bank and Check columns
+                headerHtml = `
+                    <tr class="bg-gray-50 border-b border-gray-300 text-gray-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">
+                        ${header.map(h => `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`).join('')}
+                    </tr>
+                `;
+            }
+            
+            const tableRowsHtml = paginatedRows.map((item, index) => {
+                const { data: row, status, type: itemType, paymierBank } = item;
+                
+                // Different rendering logic for Scrap vs Deposit
+                if (type === 'Scrap') {
+                    // Create a unique key based on row data for Scrap
+                    const uniqueKey = `scrap_${row[9]}_${status}_${paymierBank}`;
+                    const isChecked = scrapCheckState[uniqueKey] === true;
+                    
+                    // Add green background for checked rows (only for Scrap)
+                    const rowClass = isChecked 
+                        ? "bg-green-100 border-b border-green-200 hover:bg-green-200" 
+                        : "bg-white border-b border-gray-100 hover:bg-gray-50";
+                    
+                    let rowHtml = `<tr class="${rowClass}">`;
+
+                    const dataColumns = [];
+                    for (let i = 0; i < 10; i++) {
+                        dataColumns[i] = row[i] !== undefined ? row[i] : '';
+                    }
+                    
+                    const dataCells = dataColumns.map(cell => `<td class="px-4 py-2 whitespace-nowrap">${cell}</td>`).join('');
+                    rowHtml += dataCells;
+
+                    const statusValue = status || '';
+                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
+                                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
+                                  'bg-gray-50 text-gray-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
+
+                    const paymierBankValue = paymierBank || 'N/A';
+                    const paymierBankClass = paymierBank !== 'N/A' ? 'bg-green-100 text-green-800' : 'bg-gray-50 text-gray-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${paymierBankClass}">${paymierBankValue}</td>`;
+
+                    const typeClass = 'bg-indigo-100 text-indigo-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">${type}</td>`;
+                    
+                    // Check/Cross button - shows check mark or cross icon (only for Scrap)
+                    const checkCrossIcon = isChecked 
+                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
+                        <button onclick="toggleScrapCheckState('${uniqueKey}')" 
+                                class="check-cross-btn p-1 rounded-full hover:bg-gray-100 transition duration-150">
+                            ${checkCrossIcon}
+                        </button>
+                    </td>`;
+                    
+                    rowHtml += `</tr>`;
+                    return rowHtml;
+                } else {
+                    // For Deposit, render all columns as-is without Paymier Bank and Check columns
+                    const rowClass = "bg-white border-b border-gray-100 hover:bg-gray-50";
+                    let rowHtml = `<tr class="${rowClass}">`;
+                    
+                    const dataCells = row.map(cell => `<td class="px-4 py-2 whitespace-nowrap">${cell}</td>`).join('');
+                    rowHtml += dataCells;
+
+                    const statusValue = status || '';
+                    const statusClass = 'bg-gray-50 text-gray-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
+
+                    const typeClass = 'bg-purple-100 text-purple-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">${type}</td>`;
+                    
+                    rowHtml += `</tr>`;
+                    return rowHtml;
+                }
+            }).join('');
+
+            // Add filter controls only for Scrap table
+            let filterControlsHtml = '';
+            if (type === 'Scrap') {
+                filterControlsHtml = renderScrapFilterControls(rows);
+            }
+            
+            const paginationHtml = renderPagination(totalFiltered, currentPage, tableId);
+            
+            const truncationMessage = totalFiltered === 0
+                ? `<p class="text-sm text-center text-green-700 pt-3 border-t mt-3 border-gray-200">No ${type.toLowerCase()} records require review.</p>`
+                : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[REVIEW_KEY])} (${totalFiltered} total ${type.toLowerCase()} review rows).</p>`;
+            
+            return `
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-3">${title}</h2>
+                    ${filterControlsHtml}
+                    <div class="max-h-96 overflow-y-auto table-container">
+                        <table id="${tableId}" class="w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md">
+                            <thead>
+                                ${headerHtml}
+                            </thead>
+                            <tbody>${tableRowsHtml}</tbody>
+                        </table>
+                    </div>
+                    ${paginationHtml}
+                    ${truncationMessage}
+                </div>
+            `;
+        };
+
+        function renderData(fileKey) {
+            const dataTableContainer = document.getElementById('data-table-container');
+            const noFileMessage = document.getElementById('no-file-message');
+            const searchContainer = document.getElementById('search-container');
+            const tableControls = document.getElementById('table-controls');
+            
+            dataTableContainer.classList.add('hidden');
+            dataTableContainer.innerHTML = '';
+            noFileMessage.classList.remove('hidden');
+            const isRHBMapSummary = fileKey === RHB_MAP_KEY;
+            const isRHBView = fileKey === 'file3'; 
+            const isReviewView = fileKey === REVIEW_KEY;
+            if (!fileKey || (!isRHBMapSummary && !isReviewView && !fileState[fileKey]?.data)) { 
+                document.getElementById('fileSelector').value = '';
+                fileState.activeFile = null;
+                searchContainer.classList.add('hidden');
+                tableControls.classList.add('hidden');
+                return;
+            }
+            fileState.activeFile = fileKey;
+            
+            // Show search container for all views except RHB Map Summary
+            searchContainer.classList.toggle('hidden', isRHBMapSummary);
+            
+            // Show table controls for all views except RHB Map Summary
+            tableControls.classList.toggle('hidden', isRHBMapSummary);
+            
+            // Set the rows per page dropdown to current value
+            document.getElementById('rowsPerPage').value = rowsPerPageState[fileKey] || 50;
+            
+            if (isRHBMapSummary) {
+                noFileMessage.classList.add('hidden');
+                const [depositFileKey, rhbFileKey] = ['file2', 'file3'];
+                if (!fileState[rhbFileKey]?.data) {
+                     noFileMessage.innerHTML = `<p class="text-sm text-center text-red-500">Please load the **RHB** file first to view the combined summary.</p>`;
+                     return;
+                }
+                let finalHtmlContent = '';
+                if (fileState[depositFileKey]?.data) {
+                    const depositSummaryData = generateDepositSummary(fileState.file2.data);
+                    const depositWorksheet = XLSX.utils.aoa_to_sheet(depositSummaryData.data);
+                    const depositTableHtml = XLSX.utils.sheet_to_html(depositWorksheet, {id: 'deposit-summary-table', editable: false});
+                    finalHtmlContent += `
+                        <div class="mb-8 border border-purple-200 rounded-xl p-4 bg-purple-50">
+                            <div class="flex justify-between items-center mb-3">
+                                <h2 class="text-xl font-bold text-gray-800">Data View: <span class="font-normal text-purple-600">${depositSummaryData.title}</span></h2>
+                                <button onclick="copyTable('deposit-summary-table')" class="copy-btn bg-purple-600 text-white rounded hover:bg-purple-700">Copy</button>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto">${depositTableHtml}</div>
+                            <p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-purple-200">Summary includes ${depositSummaryData.totalRows} unique categories.</p>
+                        </div>
+                    `;
+                } else {
+                     finalHtmlContent += `<div class="mb-8 p-4 bg-red-100 border border-red-300 rounded-lg"><p class="text-sm text-red-700 font-semibold">**Data View: Deposit Summary** is not available. Load **Deposit** file.</p></div>`;
+                }
+                const rhbMapSummaryData = generateRHBMappingSummary(fileState.file3.data);
+                const rhbWorksheet = XLSX.utils.aoa_to_sheet(rhbMapSummaryData.data);
+                const rhbTableHtml = XLSX.utils.sheet_to_html(rhbWorksheet, {id: 'rhb-map-summary-table', editable: false});
+                finalHtmlContent += `
+                    <div class="border border-green-200 rounded-xl p-4 bg-green-50">
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-xl font-bold text-gray-800">Data View: <span class="font-normal text-green-600">${rhbMapSummaryData.title}</span></h2>
+                            <button onclick="copyTable('rhb-map-summary-table')" class="copy-btn bg-green-600 text-white rounded hover:bg-green-700">Copy</button>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto">${rhbTableHtml}</div>
+                        <p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-green-200">Summary includes ${rhbMapSummaryData.totalRows} unique categories.</p>
+                    </div>
+                `;
+                const scrapLookupMap = prepareScrapLookupMap(fileState.file1.data);
+                const isScrapLookupActive = Object.keys(scrapLookupMap).length > 0;
+                const rhbData = fileState.file3.data;
+                const [COL_RHB_TXN_REF] = [1];
+                let noMatchRows = [];
+                if (rhbData && rhbData.length > 1) {
+                    const headerRow = rhbData[0];
+                    // Move Scrap Col 1 Value to first column
+                    const finalHeaderRow = ['Scrap Col 1 Value', ...headerRow, 'Override Scrap Ref'];
+                    const dataRows = rhbData.slice(1);
+                    const { filteredRows } = applyFilter('file3', dataRows);
+                    noMatchRows = filteredRows.filter(row => {
+                        const rhbTxnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase();
+                        const effectiveRef = getEffectiveScrapRef(rhbTxnRef, scrapLookupMap, isScrapLookupActive);
+                        return effectiveRef === UNMAPPED_KEY_SCRAP;
+                    }).map(row => {
+                        const rhbTxnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase();
+                        const effectiveRef = getEffectiveScrapRef(rhbTxnRef, scrapLookupMap, isScrapLookupActive);
+                        const dateSerial = row[0];
+                        let formattedDate = '';
+                        if (typeof dateSerial === 'number' && dateSerial > 1) {
+                            try {
+                                formattedDate = XLSX.SSF.format('MMMM DD, HH:MM:SS', dateSerial);
+                            } catch (e) {
+                                formattedDate = String(dateSerial);
+                            }
+                        } else {
+                            formattedDate = String(dateSerial);
+                        }
+                        const newRow = [...row];
+                        newRow[0] = formattedDate;
+                        let scrapCol1Value = '';
+                        if (fileState.file1.data && fileState.file1.data.length > 1) {
+                            const scrapRows = fileState.file1.data.slice(1);
+                            const matchingScrapRow = scrapRows.find(scrapRow => {
+                                const scrapRef = String(scrapRow[9] || '').trim().toUpperCase();
+                                return scrapRef === rhbTxnRef;
+                            });
+                            if (matchingScrapRow) {
+                                scrapCol1Value = String(matchingScrapRow[0] || '');
+                            }
+                        }
+                        // Move scrapCol1Value to first position
+                        return [scrapCol1Value, ...newRow, effectiveRef];
+                    });
+          // NEW FIXED CODE:
+if (noMatchRows.length > 0) {
+    // Create proper header for Unclaimed Scrap table with Scrap Col 1 Value as first column
+    const unclaimedHeader = [
+        'Scrap ID',
+        'Date & Time', 
+        'Transaction Reference Number', 
+        '-', 
+        'Outlet Name', 
+        'Amount', 
+        'Collection Account', 
+        'Refund Status', 
+        'Refund Date & Time', 
+        'Payment Mode',
+        'Transaction ID	'
+    ];
+    
+    const unclaimedAoA = [unclaimedHeader, ...noMatchRows];
+    const unclaimedWorksheet = XLSX.utils.aoa_to_sheet(unclaimedAoA);
+    const unclaimedTableHtml = XLSX.utils.sheet_to_html(unclaimedWorksheet, {id: 'no-match-table', editable: false});
+    
+    finalHtmlContent += `
+        <div class="mt-8 border border-red-200 rounded-xl p-4 bg-red-50">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-gray-800">Unclaimed Scrap</h2>
+                <button onclick="copyTable('no-match-table')" class="copy-btn bg-red-600 text-white rounded hover:bg-red-700">Copy</button>
+            </div>
+            <div class="max-h-96 overflow-y-auto">${unclaimedTableHtml}</div>
+            <p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-red-200">Displaying ${noMatchRows.length} unmatched rows.</p>
+        </div>
+    `;
+} else {
+    finalHtmlContent += `
+        <div class="mt-8 p-4 bg-green-100 border border-green-300 rounded-lg">
+            <p class="text-sm text-green-700 font-semibold">No RHB rows have Override Scrap Ref = "No Match".</p>
+        </div>
+    `;
+}
+                }
+                dataTableContainer.innerHTML = `<h1 class="text-2xl font-extrabold text-green-700 mb-6 border-b-4 border-green-300 pb-2">Combined Summary View <button onclick="copyAllSummaryTables()" class="copy-btn bg-green-600 text-white rounded hover:bg-green-700 ml-2">Copy All</button></h1>${finalHtmlContent}`;
+                if (fileState[depositFileKey]?.data) styleSummaryTable('deposit-summary-table', true);
+                styleSummaryTable('rhb-map-summary-table', false);
+                const noMatchTable = document.getElementById('no-match-table');
+                if (noMatchTable) {
+                    noMatchTable.className = "w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md";
+                    noMatchTable.querySelectorAll('tr').forEach((tr, index) => {
+                        tr.className = index === 0 
+                            ? "bg-red-100 border-b border-gray-300 text-red-700 uppercase font-semibold text-xs sticky top-0 shadow-sm"
+                            : "bg-white border-b border-gray-100 hover:bg-red-50";
+                        tr.querySelectorAll('td, th').forEach(cell => cell.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-center'));
+                    });
+                }
+            } else if (isReviewView) {
+                noFileMessage.classList.add('hidden');
+                if (!fileState.file1.data || !fileState.file2.data || !fileState.file3.data) {
+                    noFileMessage.innerHTML = `<p class="text-sm text-center text-red-500">Please load **Scrap**, **Deposit**, and **RHB** files to check for records that need review.</p>`;
+                    return;
+                }
+                
+                const depositReviewData = generateDepositUnmatchedSummary();
+                const scrapReviewData = generateScrapUnmatchedSummary();
+                
+                const depositTableHtml = renderReviewTable(
+                    depositReviewData,
+                    "UNMATCHED DEPOSIT (Success status but not in Scrap)",
+                    "deposit-review-table",
+                    "Deposit"
+                );
+                
+                const scrapTableHtml = renderReviewTable(
+                    scrapReviewData,
+                    "UNMATCHED SCRAP (Not found in RHB or Similar Last 8 Characters)",
+                    "scrap-review-table", 
+                    "Scrap"
+                );
+                
+                dataTableContainer.innerHTML = `
+                    <h1 class="text-2xl font-extrabold text-indigo-700 mb-6 border-b-4 border-indigo-300 pb-2">Review Records</h1>
+                    ${depositTableHtml}
+                    ${scrapTableHtml}
+                `;
+            } else if (isRHBView) {
+                noFileMessage.classList.add('hidden');
+                let metadata = fileState[fileKey].metadata; 
+                const { processedRows, filterDescription, isScrapLookupActive } = processRhbDataForRendering();
+                const currentPage = paginationState[fileKey].currentPage;
+                const paginatedRows = getPaginatedRows(processedRows, currentPage);
+                const totalFiltered = processedRows.length;
+                
+                const finalHeaderRow = ['Date & Time', 'Transaction Reference Number', '-', 'Outlet Name', 'Amount', 'Collection Account', 'Refund Status', 'Refund Date & Time', 'Payment Mode', 'Bank Mapping', 'Transaction ID', 'Edit'];
+                const headerHtml = finalHeaderRow.map(h => `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`).join('');
+                const tableRowsHtml = paginatedRows.map(item => {
+                    const { data: row, txnRef, effectiveRef, rhbMapCategory } = item;
+                    const isUnmapped = isScrapLookupActive && (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef === '') && !rhbScrapOverrideMap[txnRef];
+                    const currentOverride = rhbScrapOverrideMap[txnRef] || '';
+                    const rowClasses = isUnmapped ? 'unmapped-row' : "bg-white border-b border-gray-100 hover:bg-gray-50";
+                    const rowOnClick = isUnmapped ? `onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"` : ""; 
+                    const dateSerial = row[0]; 
+                    let formattedDate = '';
+                    if (typeof dateSerial === 'number' && dateSerial > 1) {
+                        try {
+                            formattedDate = XLSX.SSF.format('DD/MM/YYYY HH:MM:SS', dateSerial);
+                        } catch (e) {
+                            formattedDate = String(dateSerial);
+                        }
+                    } else {
+                        formattedDate = String(dateSerial);
+                    }
+                    let rowHtml = `<tr ${rowOnClick} class="${rowClasses}">`;
+                    row.slice(0, 9).forEach((cell, index) => {
+                        rowHtml += `<td class="px-4 py-2 whitespace-nowrap">${index === 0 ? formattedDate : cell}</td>`;
+                    });
+                    const mappingClass = rhbMapCategory === UNMAPPED_RHB_KEY ? 'text-red-600 font-bold' : 'text-green-700';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap ${mappingClass}">${rhbMapCategory}</td>`;
+                    const overrideClass = (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef.toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase()) ? 'text-red-600 font-bold' : 'text-gray-700';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-xs font-semibold ${overrideClass}">${effectiveRef}</td>`;
+                    rowHtml += `<td class="px-2 py-1 whitespace-nowrap text-center">
+                        <button onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"
+                                title="Edit Override for ${txnRef}"
+                                class="p-1.5 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 transition duration-150 shadow-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>
+                    </td></tr>`;
+                    return rowHtml;
+                }).join('');
+                const htmlContent = `<table id="sheet-data-table" class="w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md"><thead><tr class="bg-green-50 border-b border-gray-300 text-green-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">${headerHtml}</tr></thead><tbody>${tableRowsHtml}</tbody></table>`;
+                const paginationHtml = renderPagination(totalFiltered, currentPage, 'sheet-data-table');
+                const truncationMessage = totalFiltered === 0 
+                    ? `<p class="text-sm text-center text-red-500 pt-3 border-t mt-3 border-gray-200">No rows found matching criteria${filterDescription}.</p>`
+                    : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[fileKey])} (${totalFiltered} total rows${filterDescription}).</p>`;
+                dataTableContainer.innerHTML = `<h2 class="xl font-bold text-gray-800 mb-3">Filtered Data Preview: <span class="font-normal text-green-600">${metadata.name}</span></h2><div class="max-h-96 overflow-y-auto">${htmlContent}</div>${paginationHtml}${truncationMessage}`;
+                const table = document.getElementById('sheet-data-table');
+                if (table) {
+                    table.querySelectorAll('tr').forEach(row => {
+                        if(row.cells.length > 11) {
+                            row.cells[10].style.minWidth = '120px';
+                            row.cells[11].classList.remove('text-left');
+                            row.cells[11].classList.add('text-center');
+                            row.cells[11].style.minWidth = '50px';
+                        }
+                    });
+                }
+            } else {
+                noFileMessage.classList.add('hidden');
+                let metadata = fileState[fileKey].metadata; 
+                const aoaData = fileState[fileKey].data;
+                let { filteredRows, filterDescription } = applyFilter(fileKey, aoaData.slice(1));
+                const searchQuery = searchState[fileKey] || '';
+                const currentPage = paginationState[fileKey].currentPage;
+                let searchedRows = filteredRows;
+                if (searchQuery) {
+                    searchedRows = filteredRows.filter(row => row.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
+                    filterDescription += ` and searched for "${searchQuery}"`;
+                }
+                const totalFiltered = searchedRows.length;
+                const paginatedRows = getPaginatedRows(searchedRows, currentPage);
+                let finalHeaderRow = [...aoaData[0]]; 
+                
+                if (fileKey === 'file2') {
+                    paginatedRows.forEach((row, index) => {
+                        const newRow = [...row];
+                        if (newRow[0] !== undefined && newRow[0] !== null) {
+                            const firstColValue = newRow[0];
+                            if (typeof firstColValue === 'number' && firstColValue.toString().includes('e')) {
+                                newRow[0] = firstColValue.toLocaleString('fullwide', { useGrouping: false });
+                            } else if (typeof firstColValue === 'number' && firstColValue > 1e10) {
+                                newRow[0] = firstColValue.toString();
+                            }
+                        }
+                        const dateSerial = newRow[1];
+                        if (typeof dateSerial === 'number' && dateSerial > 1) {
+                            try {
+                                const excelEpoch = new Date(1899, 11, 30);
+                                const jsDate = new Date(excelEpoch.getTime() + dateSerial * 86400000);
+                                
+                                const year = jsDate.getFullYear();
+                                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                                const day = String(jsDate.getDate()).padStart(2, '0');
+                                const hours = String(jsDate.getHours()).padStart(2, '0');
+                                const minutes = String(jsDate.getMinutes()).padStart(2, '0');
+                                const seconds = String(jsDate.getSeconds()).padStart(2, '0');
+                                
+                                newRow[1] = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                            } catch (e) {
+                                console.error('Error formatting date:', e);
+                                newRow[1] = String(dateSerial);
+                            }
+                        }
+                        const fifthColumnValue = row[4] || '';
+                        const sixthColumnValue = String(row[5] || '').trim().toUpperCase();
+                        let bankMappingResult = 'N/A';
+                        let bestMatchLength = -1;
+                        const rhbMappingEntries = Object.entries(rhbMappingData);
+                        
+                        for (const [key, value] of rhbMappingEntries) { 
+                            if (sixthColumnValue.includes(key) && key.length > bestMatchLength) {
+                                bestMatchLength = key.length;
+                                bankMappingResult = value;
+                            }
+                        }
+                        
+                        paginatedRows[index] = [...newRow, fifthColumnValue, bankMappingResult];
+                    });
+                    filterDescription += " (with Direct Column E value and Bank Mapping)";
+                }
+                
+                const finalDataForSheet = [finalHeaderRow, ...paginatedRows];
+                const newWorksheet = XLSX.utils.aoa_to_sheet(finalDataForSheet);
+                htmlContent = XLSX.utils.sheet_to_html(newWorksheet, {id: 'sheet-data-table', editable: false});
+                const paginationHtml = renderPagination(totalFiltered, currentPage, 'sheet-data-table');
+                const truncationMessage = totalFiltered === 0 
+                    ? `<p class="text-sm text-center text-red-500 pt-3 border-t mt-3 border-gray-200">No rows found matching criteria${filterDescription}.</p>`
+                    : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[fileKey])} (${totalFiltered} total rows${filterDescription}).</p>`;
+                dataTableContainer.innerHTML = `<h2 class="xl font-bold text-gray-800 mb-3">Filtered Data Preview: <span class="font-normal text-indigo-600">${metadata.name}</span></h2><div class="max-h-96 overflow-y-auto">${htmlContent}</div>${paginationHtml}${truncationMessage}`;
+                const table = document.getElementById('sheet-data-table');
+                if (table) {
+                    const isDeposit = fileKey === 'file2';
+                    const headerBg = isDeposit ? 'bg-purple-50' : 'bg-indigo-50';
+                    const headerTextColor = isDeposit ? 'text-purple-700' : 'text-indigo-700';
+                    table.querySelectorAll('tr:first-child').forEach(tr => {
+                        tr.className = `${headerBg} border-b border-gray-300 ${headerTextColor} uppercase font-semibold text-xs sticky top-0 shadow-sm`;
+                    });
+                }
+            }
+            dataTableContainer.classList.remove('hidden');
+        }
+
+function copyTable(tableId) {
+    const table = document.getElementById(tableId);
+    if (!table) {
+        console.log('Table not found:', tableId);
+        return;
+    }
+
+    console.log('Copying table:', tableId);
+    
+    const rows = Array.from(table.querySelectorAll('tr'));
+    let dataRows = [];
+
+    rows.forEach((row, index) => {
+        const cells = Array.from(row.querySelectorAll('td, th'));
+        if (cells.length === 0) return;
+        
+        const textRow = cells.map(cell => cell.innerText.trim());
+        console.log('Row', index, ':', textRow);
+        
+        // Skip header row (index 0) and empty rows
+        if (index === 0) return;
+        
+        const joinedText = textRow.join('\t');
+        
+        // Skip grand total rows and empty rows
+        if (joinedText.includes('GRAND TOTAL') || joinedText.trim() === '') return;
+
+        if (tableId === 'deposit-summary-table') {
+    // For deposit summary: Stall | Bank | Amount
+    let stall = textRow[0] || '';
+    const bank = textRow[1] || '';
+    const amount = textRow[2] || '';
+    
+    // Only add if we have valid data (not empty separator rows)
+    if (stall !== '' && bank !== '' && amount !== '') {
+        // Apply specific transformations
+        if (stall.toLowerCase() === 'ez96') {
+            stall = 'EZ96'; // Ez96 → EZ96
+        } else if (stall.toLowerCase().startsWith('wow')) {
+            stall = 'WOW'; // WOW88, WOW123, etc → WOW
+        }
+        // All other stalls remain unchanged
+        dataRows.push([stall, bank, amount].join('\t'));
+    }
+// In the copyTable function, update the section for 'rhb-map-summary-table':
+} else if (tableId === 'rhb-map-summary-table') {
+    // For RHB summary: Copy only "UNCLAIM", Bank, and No Match Total columns
+    const bank = textRow[0] || '';
+    const noMatchTotal = textRow[2] || '';
+
+    // Skip header rows, grand total rows, and empty rows
+    if (bank === '' || bank === 'Bank' || bank.includes('GRAND TOTAL')) return;
+    
+    // Skip rows where noMatchTotal is 0 or empty
+    if (parseFloat(noMatchTotal.replace(/,/g, '')) === 0 || noMatchTotal === '0.00') return;
+
+    // Copy all banks with non-zero No Match Total
+    dataRows.push(`UNCLAIMED\t${bank}\t${noMatchTotal}`);
+// In the copyTable function, update the section for 'no-match-table':
+} else if (tableId === 'no-match-table') {
+    // For no-match table - copy specific columns in custom order
+    const scrapCol1Value = textRow[0] || '';        // First column
+    const dateTime = textRow[1] || '';              // Second column
+    const txnRefNumber = textRow[2] || '';          // Third column  
+    const txnRef = textRow[3] || '';                // Fourth column
+    const outletName = textRow[4] || '';            // Fifth column
+    const salesAmount = textRow[5] || '';           // Sixth column
+    
+    // Skip header rows and empty rows
+    if (dateTime === 'Date & Time' || dateTime === '') return;
+    
+    // Custom order as requested:
+    // second column, blank column, 5th column, 3rd column, 6th column, word "Unclaim", blank column, blank column, blank column, blank column, first column
+    const customOrder = [
+        dateTime,           // second column
+        '',                 // blank column
+        outletName,         // 5th column
+        txnRefNumber,       // 3rd column
+        salesAmount,        // 6th column
+        'Unclaim',          // word "Unclaim"
+        '',                 // blank column
+        '',                 // blank column
+        '',                 // blank column
+        '',                 // blank column
+        scrapCol1Value      // first column
+    ]; 
+    
+    dataRows.push(customOrder.join('\t'));
+}else {
+            // For other tables, copy as-is
+            const rowText = textRow.join('\t');
+            if (rowText.trim() !== '') dataRows.push(rowText);
+        }
+    }); 
+
+    console.log('Data to copy:', dataRows);
+    
+    if (dataRows.length === 0) {
+        console.log('No data to copy');
+        return;
+    }
+
+    const textToCopy = dataRows.join('\n');
+    console.log('Final text to copy:', textToCopy);
+    
+    // Use modern clipboard API with fallback
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            console.log('Table copied to clipboard successfully');
+            // Alert removed from here
+        }).catch(err => {
+            console.error('Clipboard API error:', err);
+            fallbackCopyTextToClipboard(textToCopy);
+        });
+    } else {
+        fallbackCopyTextToClipboard(textToCopy);
+    }
+}
+
+// Fallback method for older browsers
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            console.log('Table copied to clipboard using fallback method');
+            // Alert removed from here
+        } else {
+            console.error('Fallback copy failed');
+            // Alert removed from here
+        }
+    } catch (err) {
+        console.error('Fallback copy error:', err);
+        // Alert removed from here
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function copyAllSummaryTables() {
+    const tables = ['deposit-summary-table', 'rhb-map-summary-table', 'no-match-table'];
+    let allContent = '';
+    tables.forEach(id => {
+        const table = document.getElementById(id);
+        if (table) {
+            const bodyRows = Array.from(table.querySelectorAll('tbody tr')).map(row => row.outerHTML).join('');
+            if (bodyRows) {
+                allContent += `<table><tbody>${bodyRows}</tbody></table>
+`;
+            }
+        }
+    });
+    if (allContent) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = allContent;
+        document.body.appendChild(tempDiv);
+        let range;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(tempDiv);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            document.body.removeChild(tempDiv);
+            // Alert removed from here
+        } else {
+            document.body.removeChild(tempDiv);
+            // Alert removed from here
+        }
+    } else {
+        // Alert removed from here
+    }
+}
+
+        window.onload = () => {
+            updateFileSelector();
+            initializeMappingInputs();
+            applyAllMappingsAndClose(); 
+        };
+    </script>
+</body>
+</html>
