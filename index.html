@@ -942,20 +942,117 @@
             };
         };
 
+        // CORRECTED: Function to generate Scrap records that are not found in Deposit or have non-SUCCESS status
+     const generateScrapDepositUnmatchedSummary = () => {
+    const scrapData = fileState.file1.data;
+    const depositData = fileState.file2.data;
+    if (!scrapData || !depositData) {
+        return { data: [], header: [], title: `Scrap Records Not Found in Deposit or Non-SUCCESS`, totalRows: 0 };
+    }
+    
+    // Create a map of deposit references (column 0) to their status (column 8)
+    const depositRefStatusMap = new Map();
+    if (depositData.length > 1) {
+        depositData.slice(1).forEach(row => {
+            const depositRef = String(row[0] || '').trim().toUpperCase();
+            const depositStatus = String(row[8] || '').trim().toUpperCase();
+            if (depositRef) {
+                depositRefStatusMap.set(depositRef, depositStatus);
+            }
+        });
+    }
+    
+    const headerRow = scrapData[0];
+    const scrapRows = scrapData.slice(1);
+    const SCRAP_TXN_REF_COL = 8; // Column J (9th column, 0-indexed) - Transaction ID
+    
+    const rowsForReview = [];
+    const rhbMappingEntries = Object.entries(rhbMappingData);
+    
+    scrapRows.forEach(row => {
+        const scrapTxnRef = String(row[SCRAP_TXN_REF_COL] || '').trim().toUpperCase();
+        if (!scrapTxnRef) return;
+        
+        let status = '';
+        let shouldInclude = false;
+        
+        // Check if Scrap Transaction ID exists in Deposit column 0
+        if (!depositRefStatusMap.has(scrapTxnRef)) {
+            // NOT FOUND in Deposit column 0
+            status = 'NOT IN DEPOSIT';
+            shouldInclude = true;
+        } else {
+            // FOUND in Deposit column 0 - now check Deposit column 8 status
+            const depositStatus = depositRefStatusMap.get(scrapTxnRef);
+            if (depositStatus !== 'SUCCESS') {
+                // CHANGED: Show just the status directly without "DEPOSIT STATUS: " prefix
+                status = depositStatus; // Just show FAILED, IN PROCESS, etc. directly
+                shouldInclude = true;
+            }
+            // If depositStatus is 'SUCCESS', don't include in this table
+        }
+        
+        if (shouldInclude) {
+            const seventhColValue = String(row[6] || '').trim().toUpperCase();
+            let paymierBankResult = 'N/A';
+            let bestMatchLength = -1;
+            
+            for (const [key, value] of rhbMappingEntries) { 
+                if (seventhColValue.includes(key) && key.length > bestMatchLength) {
+                    bestMatchLength = key.length;
+                    paymierBankResult = value;
+                }
+            }
+            
+            rowsForReview.push({
+                data: row,
+                status: status,
+                type: 'Scrap',
+                paymierBank: paymierBankResult
+            });
+        }
+    });
+    
+    const reviewHeader = [...headerRow.slice(0, 10), 'STATUS', 'Paymier Bank', 'Type', 'Check'];
+    
+    return {
+        data: rowsForReview,
+        header: reviewHeader,
+        title: `Scrap Records Not Found in Deposit or Non-SUCCESS Status`,
+        totalRows: rowsForReview.length
+    };
+};
+
+        // MODIFIED: Merged function to combine both scrap review tables
+        const generateMergedScrapReviewSummary = () => {
+            const scrapReviewData = generateScrapUnmatchedSummary();
+            const scrapDepositReviewData = generateScrapDepositUnmatchedSummary();
+            
+            // Combine both data sources
+            const mergedData = [...scrapReviewData.data, ...scrapDepositReviewData.data];
+            
+            return {
+                data: mergedData,
+                header: scrapReviewData.header,
+                title: 'SCRAP RECORDS FOR REVIEW',
+                totalRows: mergedData.length
+            };
+        };
+
         const generateUnifiedReviewSummary = () => {
             const depositReview = generateDepositUnmatchedSummary();
-            const scrapReview = generateScrapUnmatchedSummary();
+            const mergedScrapReview = generateMergedScrapReviewSummary(); // Use the merged scrap review
             
             const depositHeader = depositReview.header;
-            const scrapHeader = scrapReview.header;
+            const scrapHeader = mergedScrapReview.header;
             
             const finalHeader = [...depositHeader.slice(0, -2), 'Match Status (RHB Col B / Deposit Col G)', 'Paymier Bank', 'Type'];
             
             return {
-                data: [...depositReview.data, ...scrapReview.data],
+                data: [...depositReview.data, ...mergedScrapReview.data], // Use the merged scrap data
                 header: finalHeader,
                 title: 'CHECK UNMATCH',
-                totalRows: depositReview.data.length + scrapReview.data.length
+                totalRows: depositReview.data.length + mergedScrapReview.data.length
             };
         };
 
@@ -1202,11 +1299,12 @@
         const renderReviewTableOnly = () => {
             if (fileState.activeFile !== REVIEW_KEY) return;
             
-            const scrapReviewData = generateScrapUnmatchedSummary();
+            const depositReviewData = generateDepositUnmatchedSummary();
+            const mergedScrapReviewData = generateMergedScrapReviewSummary(); // Use the merged scrap data
             const searchQuery = searchState[REVIEW_KEY] || '';
             const currentPage = paginationState[REVIEW_KEY].currentPage;
             
-            let filteredRows = scrapReviewData.data;
+            let filteredRows = [...depositReviewData.data, ...mergedScrapReviewData.data]; // Use the merged scrap data
             
             if (searchQuery) {
                 filteredRows = filteredRows.filter(item => item.data.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
@@ -1244,28 +1342,38 @@
                     rowHtml += dataCells;
 
                     const statusValue = status || '';
-                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
-                                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
-                                  'bg-gray-50 text-gray-800';
+                    // In renderReviewTableOnly function, update the statusClass assignment:
+const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
+                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
+                  status === 'NOT IN DEPOSIT' ? 'bg-red-100 text-red-800' : 
+                  status === 'IN PROCESS' ? 'bg-blue-100 text-blue-800' : 
+                  status === 'FAILED' ? 'bg-red-100 text-red-800' : // Add color for FAILED
+                  'bg-gray-50 text-gray-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
 
                     const paymierBankValue = paymierBank || 'N/A';
                     const paymierBankClass = paymierBank !== 'N/A' ? 'bg-green-100 text-green-800' : 'bg-gray-50 text-gray-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${paymierBankClass}">${paymierBankValue}</td>`;
 
-                    const typeClass = 'bg-indigo-100 text-indigo-800';
-                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">Scrap</td>`;
+                    const typeClass = itemType === 'Deposit' ? 'bg-purple-100 text-purple-800' : 'bg-indigo-100 text-indigo-800';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">${itemType}</td>`;
                     
-                    const checkCrossIcon = isChecked 
-                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
-                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-                    
-                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
-                        <button onclick="toggleScrapCheckState('${uniqueKey}')" 
-                                class="check-cross-btn p-1 rounded-full hover:bg-gray-100 transition duration-150">
-                            ${checkCrossIcon}
-                        </button>
-                    </td>`;
+                    // Only show check/cross button for Scrap rows
+                    if (itemType === 'Scrap') {
+                        const checkCrossIcon = isChecked 
+                            ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                            : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                        
+                        rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
+                            <button onclick="toggleScrapCheckState('${uniqueKey}')" 
+                                    class="check-cross-btn p-1 rounded-full hover:bg-gray-100 transition duration-150">
+                                ${checkCrossIcon}
+                            </button>
+                        </td>`;
+                    } else {
+                        // For Deposit rows, leave the check column empty
+                        rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center"></td>`;
+                    }
                     
                     rowHtml += `</tr>`;
                     return rowHtml;
@@ -1283,8 +1391,8 @@
                 const summaryText = document.querySelector('#scrap-review-table').closest('.mb-8').querySelector('.text-sm.text-center.text-gray-500');
                 if (summaryText) {
                     const truncationMessage = totalFiltered === 0
-                        ? `<p class="text-sm text-center text-green-700 pt-3 border-t mt-3 border-gray-200">No scrap records require review.</p>`
-                        : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[REVIEW_KEY])} (${totalFiltered} total scrap review rows).</p>`;
+                        ? `<p class="text-sm text-center text-green-700 pt-3 border-t mt-3 border-gray-200">No records require review.</p>`
+                        : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[REVIEW_KEY])} (${totalFiltered} total review rows).</p>`;
                     summaryText.outerHTML = truncationMessage;
                 }
             }
@@ -1361,9 +1469,13 @@
                     rowHtml += dataCells;
 
                     const statusValue = status || '';
-                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
-                                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
-                                  'bg-gray-50 text-gray-800';
+                    // In renderReviewTableOnly function, update the statusClass assignment:
+const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
+                  status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
+                  status === 'NOT IN DEPOSIT' ? 'bg-red-100 text-red-800' : 
+                  status === 'IN PROCESS' ? 'bg-blue-100 text-blue-800' : 
+                  status === 'FAILED' ? 'bg-red-100 text-red-800' : // Add color for FAILED
+                  'bg-gray-50 text-gray-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
 
                     const paymierBankValue = paymierBank || 'N/A';
@@ -1610,7 +1722,7 @@ if (noMatchRows.length > 0) {
                 }
                 
                 const depositReviewData = generateDepositUnmatchedSummary();
-                const scrapReviewData = generateScrapUnmatchedSummary();
+                const mergedScrapReviewData = generateMergedScrapReviewSummary(); // Use the merged scrap data
                 
                 const depositTableHtml = renderReviewTable(
                     depositReviewData,
@@ -1620,8 +1732,8 @@ if (noMatchRows.length > 0) {
                 );
                 
                 const scrapTableHtml = renderReviewTable(
-                    scrapReviewData,
-                    "UNMATCHED SCRAP (Not found in RHB or Similar Last 8 Characters)",
+                    mergedScrapReviewData,
+                    "SCRAP RECORDS FOR REVIEW", // Updated title for merged table
                     "scrap-review-table", 
                     "Scrap"
                 );
