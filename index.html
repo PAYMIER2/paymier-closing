@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,29 +8,49 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { 
+
+        body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7ffec; 
-            min-height: 10vh;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 1rem;
+            align-items: flex-start;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
         }
-        #sheet-data-table th, #sheet-data-table td {
-            border: 1px solid #e5e7eb;
-            padding: 0.5rem;
+
+        #sheet-data-table {
+            border-collapse: collapse;
+            width: 100%;
         }
+
+        #sheet-data-table th,
+        #sheet-data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        #sheet-data-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+
         .modal {
             transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-        } 
+        }
+
         .modal-active .modal-content {
             transform: scale(1);
         }
+
         .modal-content {
             transform: scale(0.95);
             transition: transform 0.3s ease-out;
         }
+
         .unmapped-row {
             background-color: #fecaca !important;
             border-color: #f87171 !important;
@@ -37,14 +58,17 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .unmapped-row:hover {
             background-color: #fca5a5 !important;
             transform: scale(1.005);
         }
+
         table {
             table-layout: auto !important;
             width: 100%;
         }
+
         table th,
         table td {
             white-space: nowrap !important;
@@ -52,18 +76,23 @@
             text-overflow: ellipsis;
             max-width: none !important;
         }
-        .mapping-key, .mapping-value {
+
+        .mapping-key,
+        .mapping-value {
             max-width: 120px;
         }
+
         .copy-btn {
             margin-left: 0.5rem;
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
         }
+
         th {
             text-align: center !important;
             vertical-align: middle !important;
         }
+
         .filter-section {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -71,224 +100,785 @@
             padding: 1rem;
             margin-bottom: 1rem;
         }
+
         .filter-dropdown {
             width: 100%;
             max-width: 300px;
         }
+
         .filter-option {
             display: flex;
             align-items: center;
             margin-bottom: 0.5rem;
         }
+
         .multi-select {
             height: 120px;
         }
+
         .hidden-row {
             display: none;
         }
+
         .pagination-btn {
             padding: 0.5rem 1rem;
             margin: 0 0.25rem;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             background-color: white;
+            color: #374151;
+            /* Dark text for light mode */
             cursor: pointer;
+            transition: all 0.2s;
         }
+
         .pagination-btn:hover {
             background-color: #f3f4f6;
+            color: #111827;
         }
+
         .pagination-btn.active {
             background-color: #3b82f6;
             color: white;
+            border-color: #3b82f6;
         }
+
+        /* Dark Mode Pagination */
+        body.dark-mode .pagination-btn {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .pagination-btn:hover {
+            background-color: #334155;
+            color: white;
+        }
+
+        body.dark-mode .pagination-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
         .filter-collapsible {
             cursor: pointer;
             user-select: none;
         }
+
         .filter-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
+
         .filter-content.expanded {
             max-height: 500px;
         }
+
         .check-cross-btn {
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .check-cross-btn:hover {
             transform: scale(1.1);
         }
-    </style>
-<script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script><script type="text/javascript" src="https://tiiny.host/ad-script.js"></script><meta property="og:url" content="https://paymier-closing.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ></head>
-<body>
-    <div id="app-container" class="w-full max-w-5xl bg-white p-6 md:p-10 rounded-xl shadow-2xl border border-gray-100 relative">
-        
-        <button onclick="toggleMappingModal(true)" 
-            title="Manage Mappings" 
-            class="absolute top-4 right-4 p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition duration-300 shadow-lg z-10 hover:rotate-90">
-            
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37zM15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        </button>
-        
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-4 text-center">
-        █▓▒▒░░░PAYMIER CLOSING TOOL░░░▒▒▓█
-        </h1>
-        
-        <div class="grid md:grid-cols-3 gap-4 mb-8">
-            
-            <div class="border-2 border-dashed border-indigo-300 rounded-lg p-4 bg-indigo-50 hover:bg-indigo-100 transition duration-300">
-                <p class="font-semibold text-indigo-700 mb-2">Scrap</p>
-                <input type="file" id="fileInput1" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file1')">
-                <label for="fileInput1" class="block w-full text-center py-2 px-3 bg-indigo-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-indigo-700 transition duration-300 shadow-md">Select Scrap file</label>
-                <p id="file1-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
-            </div>
-            
-            <div class="border-2 border-dashed border-purple-300 rounded-lg p-4 bg-purple-50 hover:bg-purple-100 transition duration-300">
-                <p class="font-semibold text-purple-700 mb-2">Deposit</p>
-                <input type="file" id="fileInput2" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file2')">
-                <label for="fileInput2" class="block w-full text-center py-2 px-3 bg-purple-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-purple-700 transition duration-300 shadow-md">Select Deposit file</label>
-                <p id="file2-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
-            </div>
-            
-            <div class="border-2 border-dashed border-green-300 rounded-lg p-4 bg-green-50 hover:bg-green-100 transition duration-300">
-                <p class="font-semibold text-green-700 mb-2">STATEMENT</p>
 
-                <input type="file" id="fileInput3" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event, 'file3')" multiple>
-                <label for="fileInput3" class="block w-full text-center py-2 px-3 bg-green-600 text-white font-semibold text-sm rounded-lg cursor-pointer hover:bg-green-700 transition duration-300 shadow-md">Select Statment Files</label>
-                <p id="file3-name" class="text-xs text-gray-500 mt-2 text-center truncate">No file loaded.</p>
+        /* --- Dark Mode Styles --- */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+        }
+
+        /* REMOVED: CSS-based Pseudo-element stars */
+        /* body.dark-mode.stars-active::before, */
+        /* body.dark-mode.stars-active::after { ... } */
+
+        /* JS-based Star Styling */
+        .star {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            /* specific animation handles opacity */
+        }
+
+        /* Define distinct twinkle animations with different durations/delays if needed, 
+           or just use one flexible one. */
+        @keyframes twinkle-anim {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+
+        /* App Container & Selector */
+        body.dark-mode #app-container,
+        body.dark-mode #selector-container,
+        body.dark-mode #search-container,
+        body.dark-mode #table-controls,
+        body.dark-mode .modal-content {
+            background-color: #1e293b !important;
+            /* Dark Slate 800 */
+            border-color: #334155 !important;
+            color: #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode #app-container {
+            background-color: rgba(30, 41, 59, 0.9) !important;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Inputs & Selects */
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #0f172a !important;
+            /* Dark Slate 900 */
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .bg-white {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0;
+        }
+
+        /* Valid Overrides for Green/Purple/Gray Containers */
+        body.dark-mode [class*="bg-green-"],
+        body.dark-mode [class*="bg-indigo-"],
+        body.dark-mode [class*="bg-purple-"],
+        body.dark-mode [class*="bg-gray-"] {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode .text-gray-900 {
+            color: #f8fafc !important;
+        }
+
+        body.dark-mode .text-gray-800 {
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+
+        body.dark-mode .text-gray-600 {
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .text-gray-500 {
+            color: #64748b !important;
+        }
+
+        body.dark-mode .text-green-800,
+        body.dark-mode .text-green-700 {
+            color: #86efac !important;
+        }
+
+        body.dark-mode .text-purple-800,
+        body.dark-mode .text-purple-700 {
+            color: #d8b4fe !important;
+        }
+
+        body.dark-mode .text-indigo-800,
+        body.dark-mode .text-indigo-700 {
+            color: #a5b4fc !important;
+        }
+
+        body.dark-mode #sheet-data-table th {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        body.dark-mode #sheet-data-table td {
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode button svg {
+            color: inherit;
+        }
+
+        body.dark-mode button.text-gray-500:hover {
+            color: #f1f5f9 !important;
+            background-color: #334155;
+            border-radius: 50%;
+        }
+
+        /* --- Scrollbar Dark Mode Fix --- */
+        body.dark-mode ::-webkit-scrollbar {
+            height: 8px;
+            /* Height for horizontal scrollbar */
+            width: 8px;
+            /* Width for vertical scrollbar */
+            background-color: #1e293b;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-track {
+            background-color: #1e293b;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-corner {
+            background-color: #1e293b;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 4px;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background-color: #64748b;
+        }
+
+        /* Fix filter section text and background */
+        body.dark-mode .filter-section,
+        body.dark-mode .filter-dropdown,
+        body.dark-mode .filter-option {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .bg-green-100 {
+            background-color: #064e3b !important;
+            /* Dark green for checked rows */
+            border-color: #065f46 !important;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .bg-green-200 {
+            /* Hover state */
+            background-color: #065f46 !important;
+        }
+
+        body.dark-mode .hover\:bg-gray-50:hover {
+            background-color: #334155 !important;
+        }
+
+        body.dark-mode .border-gray-100 {
+            border-color: #334155 !important;
+        }
+
+        /* Fix table header white background */
+        body.dark-mode thead,
+        body.dark-mode thead tr,
+        body.dark-mode thead th {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
+
+        /* Fix red/rose containers in dark mode ("Unclaimed Scrap" etc.) - NOW MATCHING STANDARD DARK THEME */
+        body.dark-mode .bg-rose-50,
+        body.dark-mode .bg-rose-100,
+        body.dark-mode .bg-red-50 {
+            background-color: #1e293b !important;
+            /* Match standard app container (Dark Slate 800) */
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        body.dark-mode .text-rose-800,
+        body.dark-mode .text-rose-700,
+        body.dark-mode .text-rose-600,
+        body.dark-mode .text-red-800,
+        body.dark-mode .text-red-700 {
+            color: #e2e8f0 !important;
+            /* Standard light text */
+            font-weight: 700;
+            /* Keep it bold to stand out as a header */
+        }
+
+        /* Fix stray white backgrounds and headers */
+        body.dark-mode .bg-white {
+            background-color: #1e293b !important;
+        }
+
+        /* ROBUST HEADER FIX: Target all table headers in dark mode */
+        body.dark-mode th,
+        body.dark-mode thead th,
+        body.dark-mode tr th {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
+
+        /* --- CYBER FUTURISTIC MODE --- */
+        body.cyber-mode {
+            background-color: #050510;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #0ff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body.cyber-mode #app-container,
+        body.cyber-mode .modal-content {
+            background-color: rgba(5, 5, 16, 0.9) !important;
+            border: 1px solid #0ff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            color: #0ff;
+        }
+
+        body.cyber-mode h1 {
+            color: #f0f !important;
+            text-shadow: 0 0 10px #f0f;
+            background: none !important;
+            -webkit-text-fill-color: #f0f !important;
+        }
+
+        body.cyber-mode .bg-white,
+        body.cyber-mode [class*="bg-indigo-"],
+        body.cyber-mode [class*="bg-gray-"],
+        body.cyber-mode [class*="bg-green-"],
+        body.cyber-mode [class*="bg-purple-"],
+        body.cyber-mode [class*="bg-rose-"],
+        body.cyber-mode [class*="bg-red-"] {
+            background-color: #0a0a1a !important;
+            border: 1px solid #f0f !important;
+            color: #0ff !important;
+        }
+
+        body.cyber-mode input,
+        body.cyber-mode select,
+        body.cyber-mode textarea {
+            background-color: #000 !important;
+            border: 1px solid #0ff !important;
+            color: #0ff !important;
+            font-family: monospace;
+        }
+
+        body.cyber-mode button {
+            border: 1px solid #0ff;
+            box-shadow: 0 0 5px #0ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        body.cyber-mode table th {
+            background-color: #000 !important;
+            color: #f0f !important;
+            border-color: #0ff !important;
+            text-transform: uppercase;
+        }
+
+        body.cyber-mode table td {
+            border-color: #004444 !important;
+            color: #0ff !important;
+        }
+
+        /* Comprehensive text color overrides for visibility */
+        body.dark-mode .text-gray-800,
+        body.dark-mode .text-gray-700,
+        body.dark-mode .text-gray-600,
+        body.dark-mode .text-indigo-700,
+        body.dark-mode .text-purple-700,
+        body.dark-mode .text-emerald-700,
+        body.dark-mode .text-blue-700 {
+            color: #f8fafc !important;
+        }
+
+        body.dark-mode .text-gray-500,
+        body.dark-mode .text-gray-400 {
+            color: #cbd5e1 !important;
+        }
+
+        body.cyber-mode .text-gray-800,
+        body.cyber-mode .text-gray-700,
+        body.cyber-mode .text-gray-600,
+        body.cyber-mode .text-indigo-700,
+        body.cyber-mode .text-purple-700,
+        body.cyber-mode .text-emerald-700,
+        body.cyber-mode .text-blue-700 {
+            color: #0ff !important;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        body.cyber-mode .text-gray-500,
+        body.cyber-mode .text-gray-400 {
+            color: #0aa !important;
+        }
+
+        body.cyber-mode .bg-indigo-100,
+        body.cyber-mode .bg-purple-100,
+        body.cyber-mode .bg-emerald-100,
+        body.cyber-mode .bg-blue-100,
+        body.cyber-mode .bg-green-100,
+        body.cyber-mode .bg-gray-50,
+        body.cyber-mode .bg-indigo-50,
+        body.cyber-mode .bg-purple-50,
+        body.cyber-mode .bg-emerald-50 {
+            background-color: #000 !important;
+            border: 1px solid #0ff !important;
+        }
+
+        body.cyber-mode .text-indigo-600,
+        body.cyber-mode .text-purple-600,
+        body.cyber-mode .text-emerald-600,
+        body.cyber-mode .text-blue-600,
+        body.cyber-mode .text-green-600 {
+            color: #f0f !important;
+            text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+        }
+
+        /* --- HELLO KITTY MODE --- */
+
+
+        /* --- Rain & Lightning Effect --- */
+        #rain-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            display: none;
+        }
+
+        #lightning-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+    </style>
+    <script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
+    <script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
+    <script type="text/javascript" src="https://tiiny.host/ad-script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Added Chart.js -->
+    <meta property="og:url" content="https://paymier-closing.tiiny.site/" data-id="th-modified">
+    <meta property="og:type" content="website" data-id="th-modified">
+</head>
+
+<body>
+    <canvas id="rain-canvas"></canvas>
+    <div id="lightning-flash"></div>
+    <!-- Container for dynamic stars -->
+    <div id="star-container"></div>
+    <div id="app-container"
+        class="w-full max-w-7xl bg-white/90 backdrop-blur-2xl p-8 md:p-12 rounded-3xl shadow-2xl ring-1 ring-black/5 relative transition-all duration-500 z-10">
+
+        <div class="absolute top-4 right-16 z-20"> <!-- Added z-20 to be above other elements -->
+            <div class="relative">
+                <select id="themeSelector" onchange="handleThemeChange(this.value)"
+                    class="appearance-none cursor-pointer pl-4 pr-10 py-2 text-sm font-bold rounded-full shadow-lg bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700">
+                    <option value="light" class="text-gray-900 bg-white">☀️</option>
+                    <option value="dark" class="text-gray-900 bg-white">🌑</option>
+                    <option value="rain" class="text-gray-900 bg-white">⛈️</option>
+                    <option value="cyber" class="text-gray-900 bg-white">🤖</option>
+
+                </select>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-        
-        <div id="selector-container" class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 hidden">
-            <label for="fileSelector" class="block text-sm font-medium text-gray-700 mb-2">
-                Select Active File for Viewing:
-            </label>
-            <select id="fileSelector" onchange="handleFileSwitch(event)" 
-                class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                <option value="" disabled selected>-- Select a loaded file --</option>
-            </select>
+
+        <button onclick="toggleMappingModal(true)" title="Manage Mappings"
+            class="absolute top-4 right-4 p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition duration-300 shadow-lg z-10 hover:rotate-90">
+
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37zM15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                </path>
+            </svg>
+        </button>
+
+        <div class="text-center mb-12">
+            <h1
+                class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 mb-2 tracking-tight drop-shadow-sm">
+                PAYMIER CLOSING TOOL
+            </h1>
+            <p class="text-gray-500 font-medium text-lg">Financial Reconciliation & Analysis System</p>
         </div>
-        
+
+        <div class="grid md:grid-cols-3 gap-6 mb-10">
+            <!-- Scrap Card -->
+            <div
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 relative overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-indigo-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+                <div class="relative z-10 w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg group-hover:text-indigo-700 transition-colors">Scrap
+                            Data</h3>
+                        <div
+                            class="p-2 bg-indigo-100 rounded-lg text-indigo-600 group-hover:bg-white group-hover:text-indigo-700 shadow-sm transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput1" class="hidden" accept=".xlsx,.xls,.csv"
+                        onchange="handleFileSelect(event, 'file1')">
+                    <label for="fileInput1"
+                        class="block w-full text-center py-3 px-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-600 font-medium text-sm rounded-xl cursor-pointer hover:border-indigo-500 hover:text-indigo-600 hover:bg-white transition-all duration-300">
+                        Select Scrap File
+                    </label>
+                    <p id="file1-name" class="text-xs text-gray-400 mt-3 text-center truncate h-4 font-mono">No file
+                        loaded</p>
+                </div>
+            </div>
+
+            <!-- Deposit Card -->
+            <div
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 relative overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+                <div class="relative z-10 w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg group-hover:text-purple-700 transition-colors">
+                            Deposit Data</h3>
+                        <div
+                            class="p-2 bg-purple-100 rounded-lg text-purple-600 group-hover:bg-white group-hover:text-purple-700 shadow-sm transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput2" class="hidden" accept=".xlsx,.xls,.csv"
+                        onchange="handleFileSelect(event, 'file2')">
+                    <label for="fileInput2"
+                        class="block w-full text-center py-3 px-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-600 font-medium text-sm rounded-xl cursor-pointer hover:border-purple-500 hover:text-purple-600 hover:bg-white transition-all duration-300">
+                        Select Deposit File
+                    </label>
+                    <p id="file2-name" class="text-xs text-gray-400 mt-3 text-center truncate h-4 font-mono">No file
+                        loaded</p>
+                </div>
+            </div>
+
+            <!-- Statement Card -->
+            <div
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 relative overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+                <div class="relative z-10 w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg group-hover:text-emerald-700 transition-colors">
+                            Statement Data</h3>
+                        <div
+                            class="p-2 bg-emerald-100 rounded-lg text-emerald-600 group-hover:bg-white group-hover:text-emerald-700 shadow-sm transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput3" class="hidden" accept=".xlsx,.xls,.csv"
+                        onchange="handleFileSelect(event, 'file3')" multiple>
+                    <label for="fileInput3"
+                        class="block w-full text-center py-3 px-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-600 font-medium text-sm rounded-xl cursor-pointer hover:border-emerald-500 hover:text-emerald-600 hover:bg-white transition-all duration-300">
+                        Select Statements
+                    </label>
+                    <p id="file3-name" class="text-xs text-gray-400 mt-3 text-center truncate h-4 font-mono">No file
+                        loaded</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="selector-container"
+            class="mb-8 p-6 bg-gray-50/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-inner hidden transition-all duration-300">
+            <label for="fileSelector" class="block text-sm font-bold text-gray-700 mb-3 tracking-wide uppercase">
+                Select Active View
+            </label>
+            <div class="relative">
+                <select id="fileSelector" onchange="handleFileSwitch(event)"
+                    class="block w-full py-3 px-4 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none transition-shadow cursor-pointer">
+                    <option value="" disabled selected>-- Select a loaded file --</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
         <div id="file-info" class="space-y-4">
-            
-            <div id="search-container" class="mb-4 p-4 bg-white rounded-lg border border-gray-200 hidden">
-                <label for="searchQuery" class="block text-sm font-medium text-gray-700 mb-2">
-                    Search Table Content:
+
+            <div id="search-container" class="mb-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+                <label for="searchQuery" class="block text-sm font-semibold text-gray-700 mb-2 pl-1">
+                    Search Data
                 </label>
-                <input type="text" id="searchQuery" oninput="handleSearchInput()" 
-                    class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Type to search within the current file's data...">
+                <div class="relative rounded-xl shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                            fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchQuery" oninput="handleSearchInput()"
+                        class="block w-full pl-10 py-3 pr-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+                        placeholder="Search records...">
+                </div>
             </div>
 
             <!-- Display Options -->
-            <div id="table-controls" class="mb-4 p-4 bg-white rounded-lg border border-gray-200 hidden">
-                <div class="flex flex-wrap gap-4 items-center">
+            <!-- Display Options -->
+            <div id="table-controls"
+                class="mb-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hidden flex-wrap items-center justify-between">
+                <div class="flex flex-wrap gap-4 items-center w-full">
                     <!-- Display Options -->
-                    <div class="flex items-center gap-2">
-                        <label for="rowsPerPage" class="text-sm font-medium text-gray-700">Show:</label>
-                        <select id="rowsPerPage" onchange="handleRowsPerPageChange()" 
-                            class="py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <div class="flex items-center gap-3">
+                        <label for="rowsPerPage" class="text-sm font-medium text-gray-700">Show rows:</label>
+                        <select id="rowsPerPage" onchange="handleRowsPerPageChange()"
+                            class="py-2 pl-3 pr-8 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm cursor-pointer">
                             <option value="50">50</option>
                             <option value="100">100</option>
                             <option value="500">500</option>
                         </select>
-                        <span class="text-sm text-gray-500">records per page</span>
                     </div>
                 </div>
             </div>
 
-            <div id="data-table-container" class="bg-white p-4 rounded-lg border border-gray-200 hidden overflow-x-auto shadow-inner">
-                
+            <div id="data-table-container"
+                class="bg-white p-1 rounded-2xl border border-gray-200 hidden overflow-x-auto shadow-inner min-h-[400px]">
+
             </div>
             <div id="no-file-message" class="text-center p-4 text-gray-400">
             </div>
         </div>
     </div>
-    
-    <div id="mappingModal" class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
-         onclick="if(event.target.id === 'mappingModal') toggleMappingModal(false)">
+
+    <div id="mappingModal"
+        class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
+        onclick="if(event.target.id === 'mappingModal') toggleMappingModal(false)">
         <div class="modal-content bg-white w-full max-w-4xl p-8 rounded-xl shadow-2xl relative">
             <h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Setting</h2>
-            
-            <button onclick="toggleMappingModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition duration-150">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+
+            <button onclick="toggleMappingModal(false)"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
             </button>
             <div class="grid md:grid-cols-1 gap-6">
-                
+
                 <div id="rhb-mapping-settings" class="p-4 bg-green-50 rounded-xl border border-green-200">
                     <h3 class="text-xl font-bold text-green-800 mb-3 border-b border-green-300 pb-2">Paymier Bank</h3>
-                    
+
                     <div class="flex items-center space-x-2 mb-2 text-xs font-bold uppercase text-green-700">
                         <span class="flex-1">Keyword</span>
                         <span class="flex-1">Bank</span>
                         <span class="w-4"></span>
                     </div>
-                    
+
                     <div id="rhbMappingRowsContainer" class="space-y-2 mb-4 max-h-56 overflow-y-auto pr-2">
-                        
+
                     </div>
-                    <button onclick="addMappingRow('rhbMappingRowsContainer')" class="w-full py-2 px-4 text-green-700 font-semibold text-sm rounded-lg border border-green-300 bg-green-200 hover:bg-green-300 transition duration-300 shadow-sm">
+                    <button onclick="addMappingRow('rhbMappingRowsContainer')"
+                        class="w-full py-2 px-4 text-green-700 font-semibold text-sm rounded-lg border border-green-300 bg-green-200 hover:bg-green-300 transition duration-300 shadow-sm">
                         + Add New Rule
                     </button>
                 </div>
             </div>
-            
+
             <div class="mt-8 pt-4 border-t border-gray-300 flex justify-between items-center">
                 <p id="mappingStatus" class="text-sm text-gray-600 font-medium">Please apply changes.</p>
-                <button onclick="applyAllMappingsAndClose()" class="py-2 px-8 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md">
+                <button onclick="applyAllMappingsAndClose()"
+                    class="py-2 px-8 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md">
                     Apply Changes & Close
                 </button>
             </div>
         </div>
     </div>
-    
-    <div id="overrideModal" class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
-         onclick="if(event.target.id === 'overrideModal') toggleOverrideModal(false)">
+
+    <div id="overrideModal"
+        class="modal fixed inset-0 z-50 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible"
+        onclick="if(event.target.id === 'overrideModal') toggleOverrideModal(false)">
         <div class="modal-content bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl relative">
             <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Edit Scrap Reference Override</h3>
-            <p class="text-sm text-gray-600 mb-4">Transaction Ref: <span id="modalTxnRefDisplay" class="font-mono font-semibold text-indigo-700 break-all"></span></p>
-            <label for="overrideInput" class="block text-sm font-medium text-gray-700 mb-1">New Override Value (e.g., LPK001):</label>
-            <input type="text" id="overrideInput" class="w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm mb-4" placeholder="Enter new reference here">
+            <p class="text-sm text-gray-600 mb-4">Transaction Ref: <span id="modalTxnRefDisplay"
+                    class="font-mono font-semibold text-indigo-700 break-all"></span></p>
+            <label for="overrideInput" class="block text-sm font-medium text-gray-700 mb-1">New Override Value (e.g.,
+                LPK001):</label>
+            <input type="text" id="overrideInput"
+                class="w-full py-2 px-3 border border-gray-300 rounded-md focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm mb-4"
+                placeholder="Enter new reference here">
             <div class="flex justify-end space-x-3">
-                <button onclick="saveOverrideFromModal()" class="py-2 px-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-300 shadow-md">
+                <button onclick="saveOverrideFromModal()"
+                    class="py-2 px-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-300 shadow-md">
                     Save
                 </button>
-                <button onclick="toggleOverrideModal(false)" class="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition duration-300 shadow-md">
+                <button onclick="toggleOverrideModal(false)"
+                    class="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition duration-300 shadow-md">
                     Cancel
                 </button>
             </div>
-            
-            <input type="hidden" id="modalTxnRefContext" >
+
+            <input type="hidden" id="modalTxnRefContext">
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
         const MAX_ROWS = 100;
         const ROWS_PER_PAGE = 50;
-        const RHB_MAP_KEY = 'rhb-map-summary';
-        const REVIEW_KEY = 'review-summary';
-        const UNMAPPED_KEY_SCRAP = 'No Match'; 
-        const UNMAPPED_RHB_KEY = 'N/A (No Prefix Match)'; 
-        
+        const RHB_MAP_KEY = 'rhb-map';
+        const REVIEW_KEY = 'review-data';
+        const ANALYSIS_KEY = 'analysis-dashboard'; // New Key for Analysis Dashboard
+        const UNMAPPED_KEY_SCRAP = 'No Match';
+        const UNMAPPED_RHB_KEY = 'N/A (No Prefix Match)';
+
         // UPDATED: File configuration with new column structures
         const FILE_CONFIG = [
-            { 
-                key: 'file1', 
-                label: 'Scrap', 
-                filter: { index: 4, values: ['RM', 'MYR'] } 
+            {
+                key: 'file1',
+                label: 'Scrap',
+                filter: { index: 4, values: ['RM', 'MYR'] }
             },
-            { 
-                key: 'file2', 
-                label: 'Deposit', 
-                filter: null 
+            {
+                key: 'file2',
+                label: 'Deposit',
+                filter: null
             },
-            { 
-                key: 'file3', 
-                label: 'RHB BANK STATEMENT', 
-                filter: { index: 4, type: 'numeric' } 
+            {
+                key: 'file3',
+                label: 'RHB BANK STATEMENT',
+                filter: { index: 4, type: 'numeric' }
             }
         ];
 
@@ -336,11 +926,11 @@
 
         const fileState = FILE_CONFIG.reduce((acc, config) => {
             acc[config.key] = { data: null, name: `${config.label} (Unloaded)`, metadata: null };
-            return acc; 
+            return acc;
         }, {});
-        let depositMappingData = {}; 
-        let rhbMappingData = {};     
-        let rhbScrapOverrideMap = {}; 
+        let depositMappingData = {};
+        let rhbMappingData = {};
+        let rhbScrapOverrideMap = {};
 
         // Add filter state management
         let scrapFilterState = {
@@ -354,7 +944,7 @@
             [RHB_MAP_KEY]: '',
             [REVIEW_KEY]: '',
             'file1': '',
-            'file2': '', 
+            'file2': '',
             'file3': ''
         };
 
@@ -385,9 +975,9 @@
         };
 
         const INITIAL_RHB_MAPS = {
-           
-            'PBB (Paymier)': ['OUTLET'] ,'RHB (Paymier)': ['TAN'], 'RHB2 (Paymier)': ['XPOWER'], 'RHB3 (Paymier)': ['JT'], 'RHB4 (Paymier)': ['HL'], 
-            'RHB5 (Paymier)': ['DS'], 'RHB6 (Paymier)': ['ANGIE'], 'RHB7 (Paymier)': ['JH'], 'RHB8 (Paymier)': ['MG'], 
+
+            'PBB (Paymier)': ['OUTLET'], 'RHB (Paymier)': ['TAN'], 'RHB2 (Paymier)': ['XPOWER'], 'RHB3 (Paymier)': ['JT'], 'RHB4 (Paymier)': ['HL'],
+            'RHB5 (Paymier)': ['DS'], 'RHB6 (Paymier)': ['ANGIE'], 'RHB7 (Paymier)': ['JH'], 'RHB8 (Paymier)': ['MG'],
             'RHB9 (Paymier)': ['DAILY'], 'RHB10 (Paymier)': ['KSC'], 'RHB11 (Paymier)': ['HELMI'], 'RHB12 (Paymier)': ['HLT'], 'RHB13 (Paymier)': ['CC'], 'RHB14 (Paymier)': ['SC'], 'RHB15 (Paymier)': ['NG'], 'RHB16 (Paymier)': ['FF'], 'RHB17 (Paymier)': ['Nice']
         };
 
@@ -401,7 +991,7 @@
                     document.getElementById('modalTxnRefContext').value = txnRef;
                     document.getElementById('modalTxnRefDisplay').textContent = txnRef;
                     document.getElementById('overrideInput').value = currentValue;
-                    document.getElementById('overrideInput').focus(); 
+                    document.getElementById('overrideInput').focus();
                 }
             } else {
                 modal.classList.remove('modal-active');
@@ -430,10 +1020,10 @@
                 renderData(fileState.activeFile);
             }
         };
-        
+
         const createMappingRow = (containerId, initialKey = '', initialValue = '') => {
             const container = document.getElementById(containerId);
-            const id = Date.now() + Math.random(); 
+            const id = Date.now() + Math.random();
             const color = 'green';
             const row = document.createElement('div');
             row.id = `row-${id}`;
@@ -441,7 +1031,7 @@
             row.innerHTML = `
                 <input type="text" value="${initialKey}" placeholder="Prefix Keyword" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-key"/>
                 <input type="text" value="${initialValue}" placeholder="Category" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-value"/>
-                <button type="button" onclick="document.getElementById('row-${id}').remove()" title="Remove mapping rule" class="text-red-500 hover:text-red-700 font-bold p-1 w-4 h-4 flex items-center justify-center transition duration-150">×</button>
+                <button type="button" onclick="if(confirm('Are you sure you want to delete this rule?')) document.getElementById('row-${id}').remove()" title="Remove mapping rule" class="text-red-500 hover:text-red-700 font-bold p-1 w-4 h-4 flex items-center justify-center transition duration-150">×</button>
             `;
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
@@ -458,15 +1048,12 @@
             });
             return mapping;
         };
-        const initializeMappingInputs = () => {
-            const rhbContainer = document.getElementById('rhbMappingRowsContainer');
-            rhbContainer.innerHTML = '';
-            Object.keys(INITIAL_RHB_MAPS).forEach(category => {
-                INITIAL_RHB_MAPS[category].forEach(key => createMappingRow('rhbMappingRowsContainer', key, category));
-            });
-        };
         const updateDepositMapping = () => { depositMappingData = {}; }; // Remove deposit mapping
-        const updateRHBMapping = () => { rhbMappingData = readMappingInputs('rhbMappingRowsContainer'); };
+        const updateRHBMapping = () => {
+            rhbMappingData = readMappingInputs('rhbMappingRowsContainer');
+            // Save to Local Storage
+            localStorage.setItem('rhbMappingData', JSON.stringify(rhbMappingData));
+        };
         const applyAllMappingsAndClose = () => {
             updateDepositMapping();
             updateRHBMapping();
@@ -476,7 +1063,44 @@
                 renderData(fileState.activeFile);
             }
         };
-        
+
+        const loadSavedMappings = () => {
+            const savedData = localStorage.getItem('rhbMappingData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    if (Object.keys(parsedData).length > 0) {
+                        // Use saved data if present
+                        const rhbContainer = document.getElementById('rhbMappingRowsContainer');
+                        rhbContainer.innerHTML = ''; // Clear default
+
+                        // Sort by key length descending to preserve priority or just alphabetical
+                        Object.entries(parsedData).forEach(([key, value]) => {
+                            createMappingRow('rhbMappingRowsContainer', key, value);
+                        });
+                        return true;
+                    }
+                } catch (e) {
+                    console.error("Failed to load saved mappings:", e);
+                }
+            }
+            return false;
+        };
+
+        const initializeMappingInputs = () => {
+            // Try loading from local storage first
+            if (!loadSavedMappings()) {
+                // Determine if we should use defaults or keep empty? 
+                // The original code reset to defaults every time. 
+                // Let's stick to defaults if nothing is saved.
+                const rhbContainer = document.getElementById('rhbMappingRowsContainer');
+                rhbContainer.innerHTML = '';
+                Object.keys(INITIAL_RHB_MAPS).forEach(category => {
+                    INITIAL_RHB_MAPS[category].forEach(key => createMappingRow('rhbMappingRowsContainer', key, category));
+                });
+            }
+        };
+
         const handleSearchInput = () => {
             if (fileState.activeFile) {
                 searchState[fileState.activeFile] = document.getElementById('searchQuery').value;
@@ -498,25 +1122,25 @@
         // NEW: Function to update only the specific row appearance
         const updateSingleRowAppearance = (rowId) => {
             const isChecked = scrapCheckState[rowId] === true;
-            
+
             // Find the row in the current DOM
             const rows = document.querySelectorAll('#scrap-review-table tbody tr');
             const rowIndex = rowId % rowsPerPageState[REVIEW_KEY]; // Get index within current page
-            
+
             if (rows[rowIndex]) {
                 const row = rows[rowIndex];
-                
+
                 // Update row background
                 if (isChecked) {
                     row.className = "bg-green-100 border-b border-green-200 hover:bg-green-200";
                 } else {
                     row.className = "bg-white border-b border-gray-100 hover:bg-gray-50";
                 }
-                
+
                 // Update check/cross icon
                 const button = row.querySelector('.check-cross-btn');
                 if (button) {
-                    const iconHtml = isChecked 
+                    const iconHtml = isChecked
                         ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
                         : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
                     button.innerHTML = iconHtml;
@@ -524,46 +1148,46 @@
             }
         };
 
-       // CHANGED: Toggle between check and cross and update all duplicates
-const toggleScrapCheckState = (uniqueKey) => {
-    // Parse the unique key
-    const parts = uniqueKey.split('_');
-    const transactionId = parts[1];
-    const status = parts[2];
-    const paymierBank = parts[3];
-    const duplicateValue = parts[4] || ''; // Get duplicate value from key
-    
-    // Toggle the current row's state
-    const newState = !scrapCheckState[uniqueKey];
-    scrapCheckState[uniqueKey] = newState;
-    
-    console.log("Toggle called for:", uniqueKey, "New state:", newState, "Duplicate value:", duplicateValue);
-    
-    // Find and update all duplicate rows with the same duplicate value
-    if (duplicateValue) {
-        // Find all keys that contain this duplicate value
-        Object.keys(scrapCheckState).forEach(key => {
-            const keyParts = key.split('_');
-            const keyDuplicateValue = keyParts[4] || '';
-            
-            if (keyDuplicateValue === duplicateValue && key !== uniqueKey) {
-                console.log("Updating duplicate row:", key, "to:", newState);
-                scrapCheckState[key] = newState;
+        // CHANGED: Toggle between check and cross and update all duplicates
+        const toggleScrapCheckState = (uniqueKey) => {
+            // Parse the unique key
+            const parts = uniqueKey.split('_');
+            const transactionId = parts[1];
+            const status = parts[2];
+            const paymierBank = parts[3];
+            const duplicateValue = parts[4] || ''; // Get duplicate value from key
+
+            // Toggle the current row's state
+            const newState = !scrapCheckState[uniqueKey];
+            scrapCheckState[uniqueKey] = newState;
+
+            console.log("Toggle called for:", uniqueKey, "New state:", newState, "Duplicate value:", duplicateValue);
+
+            // Find and update all duplicate rows with the same duplicate value
+            if (duplicateValue) {
+                // Find all keys that contain this duplicate value
+                Object.keys(scrapCheckState).forEach(key => {
+                    const keyParts = key.split('_');
+                    const keyDuplicateValue = keyParts[4] || '';
+
+                    if (keyDuplicateValue === duplicateValue && key !== uniqueKey) {
+                        console.log("Updating duplicate row:", key, "to:", newState);
+                        scrapCheckState[key] = newState;
+                    }
+                });
             }
-        });
-    }
-    
-    // Force a full re-render of the review table to ensure all duplicates are updated
-    if (fileState.activeFile === REVIEW_KEY) {
-        renderReviewTableOnly();
-    }
-};
+
+            // Force a full re-render of the review table to ensure all duplicates are updated
+            if (fileState.activeFile === REVIEW_KEY) {
+                renderReviewTableOnly();
+            }
+        };
         const toggleFilterSection = (sectionId) => {
             const content = document.getElementById(`${sectionId}-content`);
             const arrow = document.getElementById(`${sectionId}-arrow`);
             content.classList.toggle('expanded');
             arrow.textContent = content.classList.contains('expanded') ? '▼' : '►';
-            
+
             // NEW: Save filter dropdown state
             filterDropdownState.expanded = content.classList.contains('expanded');
         };
@@ -621,7 +1245,7 @@ const toggleScrapCheckState = (uniqueKey) => {
 
             return paginationHtml;
         };
-        
+
         const updateFileSelector = () => {
             const selector = document.getElementById('fileSelector');
             const container = document.getElementById('selector-container');
@@ -637,23 +1261,31 @@ const toggleScrapCheckState = (uniqueKey) => {
                     loadedCount++;
                 }
             });
-            if (fileState.file3.data) {
-                const rhbMapOption = document.createElement('option');
-                rhbMapOption.value = RHB_MAP_KEY;
-                rhbMapOption.textContent = 'KEY SUMMURAY';
-                selector.appendChild(rhbMapOption);
-                loadedCount++; 
-            }
-            if (fileState.file1.data && fileState.file2.data && fileState.file3.data) {
-                const reviewOption = document.createElement('option');
-                reviewOption.value = REVIEW_KEY;
-                reviewOption.textContent = 'CHECK UNMATCHED';
-                selector.appendChild(reviewOption);
-                loadedCount++;
-            }
+
+            // Always add KEY SUMMURAY option
+            const rhbMapOption = document.createElement('option');
+            rhbMapOption.value = RHB_MAP_KEY;
+            rhbMapOption.textContent = 'KEY SUMMURAY';
+            selector.appendChild(rhbMapOption);
+            loadedCount++;
+
+            // Always add CHECK UNMATCHED option
+            const reviewOption = document.createElement('option');
+            reviewOption.value = REVIEW_KEY;
+            reviewOption.textContent = 'CHECK UNMATCHED';
+            selector.appendChild(reviewOption);
+            loadedCount++;
+
+            // Always add INTELLIGENT ANALYSIS option
+            const analysisOption = document.createElement('option');
+            analysisOption.value = ANALYSIS_KEY;
+            analysisOption.textContent = 'INTELLIGENT ANALYSIS';
+            selector.appendChild(analysisOption);
+            loadedCount++;
+
             container.classList.toggle('hidden', loadedCount === 0);
         };
-        
+
         const parseFile = (file) => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -683,13 +1315,13 @@ const toggleScrapCheckState = (uniqueKey) => {
             let filteredRows = dataRows;
             let filterDescription = ' (raw data)';
             if (!config || !config.filter) return { filteredRows, filterDescription };
-            if (config.key === 'file1') { 
+            if (config.key === 'file1') {
                 filteredRows = dataRows.filter(row => {
                     const cellValue = row[config.filter.index];
                     return typeof cellValue === 'string' && config.filter.values.includes(cellValue.trim().toUpperCase());
                 });
                 filterDescription = ' (filtered by Column E = RM/MYR)'; // Updated description
-            } else if (config.key === 'file3') { 
+            } else if (config.key === 'file3') {
                 filteredRows = dataRows.filter(row => {
                     const cellValue = row[config.filter.index];
                     return cellValue !== undefined && cellValue !== null && !isNaN(parseFloat(cellValue)) && isFinite(cellValue);
@@ -703,7 +1335,7 @@ const toggleScrapCheckState = (uniqueKey) => {
             document.getElementById('searchQuery').value = searchState[fileKey] || '';
             renderData(fileKey);
         };
-        
+
         async function handleFileSelect(event, fileKey) {
             const files = Array.from(event.target.files);
             const nameDisplay = document.getElementById(fileKey + '-name');
@@ -712,7 +1344,7 @@ const toggleScrapCheckState = (uniqueKey) => {
                 fileState[fileKey] = { data: null, name: `${slotName} (Unloaded)`, metadata: null };
                 nameDisplay.textContent = 'No file loaded.';
                 updateFileSelector();
-                renderData(fileState.activeFile); 
+                renderData(fileState.activeFile);
                 return;
             }
             try {
@@ -720,13 +1352,13 @@ const toggleScrapCheckState = (uniqueKey) => {
                 if (fileKey === 'file3' && files.length > 0) {
                     const results = await Promise.all(files.map(parseFile));
                     if (results.length > 0 && results[0].length > 0) {
-                        aoaData.push(...results[0].slice(0, 1)); 
+                        aoaData.push(...results[0].slice(0, 1));
                         results.forEach(data => aoaData.push(...data.slice(1)));
                     }
                     if (aoaData.length > 1) {
                         const uniqueTxnRefs = new Set();
                         const uniqueDataRows = aoaData.slice(1).filter(row => {
-                            const txnRef = String(row[1] || '').trim().toUpperCase(); 
+                            const txnRef = String(row[1] || '').trim().toUpperCase();
                             if (txnRef && !uniqueTxnRefs.has(txnRef)) {
                                 uniqueTxnRefs.add(txnRef);
                                 return true;
@@ -754,20 +1386,20 @@ const toggleScrapCheckState = (uniqueKey) => {
             } catch (error) {
                 console.error(`Error processing file(s) for ${slotName}:`, error);
                 nameDisplay.textContent = `Error loading file(s)!`;
-                fileState[fileKey].data = null; 
+                fileState[fileKey].data = null;
                 updateFileSelector();
-                document.getElementById('fileSelector').value = ''; 
-                renderData(null); 
+                document.getElementById('fileSelector').value = '';
+                renderData(null);
             }
         }
-        
+
         // UPDATED: Generate deposit summary with new column structure
         const generateDepositSummary = (aoaData) => {
             const dataRows = aoaData.slice(1);
             const compoundSummary = {};
-            
+
             const rhbMappingEntries = Object.entries(rhbMappingData);
-            
+
             dataRows.filter(row => {
                 const status = String(row[DEPOSIT_COLUMNS.STATUS] || '').trim().toUpperCase();
                 const amount = parseFloat(row[DEPOSIT_COLUMNS.AMOUNT_RM] || 0);
@@ -776,34 +1408,34 @@ const toggleScrapCheckState = (uniqueKey) => {
                 const amount = parseFloat(row[DEPOSIT_COLUMNS.AMOUNT_RM]);
                 const merchant = String(row[DEPOSIT_COLUMNS.MERCHANT] || '').trim();
                 const bankCodeValue = String(row[DEPOSIT_COLUMNS.BANKCODE] || '').trim().toUpperCase();
-                
+
                 let bankMappingResult = 'N/A';
                 let bestMatchLength = -1;
-                
+
                 for (const [key, value] of rhbMappingEntries) {
                     if (bankCodeValue.includes(key) && key.length > bestMatchLength) {
                         bestMatchLength = key.length;
                         bankMappingResult = value;
                     }
                 }
-                
+
                 const compoundKey = `${merchant} | ${bankMappingResult}`;
                 compoundSummary[compoundKey] = (compoundSummary[compoundKey] || 0) + amount;
             });
-            
+
             let summaryAoA = [['Merchant', 'Bank', 'Deposit Amount']];
             let grandTotal = 0;
-            
+
             Object.keys(compoundSummary).sort().forEach(key => {
                 const total = compoundSummary[key];
                 grandTotal += total;
                 const [merchant, bank] = key.split(' | ');
                 summaryAoA.push([merchant, bank, total.toFixed(2)]);
             });
-            
+
             summaryAoA.push(['', '']);
             summaryAoA.push(['GRAND TOTAL', '', grandTotal.toFixed(2)]);
-            
+
             return {
                 data: summaryAoA,
                 title: `Deposit Summary`,
@@ -821,26 +1453,26 @@ const toggleScrapCheckState = (uniqueKey) => {
             const rhbMappingEntries = Object.entries(rhbMappingData);
             let grandTotal = 0;
             let noMatchGrandTotal = 0;
-            
+
             filteredRows.forEach(row => {
-                const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase(); 
+                const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase();
                 const amount = parseFloat(row[COL_SALES_AMOUNT]);
                 const txnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase();
                 if (isNaN(amount)) return;
-                
+
                 let rhbMapCategory = UNMAPPED_RHB_KEY;
                 let bestMatchLength = -1;
-                for (const [key, value] of rhbMappingEntries) { 
+                for (const [key, value] of rhbMappingEntries) {
                     if (description.includes(key) && key.length > bestMatchLength) {
                         bestMatchLength = key.length;
                         rhbMapCategory = value;
                     }
                 }
-                
+
                 // Check if this row has "No Match" in Override Scrap Ref
                 const effectiveRef = getEffectiveScrapRef(txnRef, scrapLookupMap, isScrapLookupActive);
                 const isNoMatch = effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef.toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase();
-                
+
                 const categoryTotals = mappedCategories.get(rhbMapCategory) || { total: 0, noMatchTotal: 0 };
                 categoryTotals.total += amount;
                 if (isNoMatch) {
@@ -850,23 +1482,23 @@ const toggleScrapCheckState = (uniqueKey) => {
                 mappedCategories.set(rhbMapCategory, categoryTotals);
                 grandTotal += amount;
             });
-            
+
             let summaryAoA = [['Bank', 'Total Amount', 'No Match Total']];
-            
+
             Array.from(mappedCategories.keys())
-            .sort((a, b) => {
-                const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
-                const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
-                if (a.startsWith('RHB') && b.startsWith('RHB')) {
-                    return numA - numB;
-                }
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-            })
-            .forEach(key => {
-                const totals = mappedCategories.get(key);
-                summaryAoA.push([key, totals.total.toFixed(2), totals.noMatchTotal.toFixed(2)]);
-            });
-            
+                .sort((a, b) => {
+                    const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+                    const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+                    if (a.startsWith('RHB') && b.startsWith('RHB')) {
+                        return numA - numB;
+                    }
+                    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+                })
+                .forEach(key => {
+                    const totals = mappedCategories.get(key);
+                    summaryAoA.push([key, totals.total.toFixed(2), totals.noMatchTotal.toFixed(2)]);
+                });
+
             summaryAoA.push(['', '', '']);
             summaryAoA.push(['GRAND TOTAL', grandTotal.toFixed(2), noMatchGrandTotal.toFixed(2)]);
 
@@ -880,48 +1512,50 @@ const toggleScrapCheckState = (uniqueKey) => {
             if (!depositData || !scrapData) {
                 return { data: [], header: [], title: `Deposit Records for Review (Unmatched & Success)`, totalRows: 0 };
             }
-            
+
             // Create set of Transaction IDs from Scrap (column 7 in new structure)
             const scrapTransactionIdSet = new Set();
             if (scrapData.length > 1) {
                 scrapData.slice(1).forEach(row => {
-                    const transactionId = String(row[SCRAP_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                    const rawId = String(row[SCRAP_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                    const transactionId = rawId.replace(/[^A-Z0-9]/g, '');
                     if (transactionId) scrapTransactionIdSet.add(transactionId);
                 });
             }
-            
+
             const headerRow = depositData[0];
             const depositRows = depositData.slice(1);
-            
+
             const rowsForReview = [];
             depositRows.forEach(row => {
-                const depositTransactionId = String(row[DEPOSIT_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                const rawDepositId = String(row[DEPOSIT_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                const depositTransactionId = rawDepositId.replace(/[^A-Z0-9]/g, '');
                 const status = String(row[DEPOSIT_COLUMNS.STATUS] || '').trim().toUpperCase();
-                
+
                 if (status === 'SUCCESS' && !scrapTransactionIdSet.has(depositTransactionId)) {
                     const formattedRow = [...row];
-                    
+
                     // Format deposit time
                     const depositTime = row[DEPOSIT_COLUMNS.DEPOSIT_TIME];
                     if (typeof depositTime === 'number' && depositTime > 1) {
                         try {
                             const excelEpoch = new Date(1899, 11, 30);
                             const jsDate = new Date(excelEpoch.getTime() + depositTime * 86400000);
-                            
+
                             const year = jsDate.getFullYear();
                             const month = String(jsDate.getMonth() + 1).padStart(2, '0');
                             const day = String(jsDate.getDate()).padStart(2, '0');
                             const hours = String(jsDate.getHours()).padStart(2, '0');
                             const minutes = String(jsDate.getMinutes()).padStart(2, '0');
                             const seconds = String(jsDate.getSeconds()).padStart(2, '0');
-                            
+
                             formattedRow[DEPOSIT_COLUMNS.DEPOSIT_TIME] = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                         } catch (e) {
                             console.error('Error formatting deposit time:', e);
                             formattedRow[DEPOSIT_COLUMNS.DEPOSIT_TIME] = String(depositTime);
                         }
                     }
-                    
+
                     rowsForReview.push({
                         data: formattedRow,
                         status: status,
@@ -929,7 +1563,7 @@ const toggleScrapCheckState = (uniqueKey) => {
                     });
                 }
             });
-            
+
             const reviewHeader = [...headerRow, 'STATUS', 'Type'];
             return {
                 data: rowsForReview,
@@ -939,101 +1573,102 @@ const toggleScrapCheckState = (uniqueKey) => {
             };
         };
 
-const generateScrapUnmatchedSummary = () => {
-    const scrapData = fileState.file1.data;
+        const generateScrapUnmatchedSummary = () => {
+            const scrapData = fileState.file1.data;
 
-    if (!scrapData || scrapData.length <= 1) {
-        return {
-            data: [],
-            header: [],
-            title: 'SCRAP RECORDS FOR REVIEW',
-            totalRows: 0
-        };
-    }
-
-    const headerRow = scrapData[0];
-    const scrapRows = scrapData.slice(1);
-
-    const DUPLICATE_COLUMN_INDEX = 9;   // Column 10 (Remarks / duplicate key)
-    const BANKCODE_COLUMN_INDEX = 8;    // Bankcode
-    const TRANSACTION_ID_COLUMN = 7;    // Transaction ID
-    const STATUS_COLUMN = 11;           // ✅ FIXED Status column
-
-    // Count duplicates
-    const valueCountMap = {};
-    scrapRows.forEach(row => {
-        const value = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
-        if (value) valueCountMap[value] = (valueCountMap[value] || 0) + 1;
-    });
-
-    const rhbMappingEntries = Object.entries(rhbMappingData);
-    const duplicateRows = [];
-
-    scrapRows.forEach((row, index) => {
-        const duplicateValue = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
-        if (!duplicateValue || valueCountMap[duplicateValue] <= 1) return;
-
-        // ✅ Get STATUS correctly
-        const status = String(row[STATUS_COLUMN] || 'DUPLICATE').trim().toUpperCase();
-
-        // ✅ APPLY STATUS FILTER (FAILED / SUCCESS)
-        if (
-            Object.keys(scrapFilterState.status).length > 0 &&
-            scrapFilterState.status[status] === false
-        ) {
-            return;
-        }
-
-        // Paymier Bank Mapping
-        const bankcodeValue = String(row[BANKCODE_COLUMN_INDEX] || '').trim().toUpperCase();
-        let paymierBank = 'N/A';
-        let bestMatchLength = -1;
-
-        for (const [key, value] of rhbMappingEntries) {
-            if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
-                bestMatchLength = key.length;
-                paymierBank = value;
+            if (!scrapData || scrapData.length <= 1) {
+                return {
+                    data: [],
+                    header: [],
+                    title: 'SCRAP RECORDS FOR REVIEW',
+                    totalRows: 0
+                };
             }
-        }
 
-        const transactionId = String(row[TRANSACTION_ID_COLUMN] || '').trim().toUpperCase();
+            const headerRow = scrapData[0];
+            const scrapRows = scrapData.slice(1);
 
-        duplicateRows.push({
-            data: row,
-            status,
-            type: 'Scrap',
-            paymierBank,
-            transactionId,
-            duplicateValue,
-            originalIndex: index
-        });
-    });
+            const DUPLICATE_COLUMN_INDEX = 9;   // Column 10 (Remarks / duplicate key)
+            const BANKCODE_COLUMN_INDEX = 8;    // Bankcode
+            const TRANSACTION_ID_COLUMN = 7;    // Transaction ID
+            const STATUS_COLUMN = 11;           // ✅ FIXED Status column
 
-    duplicateRows.sort((a, b) => {
-        const cmp = a.duplicateValue.localeCompare(b.duplicateValue);
-        if (cmp !== 0) return cmp;
-        return a.originalIndex - b.originalIndex;
-    });
+            // Count duplicates
+            const valueCountMap = {};
+            scrapRows.forEach(row => {
+                const value = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
+                if (value) valueCountMap[value] = (valueCountMap[value] || 0) + 1;
+            });
 
-    return {
-        data: duplicateRows.map(item => ({
-            data: item.data,
-            status: item.status,
-            type: 'Scrap',
-            paymierBank: item.paymierBank,
-            transactionId: item.transactionId,
-            duplicateValue: item.duplicateValue
-        })),
-        header: [
-            ...headerRow,
-            'STATUS',
-            'Paymier Bank',
-            'Type'
-        ],
-        title: 'SCRAP RECORDS FOR REVIEW',
-        totalRows: duplicateRows.length
-    };
-};
+            const rhbMappingEntries = Object.entries(rhbMappingData);
+            const duplicateRows = [];
+
+            scrapRows.forEach((row, index) => {
+                const duplicateValue = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
+                if (!duplicateValue || valueCountMap[duplicateValue] <= 1) return;
+
+                // ✅ Get STATUS correctly
+                const status = String(row[STATUS_COLUMN] || 'DUPLICATE').trim().toUpperCase();
+
+                // ✅ APPLY STATUS FILTER (FAILED / SUCCESS)
+                if (
+                    Object.keys(scrapFilterState.status).length > 0 &&
+                    scrapFilterState.status[status] === false
+                ) {
+                    return;
+                }
+
+                // Paymier Bank Mapping
+                const bankcodeValue = String(row[BANKCODE_COLUMN_INDEX] || '').trim().toUpperCase();
+                let paymierBank = 'N/A';
+                let bestMatchLength = -1;
+
+                for (const [key, value] of rhbMappingEntries) {
+                    if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
+                        bestMatchLength = key.length;
+                        paymierBank = value;
+                    }
+                }
+
+                const rawId = String(row[TRANSACTION_ID_COLUMN] || '').trim().toUpperCase();
+                const transactionId = rawId.replace(/[^A-Z0-9]/g, '');
+
+                duplicateRows.push({
+                    data: row,
+                    status,
+                    type: 'Scrap',
+                    paymierBank,
+                    transactionId,
+                    duplicateValue,
+                    originalIndex: index
+                });
+            });
+
+            duplicateRows.sort((a, b) => {
+                const cmp = a.duplicateValue.localeCompare(b.duplicateValue);
+                if (cmp !== 0) return cmp;
+                return a.originalIndex - b.originalIndex;
+            });
+
+            return {
+                data: duplicateRows.map(item => ({
+                    data: item.data,
+                    status: item.status,
+                    type: 'Scrap',
+                    paymierBank: item.paymierBank,
+                    transactionId: item.transactionId,
+                    duplicateValue: item.duplicateValue
+                })),
+                header: [
+                    ...headerRow,
+                    'STATUS',
+                    'Paymier Bank',
+                    'Type'
+                ],
+                title: 'SCRAP RECORDS FOR REVIEW',
+                totalRows: duplicateRows.length
+            };
+        };
 
 
 
@@ -1046,56 +1681,62 @@ const generateScrapUnmatchedSummary = () => {
             if (!scrapData || !depositData) {
                 return { data: [], header: [], title: `Scrap Records Not Found in Deposit or Non-SUCCESS`, totalRows: 0 };
             }
-            
+
             // Create map of deposit transaction IDs to their status
             const depositIdStatusMap = new Map();
             if (depositData.length > 1) {
                 depositData.slice(1).forEach(row => {
-                    const depositId = String(row[DEPOSIT_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                    // normalize ID: remove non-alphanumeric
+                    const rawId = String(row[DEPOSIT_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                    const depositId = rawId.replace(/[^A-Z0-9]/g, '');
+
                     const depositStatus = String(row[DEPOSIT_COLUMNS.STATUS] || '').trim().toUpperCase();
                     if (depositId) {
                         depositIdStatusMap.set(depositId, depositStatus);
                     }
                 });
             }
-            
+
             const headerRow = scrapData[0];
             const scrapRows = scrapData.slice(1);
-            
+
             const rowsForReview = [];
             const rhbMappingEntries = Object.entries(rhbMappingData);
-            
+
             scrapRows.forEach(row => {
-                const scrapTransactionId = String(row[SCRAP_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                const rawScrapId = String(row[SCRAP_COLUMNS.TRANSACTION_ID] || '').trim().toUpperCase();
+                const scrapTransactionId = rawScrapId.replace(/[^A-Z0-9]/g, '');
+
                 if (!scrapTransactionId) return;
-                
+
                 let status = '';
                 let shouldInclude = false;
-                
+
                 // Check if Scrap Transaction ID exists in Deposit
                 if (!depositIdStatusMap.has(scrapTransactionId)) {
                     status = 'NOT IN DEPOSIT';
                     shouldInclude = true;
                 } else {
                     const depositStatus = depositIdStatusMap.get(scrapTransactionId);
-                    if (depositStatus !== 'SUCCESS') {
+                    // Check against multiple success variations
+                    if (!['SUCCESS', 'SUCCES', 'SUCCESSFUL'].includes(depositStatus)) {
                         status = depositStatus;
                         shouldInclude = true;
                     }
                 }
-                
+
                 if (shouldInclude) {
                     const bankcodeValue = String(row[SCRAP_COLUMNS.BANKCODE] || '').trim().toUpperCase();
                     let paymierBankResult = 'N/A';
                     let bestMatchLength = -1;
-                    
+
                     for (const [key, value] of rhbMappingEntries) {
                         if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
                             bestMatchLength = key.length;
                             paymierBankResult = value;
                         }
                     }
-                    
+
                     rowsForReview.push({
                         data: row,
                         status: status,
@@ -1104,10 +1745,10 @@ const generateScrapUnmatchedSummary = () => {
                     });
                 }
             });
-            
+
             // UPDATED: Show 10 columns for scrap data (0-9)
             const reviewHeader = [...headerRow.slice(0, 10), 'STATUS', 'Paymier Bank', 'Type', 'Check'];
-            
+
             return {
                 data: rowsForReview,
                 header: reviewHeader,
@@ -1117,43 +1758,43 @@ const generateScrapUnmatchedSummary = () => {
         };
 
         // MODIFIED: Merged function to combine both scrap review tables
-       const generateMergedScrapReviewSummary = () => {
-    const scrapReviewData = generateScrapUnmatchedSummary();
-    const scrapDepositReviewData = generateScrapDepositUnmatchedSummary();
-    
-    // Combine both data sources
-    const mergedData = [...scrapReviewData.data, ...scrapDepositReviewData.data];
-    
-    // Initialize check state for all rows
-    mergedData.forEach(item => {
-        if (item.type === 'Scrap') {
-            const { transactionId = '', status = '', paymierBank = 'N/A', duplicateValue = '' } = item;
-            const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
-            
-            // Initialize to false if not already set
-            if (scrapCheckState[uniqueKey] === undefined) {
-                scrapCheckState[uniqueKey] = false;
-            }
-        }
-    });
-    
-    return {
-        data: mergedData,
-        header: scrapReviewData.header,
-        title: 'SCRAP RECORDS FOR REVIEW',
-        totalRows: mergedData.length
-    };
-};
+        const generateMergedScrapReviewSummary = () => {
+            const scrapReviewData = generateScrapUnmatchedSummary();
+            const scrapDepositReviewData = generateScrapDepositUnmatchedSummary();
+
+            // Combine both data sources
+            const mergedData = [...scrapReviewData.data, ...scrapDepositReviewData.data];
+
+            // Initialize check state for all rows
+            mergedData.forEach(item => {
+                if (item.type === 'Scrap') {
+                    const { transactionId = '', status = '', paymierBank = 'N/A', duplicateValue = '' } = item;
+                    const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
+
+                    // Initialize to false if not already set
+                    if (scrapCheckState[uniqueKey] === undefined) {
+                        scrapCheckState[uniqueKey] = false;
+                    }
+                }
+            });
+
+            return {
+                data: mergedData,
+                header: scrapReviewData.header,
+                title: 'SCRAP RECORDS FOR REVIEW',
+                totalRows: mergedData.length
+            };
+        };
 
         const generateUnifiedReviewSummary = () => {
             const depositReview = generateDepositUnmatchedSummary();
             const mergedScrapReview = generateMergedScrapReviewSummary(); // Use the merged scrap review
-            
+
             const depositHeader = depositReview.header;
             const scrapHeader = mergedScrapReview.header;
-            
+
             const finalHeader = [...depositHeader.slice(0, -2), 'Match Status (RHB Col B / Deposit Col G)', 'Paymier Bank', 'Type'];
-            
+
             return {
                 data: [...depositReview.data, ...mergedScrapReview.data], // Use the merged scrap data
                 header: finalHeader,
@@ -1162,30 +1803,30 @@ const generateScrapUnmatchedSummary = () => {
             };
         };
 
-      const styleSummaryTable = (tableId, isDeposit) => {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-    const [headerBg, headerTextColor] = isDeposit ? ['bg-purple-50', 'text-purple-700'] : ['bg-green-50', 'text-green-700'];
-    const [bgColor, textColor, borderColor] = isDeposit ? ['bg-purple-100', 'text-purple-800', 'border-purple-500'] : ['bg-green-100', 'text-green-800', 'border-green-500'];
-    table.className = "w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md";
-    table.querySelectorAll('tr').forEach((tr, index) => {
-        tr.className = index === 0 
-            ? `${headerBg} border-b border-gray-300 ${headerTextColor} uppercase font-semibold text-xs sticky top-0 shadow-sm`
-            : "bg-white border-b border-gray-100 hover:bg-gray-50";
-        tr.querySelectorAll('td, th').forEach(cell => cell.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-center'));
-    });
-    if (table.rows.length > 0) {
-        const totalRow = table.rows[table.rows.length - 1];
-        if (String(totalRow.cells[0]?.textContent).trim() === 'GRAND TOTAL') {
-            totalRow.className = `${bgColor} ${textColor} font-bold border-t-4 ${borderColor}`;
-            totalRow.cells[0].classList.add('text-lg', 'text-center');
-            totalRow.cells[0].classList.remove('text-left');
-            for(let i = 1; i < totalRow.cells.length; i++) {
-                totalRow.cells[i].classList.add('text-lg', 'text-right');
+        const styleSummaryTable = (tableId, isDeposit) => {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const [headerBg, headerTextColor] = isDeposit ? ['bg-purple-50', 'text-purple-700'] : ['bg-green-50', 'text-green-700'];
+            const [bgColor, textColor, borderColor] = isDeposit ? ['bg-purple-100', 'text-purple-800', 'border-purple-500'] : ['bg-green-100', 'text-green-800', 'border-green-500'];
+            table.className = "w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md";
+            table.querySelectorAll('tr').forEach((tr, index) => {
+                tr.className = index === 0
+                    ? `${headerBg} border-b border-gray-300 ${headerTextColor} uppercase font-semibold text-xs sticky top-0 shadow-sm`
+                    : "bg-white border-b border-gray-100 hover:bg-gray-50";
+                tr.querySelectorAll('td, th').forEach(cell => cell.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-center'));
+            });
+            if (table.rows.length > 0) {
+                const totalRow = table.rows[table.rows.length - 1];
+                if (String(totalRow.cells[0]?.textContent).trim() === 'GRAND TOTAL') {
+                    totalRow.className = `${bgColor} ${textColor} font-bold border-t-4 ${borderColor}`;
+                    totalRow.cells[0].classList.add('text-lg', 'text-center');
+                    totalRow.cells[0].classList.remove('text-left');
+                    for (let i = 1; i < totalRow.cells.length; i++) {
+                        totalRow.cells[i].classList.add('text-lg', 'text-right');
+                    }
+                }
             }
-        }
-    }
-};
+        };
 
         const getEffectiveScrapRef = (rhbTxnRef, scrapLookupMap, isScrapLookupActive) => {
             const currentOverride = rhbScrapOverrideMap[rhbTxnRef] || '';
@@ -1195,33 +1836,33 @@ const generateScrapUnmatchedSummary = () => {
         };
 
         // UPDATED: prepareScrapLookupMap with correct column indices
-const prepareScrapLookupMap = (scrapData) => {
-    const map = {};
-    if (scrapData && scrapData.length > 1) {
-        const txnRefToScrapRefs = {};
-        scrapData.slice(1).forEach(row => {
-            // CHANGED: Use column 9 (Remarks) to find RHB Transaction Reference
-            const txnRefKey = String(row[9] || '').trim().toUpperCase(); // Column 9: Remarks
-            // CHANGED: Use column 8 for the expected scrap reference
-            const scrapRefValue = String(row[7] || '').trim(); // Column 8: Your expected reference
-            if (txnRefKey) {
-                if (!txnRefToScrapRefs[txnRefKey]) {
-                    txnRefToScrapRefs[txnRefKey] = [];
+        const prepareScrapLookupMap = (scrapData) => {
+            const map = {};
+            if (scrapData && scrapData.length > 1) {
+                const txnRefToScrapRefs = {};
+                scrapData.slice(1).forEach(row => {
+                    // CHANGED: Use column 9 (Remarks) to find RHB Transaction Reference
+                    const txnRefKey = String(row[9] || '').trim().toUpperCase(); // Column 9: Remarks
+                    // CHANGED: Use column 8 for the expected scrap reference
+                    const scrapRefValue = String(row[7] || '').trim(); // Column 8: Your expected reference
+                    if (txnRefKey) {
+                        if (!txnRefToScrapRefs[txnRefKey]) {
+                            txnRefToScrapRefs[txnRefKey] = [];
+                        }
+                        txnRefToScrapRefs[txnRefKey].push(scrapRefValue);
+                    }
+                });
+                for (const [txnRef, refs] of Object.entries(txnRefToScrapRefs)) {
+                    const nonBlankRefs = refs.filter(ref => ref !== '');
+                    if (nonBlankRefs.length > 0) {
+                        map[txnRef] = nonBlankRefs[0];
+                    } else if (refs.length > 0) {
+                        map[txnRef] = '';
+                    }
                 }
-                txnRefToScrapRefs[txnRefKey].push(scrapRefValue);
             }
-        });
-        for (const [txnRef, refs] of Object.entries(txnRefToScrapRefs)) {
-            const nonBlankRefs = refs.filter(ref => ref !== '');
-            if (nonBlankRefs.length > 0) {
-                map[txnRef] = nonBlankRefs[0];
-            } else if (refs.length > 0) {
-                map[txnRef] = '';
-            }
-        }
-    }
-    return map;
-};
+            return map;
+        };
 
         const processRhbDataForRendering = () => {
             const aoaData = fileState.file3.data;
@@ -1233,13 +1874,13 @@ const prepareScrapLookupMap = (scrapData) => {
             const scrapLookupMap = prepareScrapLookupMap(fileState.file1.data);
             const isScrapLookupActive = Object.keys(scrapLookupMap).length > 0;
             if (isScrapLookupActive) filterDescription += " and Scrap Ref Lookup applied";
-            else filterDescription += " and Scrap Ref Lookup applied (Scrap file required)"; 
+            else filterDescription += " and Scrap Ref Lookup applied (Scrap file required)";
             let processedRows = filteredRows.map(row => {
-                const rhbTxnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase(); 
+                const rhbTxnRef = String(row[COL_RHB_TXN_REF] || '').trim().toUpperCase();
                 let rhbMapCategory = UNMAPPED_RHB_KEY;
                 let bestMatchLength = -1;
-                const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase(); 
-                for (const [key, value] of rhbMappingEntries) { 
+                const description = String(row[COL_OUTLET_NAME] || '').trim().toUpperCase();
+                for (const [key, value] of rhbMappingEntries) {
                     if (description.includes(key) && key.length > bestMatchLength) {
                         bestMatchLength = key.length;
                         rhbMapCategory = value;
@@ -1257,86 +1898,86 @@ const prepareScrapLookupMap = (scrapData) => {
         };
 
         // Add filter management functions
-       // Update the filter state initialization
-const updateScrapFilterState = (scrapData) => {
-    const statuses = [...new Set(scrapData.map(item => item.status || 'DUPLICATE'))];
-    const banks = [...new Set(scrapData.map(item => item.paymierBank || 'N/A'))];
+        // Update the filter state initialization
+        const updateScrapFilterState = (scrapData) => {
+            const statuses = [...new Set(scrapData.map(item => item.status || 'DUPLICATE'))];
+            const banks = [...new Set(scrapData.map(item => item.paymierBank || 'N/A'))];
 
-    statuses.forEach(status => {
-        if (scrapFilterState.status[status] === undefined) {
-            scrapFilterState.status[status] = true; // ✅ show by default
-        }
-    });
+            statuses.forEach(status => {
+                if (scrapFilterState.status[status] === undefined) {
+                    scrapFilterState.status[status] = true; // ✅ show by default
+                }
+            });
 
-    banks.forEach(bank => {
-        if (scrapFilterState.paymierBank[bank] === undefined) {
-            scrapFilterState.paymierBank[bank] = true;
-        }
-    });
+            banks.forEach(bank => {
+                if (scrapFilterState.paymierBank[bank] === undefined) {
+                    scrapFilterState.paymierBank[bank] = true;
+                }
+            });
 
-    // ✅ Always allow check/cross filters
-    scrapFilterState.checkStatus.check ??= true;
-    scrapFilterState.checkStatus.cross ??= true;
-};
- 
+            // ✅ Always allow check/cross filters
+            scrapFilterState.checkStatus.check ??= true;
+            scrapFilterState.checkStatus.cross ??= true;
+        };
 
-     const applyScrapFilters = (rows) => {
-    return rows.filter(item => {
 
-        // ✅ Deposit rows should NEVER be affected by scrap filters
-        if (item.type === 'Deposit') {
-            return true;
-        }
+        const applyScrapFilters = (rows) => {
+            return rows.filter(item => {
 
-        const {
-            status = 'DUPLICATE',
-            paymierBank = 'N/A',
-            transactionId = '',
-            duplicateValue = ''
-        } = item;
+                // ✅ Deposit rows should NEVER be affected by scrap filters
+                if (item.type === 'Deposit') {
+                    return true;
+                }
 
-        // STATUS filter
-        if (scrapFilterState.status[status] === false) {
-            return false;
-        }
+                const {
+                    status = 'DUPLICATE',
+                    paymierBank = 'N/A',
+                    transactionId = '',
+                    duplicateValue = ''
+                } = item;
 
-        // BANK filter
-        if (scrapFilterState.paymierBank[paymierBank] === false) {
-            return false;
-        }
+                // STATUS filter
+                if (scrapFilterState.status[status] === false) {
+                    return false;
+                }
 
-        // CHECK / CROSS filter
-        const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
-        const isChecked = scrapCheckState[uniqueKey] === true;
+                // BANK filter
+                if (scrapFilterState.paymierBank[paymierBank] === false) {
+                    return false;
+                }
 
-        // Cross only
-        if (
-            scrapFilterState.checkStatus.cross === true &&
-            scrapFilterState.checkStatus.check === false
-        ) {
-            return !isChecked; // ❌ hide checked rows
-        }
+                // CHECK / CROSS filter
+                const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
+                const isChecked = scrapCheckState[uniqueKey] === true;
 
-        // Check only
-        if (
-            scrapFilterState.checkStatus.check === true &&
-            scrapFilterState.checkStatus.cross === false
-        ) {
-            return isChecked;
-        }
+                // Cross only
+                if (
+                    scrapFilterState.checkStatus.cross === true &&
+                    scrapFilterState.checkStatus.check === false
+                ) {
+                    return !isChecked; // ❌ hide checked rows
+                }
 
-        // Both selected → show all
-        if (
-            scrapFilterState.checkStatus.check === true &&
-            scrapFilterState.checkStatus.cross === true
-        ) {
-            return true;
-        }
+                // Check only
+                if (
+                    scrapFilterState.checkStatus.check === true &&
+                    scrapFilterState.checkStatus.cross === false
+                ) {
+                    return isChecked;
+                }
 
-        // None selected → show none
-        return false;
-    });
-};
+                // Both selected → show all
+                if (
+                    scrapFilterState.checkStatus.check === true &&
+                    scrapFilterState.checkStatus.cross === true
+                ) {
+                    return true;
+                }
+
+                // None selected → show none
+                return false;
+            });
+        };
 
 
 
@@ -1344,7 +1985,7 @@ const updateScrapFilterState = (scrapData) => {
             // Get unique status values and Paymier Bank values
             const statusValues = [...new Set(scrapData.map(item => item.status))].sort();
             const bankValues = [...new Set(scrapData.map(item => item.paymierBank || 'N/A'))].sort();
-            
+
             let statusFiltersHtml = '';
             statusValues.forEach(status => {
                 const isChecked = scrapFilterState.status[status] !== false;
@@ -1356,7 +1997,7 @@ const updateScrapFilterState = (scrapData) => {
                     </div>
                 `;
             });
-            
+
             let bankFiltersHtml = '';
             bankValues.forEach(bank => {
                 const isChecked = scrapFilterState.paymierBank[bank] !== false;
@@ -1368,13 +2009,13 @@ const updateScrapFilterState = (scrapData) => {
                     </div>
                 `;
             });
-            
+
             // Check status filters
             const isCrossChecked = scrapFilterState.checkStatus['cross'] !== false;
             const isCheckChecked = scrapFilterState.checkStatus['check'] !== false;
-            
-          // In the renderScrapFilterControls function, change the check status filters to:
-let checkStatusFiltersHtml = `
+
+            // In the renderScrapFilterControls function, change the check status filters to:
+            let checkStatusFiltersHtml = `
     <div class="filter-option">
         <input type="checkbox" id="check-status-cross" class="filter-checkbox" ${isCrossChecked ? 'checked' : ''} 
                onchange="handleScrapFilterCheckboxChange('checkStatus', 'cross', this.checked)">
@@ -1386,10 +2027,10 @@ let checkStatusFiltersHtml = `
         <label for="check-status-check" class="text-sm">Check (Checked)</label>
     </div>
 `;
-            
+
             // Apply saved filter dropdown state
             const filterContentClass = filterDropdownState.expanded ? 'filter-content expanded' : 'filter-content';
-            
+
             return `
                 <div class="filter-section">
                     <div class="filter-collapsible flex items-center justify-between" onclick="toggleFilterSection('scrap-filters')">
@@ -1430,7 +2071,7 @@ let checkStatusFiltersHtml = `
             } else if (type === 'checkStatus') {
                 scrapFilterState.checkStatus[value] = isChecked;
             }
-            
+
             // Use optimized render for filter changes only
             if (fileState.activeFile === REVIEW_KEY) {
                 renderReviewTableOnly();
@@ -1438,169 +2079,171 @@ let checkStatusFiltersHtml = `
         };
 
         // NEW: Optimized function to only update the table rows without rebuilding the entire UI
-const renderReviewTableOnly = () => {
-    if (fileState.activeFile !== REVIEW_KEY) return;
+        const renderReviewTableOnly = () => {
+            if (fileState.activeFile !== REVIEW_KEY) return;
 
-    const depositReviewData = generateDepositUnmatchedSummary();
-    const mergedScrapReviewData = generateMergedScrapReviewSummary();
+            // ONLY render Scrap data (Deposit data is in a separate table handled by renderData)
+            const mergedScrapReviewData = generateMergedScrapReviewSummary();
 
-    const searchQuery = searchState[REVIEW_KEY] || '';
-    const currentPage = paginationState[REVIEW_KEY].currentPage;
+            const searchQuery = searchState[REVIEW_KEY] || '';
+            const currentPage = paginationState[REVIEW_KEY].currentPage;
 
-    // Merge Deposit + Scrap review data
-    let allRows = [
-        ...depositReviewData.data,
-        ...mergedScrapReviewData.data
-    ];
+            // Use ONLY Scrap review data
+            let allRows = [
+                ...mergedScrapReviewData.data
+            ];
 
-    // 🔍 Search filter
-    if (searchQuery) {
-        allRows = allRows.filter(item =>
-            item.data.some(cell =>
-                String(cell).toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-    }
+            // 🔍 Search filter
+            if (searchQuery) {
+                allRows = allRows.filter(item =>
+                    item.data.some(cell =>
+                        String(cell).toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                );
+            }
 
-    // ✅ APPLY SCRAP FILTERS (FAILED / SUCCESS / BANK / CHECK)
-    allRows = applyScrapFilters(allRows);
+            // ✅ APPLY SCRAP FILTERS (FAILED / SUCCESS / BANK / CHECK)
+            allRows = applyScrapFilters(allRows);
 
-    const totalFiltered = allRows.length;
-    const paginatedRows = getPaginatedRows(allRows, currentPage);
+            const totalFiltered = allRows.length;
+            const paginatedRows = getPaginatedRows(allRows, currentPage);
 
-    const tableBody = document.querySelector('#scrap-review-table tbody');
-    if (!tableBody) return;
+            const tableBody = document.querySelector('#scrap-review-table tbody');
+            if (!tableBody) return;
 
-    tableBody.innerHTML = '';
+            tableBody.innerHTML = '';
 
-    paginatedRows.forEach(item => {
-        const {
-            data: row,
-            status = 'DUPLICATE',
-            type,
-            paymierBank = 'N/A',
-            transactionId = '',
-            duplicateValue = ''
-        } = item;
+            paginatedRows.forEach(item => {
+                const {
+                    data: row,
+                    status = 'DUPLICATE',
+                    type,
+                    paymierBank = 'N/A',
+                    transactionId = '',
+                    duplicateValue = ''
+                } = item;
 
-        const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
-        const isChecked = scrapCheckState[uniqueKey] === true;
+                const uniqueKey = `scrap_${transactionId}_${status}_${paymierBank}_${duplicateValue}`;
+                const isChecked = scrapCheckState[uniqueKey] === true;
 
-        const tr = document.createElement('tr');
-        tr.className = isChecked
-            ? 'bg-green-100 border-b border-green-200 hover:bg-green-200'
-            : 'bg-white border-b border-gray-100 hover:bg-gray-50';
+                const tr = document.createElement('tr');
+                tr.className = isChecked
+                    ? 'bg-green-100 border-b border-green-200 hover:bg-green-200'
+                    : 'bg-white border-b border-gray-100 hover:bg-gray-50';
 
-        // Show first 10 scrap columns
-        for (let i = 0; i < 10; i++) {
-            const td = document.createElement('td');
-            td.className = 'px-4 py-2 whitespace-nowrap';
-            td.textContent = row[i] ?? '';
-            tr.appendChild(td);
-        }
+                // Show first 10 scrap columns
+                for (let i = 0; i < 10; i++) {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-2 whitespace-nowrap';
+                    td.textContent = row[i] ?? '';
+                    tr.appendChild(td);
+                }
 
-        // STATUS column
-        const statusTd = document.createElement('td');
-        let statusClass = 'bg-gray-50 text-gray-800';
+                // STATUS column
+                const statusTd = document.createElement('td');
+                let statusClass = 'bg-gray-50 text-gray-800';
 
-        if (status.includes('FAILED')) {
-            statusClass = 'bg-red-100 text-red-800';
-        } else if (status.includes('SUCCESS')) {
-            statusClass = 'bg-green-100 text-green-800';
-        } else if (status.includes('DUPLICATE')) {
-            statusClass = 'bg-yellow-100 text-yellow-800';
-        } else if (status.includes('NOT IN')) {
-            statusClass = 'bg-red-100 text-red-800';
-        }
+                if (status.includes('FAILED')) {
+                    statusClass = 'bg-red-100 text-red-800';
+                } else if (status.includes('SUCCESS')) {
+                    statusClass = 'bg-green-100 text-green-800';
+                } else if (status.includes('DUPLICATE')) {
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                } else if (status.includes('NOT IN')) {
+                    statusClass = 'bg-red-100 text-red-800';
+                }
 
-        statusTd.className = `px-4 py-2 text-center ${statusClass}`;
-        statusTd.textContent = status;
-        tr.appendChild(statusTd);
+                statusTd.className = `px-4 py-2 text-center ${statusClass}`;
+                statusTd.textContent = status;
+                tr.appendChild(statusTd);
 
-        // Paymier Bank column
-        const bankTd = document.createElement('td');
-        bankTd.className = paymierBank !== 'N/A'
-            ? 'px-4 py-2 text-center bg-green-100 text-green-800'
-            : 'px-4 py-2 text-center bg-gray-50 text-gray-800';
-        bankTd.textContent = paymierBank;
-        tr.appendChild(bankTd);
+                // Paymier Bank column
+                const bankTd = document.createElement('td');
+                bankTd.className = paymierBank !== 'N/A'
+                    ? 'px-4 py-2 text-center bg-green-100 text-green-800'
+                    : 'px-4 py-2 text-center bg-gray-50 text-gray-800';
+                bankTd.textContent = paymierBank;
+                tr.appendChild(bankTd);
 
-        // Type column
-        const typeTd = document.createElement('td');
-        typeTd.className = type === 'Deposit'
-            ? 'px-4 py-2 text-center bg-purple-100 text-purple-800'
-            : 'px-4 py-2 text-center bg-indigo-100 text-indigo-800';
-        typeTd.textContent = type;
-        tr.appendChild(typeTd);
+                // Type column
+                const typeTd = document.createElement('td');
+                typeTd.className = type === 'Deposit'
+                    ? 'px-4 py-2 text-center bg-purple-100 text-purple-800'
+                    : 'px-4 py-2 text-center bg-indigo-100 text-indigo-800';
+                typeTd.textContent = type;
+                tr.appendChild(typeTd);
 
-        // ✅ Check / Cross button (Scrap only)
-        const checkTd = document.createElement('td');
-        checkTd.className = 'px-4 py-2 text-center';
+                // ✅ Check / Cross button (Scrap only)
+                const checkTd = document.createElement('td');
+                checkTd.className = 'px-4 py-2 text-center';
 
-        if (type === 'Scrap') {
-            const btn = document.createElement('button');
-            btn.className = 'check-cross-btn';
-            btn.onclick = () => toggleScrapCheckState(uniqueKey);
+                if (type === 'Scrap') {
+                    const btn = document.createElement('button');
+                    btn.className = 'check-cross-btn';
+                    btn.onclick = (e) => {
+                        e.stopPropagation(); // Stop event from bubbling up
+                        toggleScrapCheckState(uniqueKey);
+                    };
 
-            btn.innerHTML = isChecked
-                ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    btn.innerHTML = isChecked
+                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                    </svg>`
-                : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                    </svg>`;
 
-            checkTd.appendChild(btn);
-        }
+                    checkTd.appendChild(btn);
+                }
 
-        tr.appendChild(checkTd);
-        tableBody.appendChild(tr);
-    });
+                tr.appendChild(checkTd);
+                tableBody.appendChild(tr);
+            });
 
-    // Pagination
-    const paginationContainer = document.getElementById('pagination-container');
-    if (paginationContainer) {
-        paginationContainer.innerHTML = renderPagination(
-            totalFiltered,
-            currentPage,
-            'scrap-review-table'
-        );
-    }
-};
+            // Pagination
+            const paginationContainer = document.getElementById('pagination-container');
+            if (paginationContainer) {
+                paginationContainer.innerHTML = renderPagination(
+                    totalFiltered,
+                    currentPage,
+                    'scrap-review-table'
+                );
+            }
+        };
 
 
         const renderReviewTable = (data, title, tableId, type) => {
             const { data: rows, header, totalRows } = data;
             const searchQuery = searchState[REVIEW_KEY] || '';
             const currentPage = paginationState[REVIEW_KEY].currentPage;
-            
-            let filteredRows = rows; 
-            
+
+            let filteredRows = rows;
+
             if (searchQuery) {
                 filteredRows = rows.filter(item => item.data.some(cell => String(cell).toLowerCase().includes(searchQuery.toLowerCase())));
             }
-            
+
             // Apply scrap-specific filters only for Scrap type
             if (type === 'Scrap') {
                 // Update filter state with current data
                 updateScrapFilterState(filteredRows);
-                
+
                 // Apply filters
                 filteredRows = applyScrapFilters(filteredRows);
             }
-            
+
             const totalFiltered = filteredRows.length;
             const paginatedRows = getPaginatedRows(filteredRows, currentPage);
-            
+
             // Create different headers for Scrap vs Deposit
             let headerHtml = '';
             if (type === 'Scrap') {
                 // Show 10 columns for scrap data
                 headerHtml = `
                     <tr class="bg-gray-50 border-b border-gray-300 text-gray-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">
-                        ${header.slice(0, 10).map((h, index) => 
-                            `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`
-                        ).join('')}
+                        ${header.slice(0, 10).map((h, index) =>
+                    `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`
+                ).join('')}
                         <th class="px-4 py-2 whitespace-nowrap">STATUS</th>
                         <th class="px-4 py-2 whitespace-nowrap">Paymier Bank</th>
                         <th class="px-4 py-2 whitespace-nowrap">Type</th>
@@ -1615,21 +2258,21 @@ const renderReviewTableOnly = () => {
                     </tr>
                 `;
             }
-            
+
             const tableRowsHtml = paginatedRows.map((item, index) => {
                 const { data: row, status, type: itemType, paymierBank } = item;
-                
+
                 // Different rendering logic for Scrap vs Deposit
                 if (type === 'Scrap') {
                     // Create a unique key based on row data for Scrap using new Transaction ID column
                     const uniqueKey = `scrap_${row[SCRAP_COLUMNS.TRANSACTION_ID]}_${status}_${paymierBank}`;
                     const isChecked = scrapCheckState[uniqueKey] === true;
-                    
+
                     // Add green background for checked rows (only for Scrap)
-                    const rowClass = isChecked 
-                        ? "bg-green-100 border-b border-green-200 hover:bg-green-200" 
+                    const rowClass = isChecked
+                        ? "bg-green-100 border-b border-green-200 hover:bg-green-200"
                         : "bg-white border-b border-gray-100 hover:bg-gray-50";
-                    
+
                     let rowHtml = `<tr class="${rowClass}">`;
 
                     // Show 10 columns for scrap data
@@ -1637,17 +2280,17 @@ const renderReviewTableOnly = () => {
                     for (let i = 0; i < 10; i++) {
                         dataColumns[i] = row[i] !== undefined ? row[i] : '';
                     }
-                    
+
                     const dataCells = dataColumns.map(cell => `<td class="px-4 py-2 whitespace-nowrap">${cell}</td>`).join('');
                     rowHtml += dataCells;
 
                     const statusValue = status || '';
-                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' : 
-                                      status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' : 
-                                      status === 'NOT IN DEPOSIT' ? 'bg-red-100 text-red-800' : 
-                                      status === 'IN PROCESS' ? 'bg-blue-100 text-blue-800' : 
-                                      status === 'FAILED' ? 'bg-red-100 text-red-800' : // Add color for FAILED
-                                      'bg-gray-50 text-gray-800';
+                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' :
+                        status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' :
+                            status === 'NOT IN DEPOSIT' ? 'bg-red-100 text-red-800' :
+                                status === 'IN PROCESS' ? 'bg-blue-100 text-blue-800' :
+                                    status === 'FAILED' ? 'bg-red-100 text-red-800' : // Add color for FAILED
+                                        'bg-gray-50 text-gray-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
 
                     const paymierBankValue = paymierBank || 'N/A';
@@ -1656,26 +2299,26 @@ const renderReviewTableOnly = () => {
 
                     const typeClass = 'bg-indigo-100 text-indigo-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">${type}</td>`;
-                    
+
                     // Check/Cross button - shows check mark or cross icon (only for Scrap)
-                    const checkCrossIcon = isChecked 
+                    const checkCrossIcon = isChecked
                         ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
                         : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-                    
+
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
                         <button onclick="toggleScrapCheckState('${uniqueKey}')" 
                                 class="check-cross-btn p-1 rounded-full hover:bg-gray-100 transition duration-150">
                             ${checkCrossIcon}
                         </button>
                     </td>`;
-                    
+
                     rowHtml += `</tr>`;
                     return rowHtml;
                 } else {
                     // For Deposit, render all columns as-is without Paymier Bank and Check columns
                     const rowClass = "bg-white border-b border-gray-100 hover:bg-gray-50";
                     let rowHtml = `<tr class="${rowClass}">`;
-                    
+
                     const dataCells = row.map(cell => `<td class="px-4 py-2 whitespace-nowrap">${cell}</td>`).join('');
                     rowHtml += dataCells;
 
@@ -1685,7 +2328,7 @@ const renderReviewTableOnly = () => {
 
                     const typeClass = 'bg-purple-100 text-purple-800';
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${typeClass}">${type}</td>`;
-                    
+
                     rowHtml += `</tr>`;
                     return rowHtml;
                 }
@@ -1696,13 +2339,13 @@ const renderReviewTableOnly = () => {
             if (type === 'Scrap') {
                 filterControlsHtml = renderScrapFilterControls(rows);
             }
-            
+
             const paginationHtml = renderPagination(totalFiltered, currentPage, tableId);
-            
+
             const truncationMessage = totalFiltered === 0
                 ? `<p class="text-sm text-center text-green-700 pt-3 border-t mt-3 border-gray-200">No ${type.toLowerCase()} records require review.</p>`
                 : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[REVIEW_KEY])} (${totalFiltered} total ${type.toLowerCase()} review rows).</p>`;
-            
+
             return `
                 <div class="mb-8">
                     <h2 class="text-xl font-bold text-gray-800 mb-3">${title}</h2>
@@ -1726,14 +2369,23 @@ const renderReviewTableOnly = () => {
             const noFileMessage = document.getElementById('no-file-message');
             const searchContainer = document.getElementById('search-container');
             const tableControls = document.getElementById('table-controls');
-            
+
             dataTableContainer.classList.add('hidden');
             dataTableContainer.innerHTML = '';
             noFileMessage.classList.remove('hidden');
             const isRHBMapSummary = fileKey === RHB_MAP_KEY;
-            const isRHBView = fileKey === 'file3'; 
+            const isRHBView = fileKey === RHB_MAP_KEY;
             const isReviewView = fileKey === REVIEW_KEY;
-            if (!fileKey || (!isRHBMapSummary && !isReviewView && !fileState[fileKey]?.data)) { 
+            const isAnalysisView = fileKey === ANALYSIS_KEY;
+
+            document.querySelectorAll('.file-table').forEach(table => table.classList.add('hidden'));
+
+            if (isAnalysisView) {
+                renderAnalysisDashboard();
+                return;
+            }
+
+            if (!fileKey || (!isRHBMapSummary && !isReviewView && !isAnalysisView && !fileState[fileKey]?.data)) {
                 document.getElementById('fileSelector').value = '';
                 fileState.activeFile = null;
                 searchContainer.classList.add('hidden');
@@ -1741,28 +2393,28 @@ const renderReviewTableOnly = () => {
                 return;
             }
             fileState.activeFile = fileKey;
-            
+
             // Show search container for all views except RHB Map Summary
             searchContainer.classList.toggle('hidden', isRHBMapSummary);
-            
+
             // Show table controls for all views except RHB Map Summary
             tableControls.classList.toggle('hidden', isRHBMapSummary);
-            
+
             // Set the rows per page dropdown to current value
             document.getElementById('rowsPerPage').value = rowsPerPageState[fileKey] || 50;
-            
+
             if (isRHBMapSummary) {
                 noFileMessage.classList.add('hidden');
                 const [depositFileKey, rhbFileKey] = ['file2', 'file3'];
                 if (!fileState[rhbFileKey]?.data) {
-                     noFileMessage.innerHTML = `<p class="text-sm text-center text-red-500">Please load the **RHB** file first to view the combined summary.</p>`;
-                     return;
+                    noFileMessage.innerHTML = `<p class="text-sm text-center text-red-500">Please load the **RHB** file first to view the combined summary.</p>`;
+                    return;
                 }
                 let finalHtmlContent = '';
                 if (fileState[depositFileKey]?.data) {
                     const depositSummaryData = generateDepositSummary(fileState.file2.data);
                     const depositWorksheet = XLSX.utils.aoa_to_sheet(depositSummaryData.data);
-                    const depositTableHtml = XLSX.utils.sheet_to_html(depositWorksheet, {id: 'deposit-summary-table', editable: false});
+                    const depositTableHtml = XLSX.utils.sheet_to_html(depositWorksheet, { id: 'deposit-summary-table', editable: false });
                     finalHtmlContent += `
                         <div class="mb-8 border border-purple-200 rounded-xl p-4 bg-purple-50">
                             <div class="flex justify-between items-center mb-3">
@@ -1774,11 +2426,11 @@ const renderReviewTableOnly = () => {
                         </div>
                     `;
                 } else {
-                     finalHtmlContent += `<div class="mb-8 p-4 bg-red-100 border border-red-300 rounded-lg"><p class="text-sm text-red-700 font-semibold">**Data View: Deposit Summary** is not available. Load **Deposit** file.</p></div>`;
+                    finalHtmlContent += `<div class="mb-8 p-4 bg-red-100 border border-red-300 rounded-lg"><p class="text-sm text-red-700 font-semibold">**Data View: Deposit Summary** is not available. Load **Deposit** file.</p></div>`;
                 }
                 const rhbMapSummaryData = generateRHBMappingSummary(fileState.file3.data);
                 const rhbWorksheet = XLSX.utils.aoa_to_sheet(rhbMapSummaryData.data);
-                const rhbTableHtml = XLSX.utils.sheet_to_html(rhbWorksheet, {id: 'rhb-map-summary-table', editable: false});
+                const rhbTableHtml = XLSX.utils.sheet_to_html(rhbWorksheet, { id: 'rhb-map-summary-table', editable: false });
                 finalHtmlContent += `
                     <div class="border border-green-200 rounded-xl p-4 bg-green-50">
                         <div class="flex justify-between items-center mb-3">
@@ -1832,54 +2484,54 @@ const renderReviewTableOnly = () => {
                             }
                         }
                         // Move scrapCol1Value to first position
-return [...newRow, effectiveRef];
+                        return [...newRow, effectiveRef];
                     });
                     // NEW FIXED CODE:
                     if (noMatchRows.length > 0) {
-    // Create function to search Scrap Data
-    const getScrapCol1Value = (rhbTxnRef) => {
-        let scrapCol1Value = '';
-        if (fileState.file1.data && fileState.file1.data.length > 1) {
-            const scrapRows = fileState.file1.data.slice(1);
-            // Search in Scrap Data 10th column (index 9) for the RHB Transaction Reference
-            const matchingScrapRow = scrapRows.find(scrapRow => {
-                const scrapCol10Value = String(scrapRow[9] || '').trim().toUpperCase();
-                return scrapCol10Value === rhbTxnRef;
-            });
-            if (matchingScrapRow) {
-                // Display Scrap Data 1st column (index 0)
-                scrapCol1Value = String(matchingScrapRow[0] || '');
-            }
-        }
-        return scrapCol1Value;
-    };
-    
-    // Add Scrap Col 1 Value as first column to each row
-    const noMatchRowsWithScrapCol1 = noMatchRows.map(row => {
-        const rhbTxnRef = String(row[1] || '').trim().toUpperCase();
-        const scrapCol1Value = getScrapCol1Value(rhbTxnRef);
-        return [scrapCol1Value, ...row];
-    });
-    
-    // Update header to include the new first column
-    const unclaimedHeader = [
-        'Scrap Col 1 Value', // New first column
-        'Date & Time', 
-        'Transaction Reference Number', 
-        '-', 
-        'Outlet Name', 
-        'Amount', 
-        'Collection Account', 
-        'Refund Status', 
-        'Refund Date & Time', 
-        'Payment Mode',
-        'Transaction ID'
-    ];
-    
-    const unclaimedAoA = [unclaimedHeader, ...noMatchRowsWithScrapCol1];
-    const unclaimedWorksheet = XLSX.utils.aoa_to_sheet(unclaimedAoA);
-    const unclaimedTableHtml = XLSX.utils.sheet_to_html(unclaimedWorksheet, {id: 'no-match-table', editable: false});
-                        
+                        // Create function to search Scrap Data
+                        const getScrapCol1Value = (rhbTxnRef) => {
+                            let scrapCol1Value = '';
+                            if (fileState.file1.data && fileState.file1.data.length > 1) {
+                                const scrapRows = fileState.file1.data.slice(1);
+                                // Search in Scrap Data 10th column (index 9) for the RHB Transaction Reference
+                                const matchingScrapRow = scrapRows.find(scrapRow => {
+                                    const scrapCol10Value = String(scrapRow[9] || '').trim().toUpperCase();
+                                    return scrapCol10Value === rhbTxnRef;
+                                });
+                                if (matchingScrapRow) {
+                                    // Display Scrap Data 1st column (index 0)
+                                    scrapCol1Value = String(matchingScrapRow[0] || '');
+                                }
+                            }
+                            return scrapCol1Value;
+                        };
+
+                        // Add Scrap Col 1 Value as first column to each row
+                        const noMatchRowsWithScrapCol1 = noMatchRows.map(row => {
+                            const rhbTxnRef = String(row[1] || '').trim().toUpperCase();
+                            const scrapCol1Value = getScrapCol1Value(rhbTxnRef);
+                            return [scrapCol1Value, ...row];
+                        });
+
+                        // Update header to include the new first column
+                        const unclaimedHeader = [
+                            'Scrap Col 1 Value', // New first column
+                            'Date & Time',
+                            'Transaction Reference Number',
+                            '-',
+                            'Outlet Name',
+                            'Amount',
+                            'Collection Account',
+                            'Refund Status',
+                            'Refund Date & Time',
+                            'Payment Mode',
+                            'Transaction ID'
+                        ];
+
+                        const unclaimedAoA = [unclaimedHeader, ...noMatchRowsWithScrapCol1];
+                        const unclaimedWorksheet = XLSX.utils.aoa_to_sheet(unclaimedAoA);
+                        const unclaimedTableHtml = XLSX.utils.sheet_to_html(unclaimedWorksheet, { id: 'no-match-table', editable: false });
+
                         finalHtmlContent += `
                             <div class="mt-8 border border-red-200 rounded-xl p-4 bg-red-50">
                                 <div class="flex justify-between items-center mb-3">
@@ -1905,7 +2557,7 @@ return [...newRow, effectiveRef];
                 if (noMatchTable) {
                     noMatchTable.className = "w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md";
                     noMatchTable.querySelectorAll('tr').forEach((tr, index) => {
-                        tr.className = index === 0 
+                        tr.className = index === 0
                             ? "bg-red-100 border-b border-gray-300 text-red-700 uppercase font-semibold text-xs sticky top-0 shadow-sm"
                             : "bg-white border-b border-gray-100 hover:bg-red-50";
                         tr.querySelectorAll('td, th').forEach(cell => cell.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-center'));
@@ -1917,24 +2569,24 @@ return [...newRow, effectiveRef];
                     noFileMessage.innerHTML = `<p class="text-sm text-center text-red-500">Please load **Scrap**, **Deposit**, and **RHB** files to check for records that need review.</p>`;
                     return;
                 }
-                
+
                 const depositReviewData = generateDepositUnmatchedSummary();
                 const mergedScrapReviewData = generateMergedScrapReviewSummary(); // Use the merged scrap data
-                
+
                 const depositTableHtml = renderReviewTable(
                     depositReviewData,
                     "UNMATCHED DEPOSIT (Success status but not in Scrap)",
                     "deposit-review-table",
                     "Deposit"
                 );
-                
+
                 const scrapTableHtml = renderReviewTable(
                     mergedScrapReviewData,
                     "SCRAP RECORDS FOR REVIEW", // Updated title for merged table
-                    "scrap-review-table", 
+                    "scrap-review-table",
                     "Scrap"
                 );
-                
+
                 dataTableContainer.innerHTML = `
                     <h1 class="text-2xl font-extrabold text-indigo-700 mb-6 border-b-4 border-indigo-300 pb-2">Review Records</h1>
                     ${depositTableHtml}
@@ -1942,12 +2594,12 @@ return [...newRow, effectiveRef];
                 `;
             } else if (isRHBView) {
                 noFileMessage.classList.add('hidden');
-                let metadata = fileState[fileKey].metadata; 
+                let metadata = fileState[fileKey].metadata;
                 const { processedRows, filterDescription, isScrapLookupActive } = processRhbDataForRendering();
                 const currentPage = paginationState[fileKey].currentPage;
                 const paginatedRows = getPaginatedRows(processedRows, currentPage);
                 const totalFiltered = processedRows.length;
-                
+
                 const finalHeaderRow = ['Date & Time', 'Transaction Reference Number', '-', 'Outlet Name', 'Amount', 'Collection Account', 'Refund Status', 'Refund Date & Time', 'Payment Mode', 'Bank Mapping', 'Transaction ID', 'Edit'];
                 const headerHtml = finalHeaderRow.map(h => `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`).join('');
                 const tableRowsHtml = paginatedRows.map(item => {
@@ -1955,8 +2607,8 @@ return [...newRow, effectiveRef];
                     const isUnmapped = isScrapLookupActive && (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef === '') && !rhbScrapOverrideMap[txnRef];
                     const currentOverride = rhbScrapOverrideMap[txnRef] || '';
                     const rowClasses = isUnmapped ? 'unmapped-row' : "bg-white border-b border-gray-100 hover:bg-gray-50";
-                    const rowOnClick = isUnmapped ? `onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"` : ""; 
-                    const dateSerial = row[0]; 
+                    const rowOnClick = isUnmapped ? `onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"` : "";
+                    const dateSerial = row[0];
                     let formattedDate = '';
                     if (typeof dateSerial === 'number' && dateSerial > 1) {
                         try {
@@ -1986,14 +2638,14 @@ return [...newRow, effectiveRef];
                 }).join('');
                 const htmlContent = `<table id="sheet-data-table" class="w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md"><thead><tr class="bg-green-50 border-b border-gray-300 text-green-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">${headerHtml}</tr></thead><tbody>${tableRowsHtml}</tbody></table>`;
                 const paginationHtml = renderPagination(totalFiltered, currentPage, 'sheet-data-table');
-                const truncationMessage = totalFiltered === 0 
+                const truncationMessage = totalFiltered === 0
                     ? `<p class="text-sm text-center text-red-500 pt-3 border-t mt-3 border-gray-200">No rows found matching criteria${filterDescription}.</p>`
                     : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[fileKey])} (${totalFiltered} total rows${filterDescription}).</p>`;
                 dataTableContainer.innerHTML = `<h2 class="xl font-bold text-gray-800 mb-3">Filtered Data Preview: <span class="font-normal text-green-600">${metadata.name}</span></h2><div class="max-h-96 overflow-y-auto">${htmlContent}</div>${paginationHtml}${truncationMessage}`;
                 const table = document.getElementById('sheet-data-table');
                 if (table) {
                     table.querySelectorAll('tr').forEach(row => {
-                        if(row.cells.length > 11) {
+                        if (row.cells.length > 11) {
                             row.cells[10].style.minWidth = '120px';
                             row.cells[11].classList.remove('text-left');
                             row.cells[11].classList.add('text-center');
@@ -2003,7 +2655,7 @@ return [...newRow, effectiveRef];
                 }
             } else {
                 noFileMessage.classList.add('hidden');
-                let metadata = fileState[fileKey].metadata; 
+                let metadata = fileState[fileKey].metadata;
                 const aoaData = fileState[fileKey].data;
                 let { filteredRows, filterDescription } = applyFilter(fileKey, aoaData.slice(1));
                 const searchQuery = searchState[fileKey] || '';
@@ -2015,12 +2667,12 @@ return [...newRow, effectiveRef];
                 }
                 const totalFiltered = searchedRows.length;
                 const paginatedRows = getPaginatedRows(searchedRows, currentPage);
-                let finalHeaderRow = [...aoaData[0]]; 
-                
+                let finalHeaderRow = [...aoaData[0]];
+
                 if (fileKey === 'file2') {
                     paginatedRows.forEach((row, index) => {
                         const newRow = [...row];
-                        
+
                         // Format deposit time
                         if (newRow[DEPOSIT_COLUMNS.DEPOSIT_TIME] !== undefined && newRow[DEPOSIT_COLUMNS.DEPOSIT_TIME] !== null) {
                             const depositTime = newRow[DEPOSIT_COLUMNS.DEPOSIT_TIME];
@@ -2028,14 +2680,14 @@ return [...newRow, effectiveRef];
                                 try {
                                     const excelEpoch = new Date(1899, 11, 30);
                                     const jsDate = new Date(excelEpoch.getTime() + depositTime * 86400000);
-                                    
+
                                     const year = jsDate.getFullYear();
                                     const month = String(jsDate.getMonth() + 1).padStart(2, '0');
                                     const day = String(jsDate.getDate()).padStart(2, '0');
                                     const hours = String(jsDate.getHours()).padStart(2, '0');
                                     const minutes = String(jsDate.getMinutes()).padStart(2, '0');
                                     const seconds = String(jsDate.getSeconds()).padStart(2, '0');
-                                    
+
                                     newRow[DEPOSIT_COLUMNS.DEPOSIT_TIME] = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                                 } catch (e) {
                                     console.error('Error formatting date:', e);
@@ -2043,29 +2695,29 @@ return [...newRow, effectiveRef];
                                 }
                             }
                         }
-                        
+
                         const bankcodeValue = String(row[DEPOSIT_COLUMNS.BANKCODE] || '').trim().toUpperCase();
                         let bankMappingResult = 'N/A';
                         let bestMatchLength = -1;
                         const rhbMappingEntries = Object.entries(rhbMappingData);
-                        
+
                         for (const [key, value] of rhbMappingEntries) {
                             if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
                                 bestMatchLength = key.length;
                                 bankMappingResult = value;
                             }
                         }
-                        
+
                         paginatedRows[index] = [...newRow, bankMappingResult];
                     });
                     filterDescription += " (with Bank Mapping)";
                 }
-                
+
                 const finalDataForSheet = [finalHeaderRow, ...paginatedRows];
                 const newWorksheet = XLSX.utils.aoa_to_sheet(finalDataForSheet);
-                htmlContent = XLSX.utils.sheet_to_html(newWorksheet, {id: 'sheet-data-table', editable: false});
+                htmlContent = XLSX.utils.sheet_to_html(newWorksheet, { id: 'sheet-data-table', editable: false });
                 const paginationHtml = renderPagination(totalFiltered, currentPage, 'sheet-data-table');
-                const truncationMessage = totalFiltered === 0 
+                const truncationMessage = totalFiltered === 0
                     ? `<p class="text-sm text-center text-red-500 pt-3 border-t mt-3 border-gray-200">No rows found matching criteria${filterDescription}.</p>`
                     : `<p class="text-sm text-center text-gray-500 pt-3 border-t mt-3 border-gray-200">Displaying page ${currentPage} of ${Math.ceil(totalFiltered / rowsPerPageState[fileKey])} (${totalFiltered} total rows${filterDescription}).</p>`;
                 dataTableContainer.innerHTML = `<h2 class="xl font-bold text-gray-800 mb-3">Filtered Data Preview: <span class="font-normal text-indigo-600">${metadata.name}</span></h2><div class="max-h-96 overflow-y-auto">${htmlContent}</div>${paginationHtml}${truncationMessage}`;
@@ -2082,188 +2734,897 @@ return [...newRow, effectiveRef];
             dataTableContainer.classList.remove('hidden');
         }
 
-function copyTable(tableId) {
-    const table = document.getElementById(tableId);
-    if (!table) {
-        console.log('Table not found:', tableId);
-        return;
-    }
+        function copyTable(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) {
+                console.log('Table not found:', tableId);
+                return;
+            }
 
-    console.log('Copying table:', tableId);
-    
-    const rows = Array.from(table.querySelectorAll('tr'));
-    let dataRows = [];
+            console.log('Copying table:', tableId);
 
-    rows.forEach((row, index) => {
-        const cells = Array.from(row.querySelectorAll('td, th'));
-        if (cells.length === 0) return;
-        
-        const textRow = cells.map(cell => cell.innerText.trim());
-        console.log('Row', index, ':', textRow);
-        
-        // Skip header row (index 0) and empty rows
-        if (index === 0) return;
-        
-        const joinedText = textRow.join('\t');
-        
-        // Skip grand total rows and empty rows
-        if (joinedText.includes('GRAND TOTAL') || joinedText.trim() === '') return;
+            const rows = Array.from(table.querySelectorAll('tr'));
+            let dataRows = [];
 
-        if (tableId === 'deposit-summary-table') {
-            // For deposit summary: Merchant | Bank | Amount
-            let merchant = textRow[0] || '';
-            const bank = textRow[1] || '';
-            const amount = textRow[2] || '';
-            
-            // Only add if we have valid data (not empty separator rows)
-            if (merchant !== '' && bank !== '' && amount !== '') {
-                // Apply specific transformations
-                if (merchant.toLowerCase() === 'ez96') {
-                    merchant = 'EZ96'; // Ez96 → EZ96
-                } else if (merchant.toLowerCase().startsWith('wow')) {
-                    merchant = 'WOW'; // WOW88, WOW123, etc → WOW
+            rows.forEach((row, index) => {
+                const cells = Array.from(row.querySelectorAll('td, th'));
+                if (cells.length === 0) return;
+
+                const textRow = cells.map(cell => cell.innerText.trim());
+                console.log('Row', index, ':', textRow);
+
+                // Skip header row (index 0) and empty rows
+                if (index === 0) return;
+
+                const joinedText = textRow.join('\t');
+
+                // Skip grand total rows and empty rows
+                if (joinedText.includes('GRAND TOTAL') || joinedText.trim() === '') return;
+
+                if (tableId === 'deposit-summary-table') {
+                    // For deposit summary: Merchant | Bank | Amount
+                    let merchant = textRow[0] || '';
+                    const bank = textRow[1] || '';
+                    const amount = textRow[2] || '';
+
+                    // Only add if we have valid data (not empty separator rows)
+                    if (merchant !== '' && bank !== '' && amount !== '') {
+                        // Apply specific transformations
+                        if (merchant.toLowerCase() === 'ez96') {
+                            merchant = 'EZ96'; // Ez96 → EZ96
+                        } else if (merchant.toLowerCase().startsWith('wow')) {
+                            merchant = 'WOW'; // WOW88, WOW123, etc → WOW
+                        }
+                        // All other merchants remain unchanged
+                        dataRows.push([merchant, bank, amount].join('\t'));
+                    }
+                } else if (tableId === 'rhb-map-summary-table') {
+                    // For RHB summary: Copy only "UNCLAIM", Bank, and No Match Total columns
+                    const bank = textRow[0] || '';
+                    const noMatchTotal = textRow[2] || '';
+
+                    // Skip header rows, grand total rows, and empty rows
+                    if (bank === '' || bank === 'Bank' || bank.includes('GRAND TOTAL')) return;
+
+                    // Skip rows where noMatchTotal is 0 or empty
+                    if (parseFloat(noMatchTotal.replace(/,/g, '')) === 0 || noMatchTotal === '0.00') return;
+
+                    // Copy all banks with non-zero No Match Total
+                    dataRows.push(`UNCLAIMED\t${bank}\t${noMatchTotal}`);
+                } else if (tableId === 'no-match-table') {
+
+                    const scrapCol1Value = textRow[0] || '';         // New first column - Scrap Col 1 Value
+                    const dateTime = textRow[1] || '';              // Date & Time (second column)
+                    const outletName = textRow[4] || '';            // Outlet Name (fifth column)
+                    const txnRefNumber = textRow[2] || '';          // Transaction Reference Number (third column)
+                    const amount = textRow[5] || '';                // Amount (sixth column)
+
+                    // Skip header rows and empty rows
+                    if (dateTime === 'Date & Time' || dateTime === '') return;
+                    const customOrder = [
+                        dateTime,           // 1. Date & Time (from second column)
+                        '',                 // 2. blank
+                        outletName,         // 3. Outlet Name (from fifth column)
+                        txnRefNumber,       // 4. Transaction Reference Number (from third column)
+                        amount,             // 5. Amount (from sixth column)
+                        'Unclaim',          // 6. word "Unclaim"
+                        '',                 // 7. blank
+                        '',                 // 8. blank
+                        '',                 // 9. blank
+                        '',                 // 10. blank
+                        scrapCol1Value      // 11. Scrap Col 1 Value (from first column)
+                    ];
+
+                    dataRows.push(customOrder.join('\t'));
+                } else {
+                    // For other tables, copy as-is
+                    const rowText = textRow.join('\t');
+                    if (rowText.trim() !== '') dataRows.push(rowText);
                 }
-                // All other merchants remain unchanged
-                dataRows.push([merchant, bank, amount].join('\t'));
+            });
+
+            console.log('Data to copy:', dataRows);
+
+            if (dataRows.length === 0) {
+                console.log('No data to copy');
+                return;
             }
-        } else if (tableId === 'rhb-map-summary-table') {
-            // For RHB summary: Copy only "UNCLAIM", Bank, and No Match Total columns
-            const bank = textRow[0] || '';
-            const noMatchTotal = textRow[2] || '';
 
-            // Skip header rows, grand total rows, and empty rows
-            if (bank === '' || bank === 'Bank' || bank.includes('GRAND TOTAL')) return;
-            
-            // Skip rows where noMatchTotal is 0 or empty
-            if (parseFloat(noMatchTotal.replace(/,/g, '')) === 0 || noMatchTotal === '0.00') return;
+            const textToCopy = dataRows.join('\n');
+            console.log('Final text to copy:', textToCopy);
 
-            // Copy all banks with non-zero No Match Total
-            dataRows.push(`UNCLAIMED\t${bank}\t${noMatchTotal}`);
-        } else if (tableId === 'no-match-table') {
-    
-    const scrapCol1Value = textRow[0] || '';         // New first column - Scrap Col 1 Value
-    const dateTime = textRow[1] || '';              // Date & Time (second column)
-    const outletName = textRow[4] || '';            // Outlet Name (fifth column)
-    const txnRefNumber = textRow[2] || '';          // Transaction Reference Number (third column)
-    const amount = textRow[5] || '';                // Amount (sixth column)
-    
-    // Skip header rows and empty rows
-    if (dateTime === 'Date & Time' || dateTime === '') return;
-    const customOrder = [
-        dateTime,           // 1. Date & Time (from second column)
-        '',                 // 2. blank
-        outletName,         // 3. Outlet Name (from fifth column)
-        txnRefNumber,       // 4. Transaction Reference Number (from third column)
-        amount,             // 5. Amount (from sixth column)
-        'Unclaim',          // 6. word "Unclaim"
-        '',                 // 7. blank
-        '',                 // 8. blank
-        '',                 // 9. blank
-        '',                 // 10. blank
-        scrapCol1Value      // 11. Scrap Col 1 Value (from first column)
-    ]; 
-    
-    dataRows.push(customOrder.join('\t'));
-} else {
-            // For other tables, copy as-is
-            const rowText = textRow.join('\t');
-            if (rowText.trim() !== '') dataRows.push(rowText);
+            // Use modern clipboard API with fallback
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    console.log('Table copied to clipboard successfully');
+                    // Alert removed from here
+                }).catch(err => {
+                    console.error('Clipboard API error:', err);
+                    fallbackCopyTextToClipboard(textToCopy);
+                });
+            } else {
+                fallbackCopyTextToClipboard(textToCopy);
+            }
         }
-    }); 
 
-    console.log('Data to copy:', dataRows);
-    
-    if (dataRows.length === 0) {
-        console.log('No data to copy');
-        return;
-    }
+        // Fallback method for older browsers
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
 
-    const textToCopy = dataRows.join('\n');
-    console.log('Final text to copy:', textToCopy);
-    
-    // Use modern clipboard API with fallback
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            console.log('Table copied to clipboard successfully');
-            // Alert removed from here
-        }).catch(err => {
-            console.error('Clipboard API error:', err);
-            fallbackCopyTextToClipboard(textToCopy);
-        });
-    } else {
-        fallbackCopyTextToClipboard(textToCopy);
-    }
-}
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    console.log('Table copied to clipboard using fallback method');
+                    // Alert removed from here
+                } else {
+                    console.error('Fallback copy failed');
+                    // Alert removed from here
+                }
+            } catch (err) {
+                console.error('Fallback copy error:', err);
+                // Alert removed from here
+            }
 
-// Fallback method for older browsers
-function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            console.log('Table copied to clipboard using fallback method');
-            // Alert removed from here
-        } else {
-            console.error('Fallback copy failed');
-            // Alert removed from here
+            document.body.removeChild(textArea);
         }
-    } catch (err) {
-        console.error('Fallback copy error:', err);
-        // Alert removed from here
-    }
-    
-    document.body.removeChild(textArea);
-}
 
-function copyAllSummaryTables() {
-    const tables = ['deposit-summary-table', 'rhb-map-summary-table', 'no-match-table'];
-    let allContent = '';
-    tables.forEach(id => {
-        const table = document.getElementById(id);
-        if (table) {
-            const bodyRows = Array.from(table.querySelectorAll('tbody tr')).map(row => row.outerHTML).join('');
-            if (bodyRows) {
-                allContent += `<table><tbody>${bodyRows}</tbody></table>
+        function copyAllSummaryTables() {
+            const tables = ['deposit-summary-table', 'rhb-map-summary-table', 'no-match-table'];
+            let allContent = '';
+            tables.forEach(id => {
+                const table = document.getElementById(id);
+                if (table) {
+                    const bodyRows = Array.from(table.querySelectorAll('tbody tr')).map(row => row.outerHTML).join('');
+                    if (bodyRows) {
+                        allContent += `<table><tbody>${bodyRows}</tbody></table>
 `;
+                    }
+                }
+            });
+            if (allContent) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = allContent;
+                document.body.appendChild(tempDiv);
+                let range;
+                if (document.createRange) {
+                    range = document.createRange();
+                    range.selectNode(tempDiv);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand('copy');
+                    window.getSelection().removeAllRanges();
+                    document.body.removeChild(tempDiv);
+                    // Alert removed from here
+                } else {
+                    document.body.removeChild(tempDiv);
+                    // Alert removed from here
+                }
+            } else {
+                // Alert removed from here
             }
         }
-    });
-    if (allContent) {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = allContent;
-        document.body.appendChild(tempDiv);
-        let range;
-        if (document.createRange) {
-            range = document.createRange();
+
+        /* --- Rain & Lightning Script --- */
+        let rainInterval;
+        let lightningTimeout;
+        const canvas = document.getElementById('rain-canvas');
+        const ctx = canvas.getContext('2d');
+        let raindrops = [];
+        let isRaining = false;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createRaindrop() {
+            return {
+                x: Math.random() * canvas.width,
+                y: -10,
+                speed: Math.random() * 10 + 5,
+                length: Math.random() * 20 + 10
+            };
+        }
+
+        // NEW: Render Analysis Dashboard
+        const renderAnalysisDashboard = () => {
+            const dataTableContainer = document.getElementById('data-table-container');
+            const noFileMessage = document.getElementById('no-file-message');
+
+            dataTableContainer.innerHTML = '';
+            dataTableContainer.classList.remove('hidden');
+            noFileMessage.classList.add('hidden');
+            document.getElementById('search-container').classList.add('hidden');
+            document.getElementById('table-controls').classList.add('hidden');
+
+            // 1. Calculate Metrics
+            const metrics = calculateAnalysisMetrics();
+
+            // 2. Build HTML Layout
+            const dashboardHtml = `
+                <div class="space-y-8 p-4">
+                    <h2 class="text-3xl font-extrabold text-gray-800 border-b pb-4">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                            Intelligent Data Analysis
+                        </span>
+                    </h2>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Total Volume -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Volume</h3>
+                                <div class="p-2 bg-green-100 rounded-lg text-green-600">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-3xl font-bold text-gray-800">RM ${metrics.totalVolume.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                            <p class="text-xs text-green-600 mt-2 font-semibold">Verified SUCCESS Transactions</p>
+                        </div>
+
+                        <!-- Top Merchant -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Top Merchant</h3>
+                                <div class="p-2 bg-purple-100 rounded-lg text-purple-600">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-xl font-bold text-gray-800 truncate" title="${metrics.topMerchant.name}">${metrics.topMerchant.name}</p>
+                            <p class="text-sm text-purple-600 mt-2 font-bold">RM ${metrics.topMerchant.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                        </div>
+                        
+                         <!-- Top Bank -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Top Bank</h3>
+                                <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                                </div>
+                            </div>
+                             <p class="text-xl font-bold text-gray-800 truncate" title="${metrics.topBank.name}">${metrics.topBank.name}</p>
+                            <p class="text-sm text-blue-600 mt-2 font-bold">RM ${metrics.topBank.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                        </div>
+                    </div>
+
+                    <!-- Additional Metrics Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Average Transaction Size -->
+                        <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-lg border border-indigo-200 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-indigo-700 text-sm font-medium uppercase tracking-wider">Avg Transaction</h3>
+                                <div class="p-2 bg-indigo-200 rounded-lg text-indigo-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-indigo-900">RM ${metrics.avgTransaction.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                            <p class="text-xs text-indigo-600 mt-2 font-semibold">Per successful deposit</p>
+                        </div>
+
+                        <!-- Total Transactions -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-lg border border-orange-200 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-orange-700 text-sm font-medium uppercase tracking-wider">Total Transactions</h3>
+                                <div class="p-2 bg-orange-200 rounded-lg text-orange-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-orange-900">${metrics.totalTransactions.toLocaleString()}</p>
+                            <p class="text-xs text-orange-600 mt-2 font-semibold">Successful deposits processed</p>
+                        </div>
+
+                        <!-- Number of Banks -->
+                        <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl shadow-lg border border-cyan-200 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-cyan-700 text-sm font-medium uppercase tracking-wider">Active Banks</h3>
+                                <div class="p-2 bg-cyan-200 rounded-lg text-cyan-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-cyan-900">${metrics.bankCount}</p>
+                            <p class="text-xs text-cyan-600 mt-2 font-semibold">Banks with transactions</p>
+                        </div>
+
+                        <!-- Number of Merchants -->
+                        <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl shadow-lg border border-pink-200 p-6 transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-pink-700 text-sm font-medium uppercase tracking-wider">Active Merchants</h3>
+                                <div class="p-2 bg-pink-200 rounded-lg text-pink-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-pink-900">${metrics.merchantCount}</p>
+                            <p class="text-xs text-pink-600 mt-2 font-semibold">Merchants with transactions</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Bank Performance Chart -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800 mb-6">Volume by Bank</h3>
+                            <canvas id="bankChart" style="max-height: 350px;"></canvas>
+                        </div>
+
+                        <!-- Merchant Distribution Chart -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800 mb-6">Top Merchants (Volume)</h3>
+                            <canvas id="merchantChart" style="max-height: 350px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Count Comparison Chart -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6">Transaction Count by Bank (Top 10)</h3>
+                        <canvas id="transactionCountChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            `;
+
+            dataTableContainer.innerHTML = dashboardHtml;
+
+            // 3. Render Charts (with slight delay to ensure DOM is ready)
+            setTimeout(() => {
+                renderChart('bankChart', 'bar', metrics.bankData);
+                renderChart('merchantChart', 'doughnut', metrics.merchantData);
+                renderChart('transactionCountChart', 'bar', metrics.transactionCountData);
+            }, 100);
+        };
+
+        const calculateAnalysisMetrics = () => {
+            // Initialize data structures
+            const bankTotals = {};
+            const merchantTotals = {};
+            const bankTransactionCounts = {};
+            const merchantTransactionCounts = {};
+            let totalVolume = 0;
+            let totalTransactions = 0;
+
+            // Get Bank Summary data using the existing function
+            if (fileState.file3.data) {
+                const bankSummary = generateRHBMappingSummary(fileState.file3.data);
+
+                // Parse the bank summary data (skip header and grand total rows)
+                const bankData = bankSummary.data.slice(1, -2); // Skip header and last 2 rows (blank + grand total)
+
+                bankData.forEach(row => {
+                    const bankName = row[0]; // Bank name
+                    const amount = parseFloat(row[1]); // Total Amount
+
+                    if (!isNaN(amount) && amount > 0) {
+                        bankTotals[bankName] = amount;
+                        totalVolume += amount;
+                    }
+                });
+
+                // Count transactions per bank from RHB statement
+                const rhbRows = fileState.file3.data.slice(1);
+                const { filteredRows } = applyFilter('file3', rhbRows);
+                const rhbMappingEntries = Object.entries(rhbMappingData);
+
+                filteredRows.forEach(row => {
+                    const amount = parseFloat(row[RHB_COLUMNS.AMOUNT] || 0);
+
+                    if (!isNaN(amount) && amount > 0) {
+                        totalTransactions++;
+
+                        // Bank Mapping
+                        const description = String(row[RHB_COLUMNS.OUTLET_NAME] || '').trim().toUpperCase();
+                        let bankName = 'Unknown Bank';
+                        let bestMatchLength = -1;
+                        for (const [key, value] of rhbMappingEntries) {
+                            if (description.includes(key) && key.length > bestMatchLength) {
+                                bestMatchLength = key.length;
+                                bankName = value;
+                            }
+                        }
+                        bankTransactionCounts[bankName] = (bankTransactionCounts[bankName] || 0) + 1;
+                    }
+                });
+            }
+
+            // Process Deposit Data for Merchant Analysis (file2)
+            if (fileState.file2.data) {
+                const depositRows = fileState.file2.data.slice(1);
+
+                depositRows.forEach(row => {
+                    const status = String(row[DEPOSIT_COLUMNS.STATUS] || '').trim().toUpperCase();
+                    const amount = parseFloat(row[DEPOSIT_COLUMNS.AMOUNT_RM] || 0);
+
+                    if ((status === 'SUCCESS' || status.includes('SUCC')) && !isNaN(amount)) {
+                        // Merchant Mapping
+                        const merchantName = String(row[DEPOSIT_COLUMNS.MERCHANT] || 'Unknown Merchant').trim();
+                        merchantTotals[merchantName] = (merchantTotals[merchantName] || 0) + amount;
+                        merchantTransactionCounts[merchantName] = (merchantTransactionCounts[merchantName] || 0) + 1;
+                    }
+                });
+            }
+
+            // Calculate derived metrics
+            const avgTransaction = totalTransactions > 0 ? totalVolume / totalTransactions : 0;
+            const bankCount = Object.keys(bankTotals).length;
+            const merchantCount = Object.keys(merchantTotals).length;
+
+            // Top Bank
+            const sortedBanks = Object.entries(bankTotals).sort((a, b) => b[1] - a[1]);
+            const topBank = sortedBanks.length > 0 ? { name: sortedBanks[0][0], amount: sortedBanks[0][1] } : { name: 'N/A', amount: 0 };
+
+            // Top Merchant
+            const sortedMerchants = Object.entries(merchantTotals).sort((a, b) => b[1] - a[1]);
+            const topMerchant = sortedMerchants.length > 0 ? { name: sortedMerchants[0][0], amount: sortedMerchants[0][1] } : { name: 'N/A', amount: 0 };
+
+            // Unmatched Count
+            const depositReviewData = generateDepositUnmatchedSummary();
+            const scrapReviewData = generateMergedScrapReviewSummary();
+            const unmatchedCount = (depositReviewData.data.length + scrapReviewData.data.length);
+
+            // Prepare Chart Data
+            // Bank Data (Top 10) - From RHB Statement
+            const bankLabels = sortedBanks.map(x => x[0]).slice(0, 10);
+            const bankValues = sortedBanks.map(x => x[1]).slice(0, 10);
+            const bankData = {
+                labels: bankLabels,
+                datasets: [{
+                    label: 'Total Volume (RM)',
+                    data: bankValues,
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            // Merchant Data (All Merchants) - From Deposit
+            const merchantLabels = sortedMerchants.map(x => x[0]);
+            const merchantValues = sortedMerchants.map(x => x[1]);
+
+            // Generate colors dynamically for all merchants
+            const generateColor = (index) => {
+                const hue = (index * 137.508) % 360; // Golden angle approximation for good color distribution
+                return `hsla(${hue}, 70%, 60%, 0.7)`;
+            };
+            const merchantColors = merchantLabels.map((_, index) => generateColor(index));
+
+            const merchantData = {
+                labels: merchantLabels,
+                datasets: [{
+                    data: merchantValues,
+                    backgroundColor: merchantColors,
+                    borderWidth: 0
+                }]
+            };
+
+            // Transaction Count Data (Top 10 Banks) - From RHB Statement
+            const sortedBankCounts = Object.entries(bankTransactionCounts).sort((a, b) => b[1] - a[1]);
+            const bankCountLabels = sortedBankCounts.map(x => x[0]).slice(0, 10);
+            const bankCountValues = sortedBankCounts.map(x => x[1]).slice(0, 10);
+            const transactionCountData = {
+                labels: bankCountLabels,
+                datasets: [{
+                    label: 'Number of Transactions',
+                    data: bankCountValues,
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            // Generate AI Insights
+            const insights = [];
+
+            if (topBank.name !== 'N/A') {
+                const bankPercentage = ((topBank.amount / totalVolume) * 100).toFixed(1);
+                insights.push(`<strong>${topBank.name}</strong> leads with <strong>${bankPercentage}%</strong> of total volume (RM ${topBank.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}) from Bank Summary. Consider strengthening this partnership.`);
+            }
+
+            if (topMerchant.name !== 'N/A') {
+                const merchantPercentage = ((topMerchant.amount / totalVolume) * 100).toFixed(1);
+                insights.push(`<strong>${topMerchant.name}</strong> accounts for <strong>${merchantPercentage}%</strong> of all transactions. Monitor this merchant closely for any changes.`);
+            }
+
+            if (avgTransaction > 0) {
+                if (avgTransaction < 50) {
+                    insights.push(`Average transaction size is <strong>RM ${avgTransaction.toFixed(2)}</strong> (Low). Consider promoting higher-value transactions or bundling strategies.`);
+                } else if (avgTransaction > 500) {
+                    insights.push(`Average transaction size is <strong>RM ${avgTransaction.toFixed(2)}</strong> (High). Excellent! Focus on customer retention and loyalty programs.`);
+                } else {
+                    insights.push(`Average transaction size is <strong>RM ${avgTransaction.toFixed(2)}</strong> (Moderate). Room for optimization through upselling strategies.`);
+                }
+            }
+
+            if (unmatchedCount > 0) {
+                const unmatchedPercentage = ((unmatchedCount / (totalTransactions + unmatchedCount)) * 100).toFixed(1);
+                insights.push(`⚠️ <strong>${unmatchedCount} records</strong> need review (<strong>${unmatchedPercentage}%</strong> of total). Prioritize data reconciliation to improve accuracy.`);
+            } else {
+                insights.push(`✅ <strong>Perfect reconciliation!</strong> No unmatched records found. Data quality is excellent.`);
+            }
+
+            if (bankCount > 0) {
+                if (bankCount === 1) {
+                    insights.push(`⚠️ <strong>Single Bank Dependency:</strong> All transactions through one bank. Consider diversifying to reduce risk.`);
+                } else if (bankCount < 3) {
+                    insights.push(`<strong>${bankCount} banks</strong> active. Limited diversity - consider expanding bank partnerships for better coverage.`);
+                } else {
+                    insights.push(`<strong>${bankCount} banks</strong> active. Good diversification reduces dependency risk.`);
+                }
+            }
+
+            const topBankTxnCount = sortedBankCounts.length > 0 ? sortedBankCounts[0][1] : 0;
+            if (topBankTxnCount > 0 && totalTransactions > 0) {
+                const topBankTxnPercentage = ((topBankTxnCount / totalTransactions) * 100).toFixed(1);
+                if (topBankTxnPercentage > 70) {
+                    insights.push(`🔍 <strong>${topBankTxnPercentage}%</strong> of transactions through a single bank. High concentration risk detected.`);
+                }
+            }
+
+            return {
+                totalVolume,
+                topBank,
+                topMerchant,
+                unmatchedCount,
+                avgTransaction,
+                totalTransactions,
+                bankCount,
+                merchantCount,
+                bankData,
+                merchantData,
+                transactionCountData,
+                insights
+            };
+        };
+
+        const renderChart = (canvasId, type, data) => {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+
+            // Destroy existing chart if any
+            if (window[canvasId] instanceof Chart) {
+                window[canvasId].destroy();
+            }
+
+            window[canvasId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: type === 'doughnut' ? 'right' : 'top',
+                        }
+                    },
+                    scales: type === 'bar' ? {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    } : {}
+                }
+            });
+        }
+
+        function drawRain() {
+            if (!isRaining) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(174, 194, 224, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.lineCap = 'round';
+
+            // Add new raindrops
+            if (Math.random() > 0.1) {
+                for (let i = 0; i < 5; i++) raindrops.push(createRaindrop());
+            }
+
+            for (let i = 0; i < raindrops.length; i++) {
+                let d = raindrops[i];
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x, d.y + d.length);
+                ctx.stroke();
+                d.y += d.speed;
+
+                // Remove drops that are off screen
+                if (d.y > canvas.height) {
+                    raindrops.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(drawRain);
+        }
+
+        function triggerLightning() {
+            if (!isRaining) return;
+            const flash = document.getElementById('lightning-flash');
+            flash.style.opacity = Math.random() * 0.4 + 0.1; // Random intensity
+            flash.style.display = 'block';
+
+            setTimeout(() => {
+                flash.style.opacity = 0;
+                flash.style.display = 'none';
+            }, Math.random() * 200 + 50); // Random duration
+
+            // Schedule next lightning
+            lightningTimeout = setTimeout(triggerLightning, Math.random() * 5000 + 2000);
+        }
+
+        window.handleThemeChange = (mode) => {
+            const canvas = document.getElementById('rain-canvas');
+
+            // Reset to clean state (Light Mode)
+            isRaining = false;
+            clearTimeout(lightningTimeout);
+            raindrops = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'none';
+            document.body.classList.remove('dark-mode', 'cyber-mode', 'stars-active');
+
+            // Apply new mode
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode', 'stars-active');
+            } else if (mode === 'rain') {
+                document.body.classList.add('dark-mode');
+                isRaining = true;
+                canvas.style.display = 'block';
+                drawRain();
+                triggerLightning();
+            } else if (mode === 'cyber') {
+                document.body.classList.add('cyber-mode');
+            }
+
+            // Save to localStorage
+            localStorage.setItem('paymier_theme', mode);
+
+            // Manage Stars (Only for standard Dark Mode)
+            if (mode === 'dark') {
+                generateStars();
+            } else {
+                clearStars();
+            }
+        };
+
+        // NEW: Function to generate random stars
+        function generateStars() {
+            clearStars(); // Clear existing first
+            const container = document.getElementById('star-container');
+            if (!container) return;
+
+            const starCount = 150; // Number of stars
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+
+                // Random Position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                star.style.left = `${x}vw`;
+                star.style.top = `${y}vh`;
+
+                // Random Size (1px to 3px)
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                // Random Animation Duration and Delay
+                const duration = Math.random() * 3 + 2; // 2s to 5s
+                const delay = Math.random() * 5; // 0s to 5s
+
+                star.style.animation = `twinkle-anim ${duration}s infinite ease-in-out ${delay}s`;
+                container.appendChild(star);
+            }
+        }
+
+        // Copy table to clipboard with visual feedback and custom formatting
+        function copyTable(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+
+            // Find the button that triggered this
+            const buttons = document.querySelectorAll(`button[onclick*="${tableId}"]`);
+            const button = buttons[0];
+
+            try {
+                let copyData = '';
+
+                // Get all rows from the table
+                const rows = Array.from(table.querySelectorAll('tr'));
+
+                if (tableId === 'deposit-summary-table') {
+                    // Deposit Summary: Skip header and grand total, replace WOW88 with WOW
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = Array.from(rows[i].querySelectorAll('td, th'));
+                        const rowText = cells.map(c => c.textContent.trim()).join('\t');
+
+                        // Skip grand total row (usually contains "GRAND TOTAL")
+                        if (rowText.toUpperCase().includes('GRAND TOTAL') || rowText.trim() === '') continue;
+
+                        // Replace WOW88 with WOW
+                        const processedRow = cells.map(c => {
+                            let text = c.textContent.trim();
+                            if (text === 'WOW88') text = 'WOW';
+                            return text;
+                        }).join('\t');
+
+                        copyData += processedRow + '\n';
+                    }
+                }
+                else if (tableId === 'rhb-map-summary-table') {
+                    // Bank Summary: Skip header, grand total, rows with No Match Total = 0
+                    // Output: UNCLAIMED, Bank, No Match Total
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = Array.from(rows[i].querySelectorAll('td, th'));
+                        const rowText = cells.map(c => c.textContent.trim()).join('\t');
+
+                        // Skip grand total or empty rows
+                        if (rowText.toUpperCase().includes('GRAND TOTAL') || rowText.trim() === '') continue;
+
+                        // Extract values
+                        const bank = cells[0]?.textContent.trim() || '';
+                        const noMatchTotal = parseFloat(cells[2]?.textContent.trim() || '0');
+
+                        // Skip rows where No Match Total is 0
+                        if (noMatchTotal === 0 || isNaN(noMatchTotal)) continue;
+
+                        // Output: UNCLAIMED, Bank, No Match Total
+                        copyData += `UNCLAIMED\t${bank}\t${noMatchTotal.toFixed(2)}\n`;
+                    }
+                }
+                else if (tableId === 'no-match-table') {
+                    // Unclaimed Scrap: Skip header and grand total
+                    // Output: Date & Time, blank, Outlet Name, Transaction Reference Number, Amount, "Unclaim", blank, blank, blank, blank, Scrap Col 1 Value
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = Array.from(rows[i].querySelectorAll('td, th'));
+                        const rowText = cells.map(c => c.textContent.trim()).join('\t');
+
+                        // Skip grand total or empty rows
+                        if (rowText.toUpperCase().includes('GRAND TOTAL') || rowText.trim() === '') continue;
+
+                        // Extract values based on column positions
+                        // Assuming: Scrap Col 1 Value, Date & Time, Transaction Reference Number, -, Outlet Name, Amount, Collection Account, Refund Status, Refund Date & Time, Payment Mode, Transaction ID
+                        const scrapCol1Value = cells[0]?.textContent.trim() || '';
+                        const dateTime = cells[1]?.textContent.trim() || '';
+                        const transactionRef = cells[2]?.textContent.trim() || '';
+                        const outletName = cells[4]?.textContent.trim() || '';
+                        const amount = cells[5]?.textContent.trim() || '';
+
+                        // Output: Date & Time, blank, Outlet Name, Transaction Reference Number, Amount, "Unclaim", blank, blank, blank, blank, Scrap Col 1 Value
+                        copyData += `${dateTime}\t\t${outletName}\t${transactionRef}\t${amount}\tUnclaim\t\t\t\t\t${scrapCol1Value}\n`;
+                    }
+                }
+                else {
+                    // Default: copy entire table (all rows except header)
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = Array.from(rows[i].querySelectorAll('td, th'));
+                        const rowText = cells.map(c => c.textContent.trim()).join('\t');
+                        copyData += rowText + '\n';
+                    }
+                }
+
+                // Copy to clipboard using modern API or fallback
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(copyData).then(() => {
+                        showCopyFeedback(button, true);
+                    }).catch(() => {
+                        // Fallback to older method
+                        fallbackCopy(copyData, button);
+                    });
+                } else {
+                    fallbackCopy(copyData, button);
+                }
+
+            } catch (err) {
+                console.error('Failed to copy table:', err);
+                showCopyFeedback(button, false);
+            }
+        }
+
+        // Fallback copy method for older browsers
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                showCopyFeedback(button, true);
+            } catch (err) {
+                showCopyFeedback(button, false);
+            }
+
+            document.body.removeChild(textarea);
+        }
+
+        // Show visual feedback on copy button
+        function showCopyFeedback(button, success) {
+            if (!button) return;
+
+            const originalText = button.textContent;
+            button.textContent = success ? 'Copied!' : 'Failed';
+            button.classList.add('bg-opacity-80');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('bg-opacity-80');
+            }, 2000);
+        }
+
+        // Copy all summary tables
+        function copyAllSummaryTables() {
+            const depositsTable = document.getElementById('deposit-summary-table');
+            const rhbTable = document.getElementById('rhb-map-summary-table');
+            const noMatchTable = document.getElementById('no-match-table');
+
+            let allContent = '';
+
+            if (depositsTable) {
+                allContent += depositsTable.outerHTML + '\n\n';
+            }
+            if (rhbTable) {
+                allContent += rhbTable.outerHTML + '\n\n';
+            }
+            if (noMatchTable) {
+                allContent += noMatchTable.outerHTML;
+            }
+
+            // Create a temporary element
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = allContent;
+            document.body.appendChild(tempDiv);
+
+            // Select and copy
+            const range = document.createRange();
             range.selectNode(tempDiv);
             window.getSelection().removeAllRanges();
             window.getSelection().addRange(range);
-            document.execCommand('copy');
+
+            try {
+                document.execCommand('copy');
+                alert('All tables copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy tables');
+            }
+
+            // Cleanup
             window.getSelection().removeAllRanges();
             document.body.removeChild(tempDiv);
-            // Alert removed from here
-        } else {
-            document.body.removeChild(tempDiv);
-            // Alert removed from here
         }
-    } else {
-        // Alert removed from here
-    }
-}
+
+        function clearStars() {
+            const container = document.getElementById('star-container');
+            if (container) container.innerHTML = '';
+        }
 
         window.onload = () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('paymier_theme') || 'light';
+            const themeSelector = document.getElementById('themeSelector');
+            if (themeSelector) {
+                themeSelector.value = savedTheme;
+                handleThemeChange(savedTheme);
+            }
+
             updateFileSelector();
             initializeMappingInputs();
-            applyAllMappingsAndClose(); 
+            applyAllMappingsAndClose();
+            loadSavedMappings(); // Load saved mapping rules
         };
     </script>
 </body>
+
 </html>
