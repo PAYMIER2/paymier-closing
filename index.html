@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PAYMIER CLOSING</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
@@ -161,6 +162,119 @@
             border-color: #3b82f6;
         }
 
+        /* --- View Switcher Styles --- */
+        .view-switcher-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .view-btn {
+            position: relative;
+            padding: 0.6rem 0.5rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            min-height: 54px;
+            overflow: hidden;
+        }
+
+        .view-btn:hover {
+            border-color: #6366f1;
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            color: #4f46e5;
+        }
+
+        .view-btn.active {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.4);
+        }
+
+        .view-btn span {
+            display: block;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view-btn .view-description {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: inherit;
+            opacity: 0.7;
+            text-transform: capitalize;
+        }
+
+        body.dark-mode .view-btn {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #94a3b8;
+        }
+
+        body.dark-mode .view-btn:hover {
+            background-color: #334155;
+            color: #e2e8f0;
+            border-color: #6366f1;
+        }
+
+        body.dark-mode .view-btn.active {
+            background-color: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        body.cyber-mode .view-btn {
+            background-color: #000;
+            border: 1px solid #0ff;
+            color: #0ff;
+            border-radius: 0;
+            text-shadow: 0 0 5px #0ff;
+            box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        body.cyber-mode .view-btn:hover {
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #f0f;
+            text-shadow: 0 0 5px #f0f;
+            border-color: #f0f;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+        }
+
+        body.cyber-mode .view-btn.active {
+            background-color: #f0f;
+            color: #000;
+            text-shadow: none;
+            border-color: #f0f;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        /* Fix mapping row white background in dark/rain mode */
+        body.dark-mode .mapping-row {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            border-color: #334155 !important;
+        }
+
         .filter-collapsible {
             cursor: pointer;
             user-select: none;
@@ -195,32 +309,6 @@
         /* body.dark-mode.stars-active::before, */
         /* body.dark-mode.stars-active::after { ... } */
 
-        /* JS-based Star Styling */
-        .star {
-            position: fixed;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0;
-            /* specific animation handles opacity */
-        }
-
-        /* Define distinct twinkle animations with different durations/delays if needed, 
-           or just use one flexible one. */
-        @keyframes twinkle-anim {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(0.8);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-        }
 
 
         /* App Container & Selector */
@@ -569,12 +657,7 @@
             display: none;
         }
     </style>
-    <script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
-    <script defer data-domain="paymier-closing.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
-    <script type="text/javascript" src="https://tiiny.host/ad-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Added Chart.js -->
-    <meta property="og:url" content="https://paymier-closing.tiiny.site/" data-id="th-modified">
-    <meta property="og:type" content="website" data-id="th-modified">
 </head>
 
 <body>
@@ -590,7 +673,6 @@
                 <select id="themeSelector" onchange="handleThemeChange(this.value)"
                     class="appearance-none cursor-pointer pl-4 pr-10 py-2 text-sm font-bold rounded-full shadow-lg bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700">
                     <option value="light" class="text-gray-900 bg-white">☀️</option>
-                    <option value="dark" class="text-gray-900 bg-white">🌑</option>
                     <option value="rain" class="text-gray-900 bg-white">⛈️</option>
                     <option value="cyber" class="text-gray-900 bg-white">🤖</option>
 
@@ -703,7 +785,7 @@
                             </svg>
                         </div>
                     </div>
-                    <input type="file" id="fileInput3" class="hidden" accept=".xlsx,.xls,.csv"
+                    <input type="file" id="fileInput3" class="hidden" accept=".xlsx,.xls,.csv,.zip"
                         onchange="handleFileSelect(event, 'file3')" multiple>
                     <label for="fileInput3"
                         class="block w-full text-center py-3 px-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-600 font-medium text-sm rounded-xl cursor-pointer hover:border-emerald-500 hover:text-emerald-600 hover:bg-white transition-all duration-300">
@@ -720,16 +802,9 @@
             <label for="fileSelector" class="block text-sm font-bold text-gray-700 mb-3 tracking-wide uppercase">
                 Select Active View
             </label>
-            <div class="relative">
-                <select id="fileSelector" onchange="handleFileSwitch(event)"
-                    class="block w-full py-3 px-4 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none transition-shadow cursor-pointer">
-                    <option value="" disabled selected>-- Select a loaded file --</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
+            <div id="view-switcher" class="view-switcher-container">
+                <!-- Dynamically populated buttons -->
+                <p class="text-sm text-gray-500 italic">No data loaded yet...</p>
             </div>
         </div>
 
@@ -800,19 +875,35 @@
                 <div id="rhb-mapping-settings" class="p-4 bg-green-50 rounded-xl border border-green-200">
                     <h3 class="text-xl font-bold text-green-800 mb-3 border-b border-green-300 pb-2">Paymier Bank</h3>
 
-                    <div class="flex items-center space-x-2 mb-2 text-xs font-bold uppercase text-green-700">
-                        <span class="flex-1">Keyword</span>
-                        <span class="flex-1">Bank</span>
-                        <span class="w-4"></span>
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex-1 grid grid-cols-2 gap-x-6 text-xs font-bold uppercase text-green-700">
+                            <div class="flex space-x-2">
+                                <span class="flex-1">Keyword</span>
+                                <span class="flex-1">Bank</span>
+                                <span class="w-4"></span>
+                            </div>
+                            <div class="flex space-x-2 hidden md:flex">
+                                <span class="flex-1">Keyword</span>
+                                <span class="flex-1">Bank</span>
+                                <span class="w-4"></span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="rhbMappingRowsContainer" class="space-y-2 mb-4 max-h-56 overflow-y-auto pr-2">
+                    <div id="rhbMappingRowsContainer"
+                        class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 mb-4 max-h-56 overflow-y-auto pr-2">
 
                     </div>
-                    <button onclick="addMappingRow('rhbMappingRowsContainer')"
-                        class="w-full py-2 px-4 text-green-700 font-semibold text-sm rounded-lg border border-green-300 bg-green-200 hover:bg-green-300 transition duration-300 shadow-sm">
-                        + Add New Rule
-                    </button>
+                    <div class="flex gap-4">
+                        <button onclick="addMappingRow('rhbMappingRowsContainer')"
+                            class="flex-1 py-2 px-4 text-green-700 font-semibold text-sm rounded-lg border border-green-300 bg-green-200 hover:bg-green-300 transition duration-300 shadow-sm">
+                            + Add New Rule
+                        </button>
+                        <button onclick="restoreDefaultMappings()"
+                            class="py-2 px-4 text-gray-700 font-semibold text-sm rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-200 transition duration-300 shadow-sm">
+                            Restore Defaults
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -843,6 +934,10 @@
                     class="py-2 px-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-300 shadow-md">
                     Save
                 </button>
+                <button onclick="setNoMatchOverride()"
+                    class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
+                    Set to No Match
+                </button>
                 <button onclick="toggleOverrideModal(false)"
                     class="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition duration-300 shadow-md">
                     Cancel
@@ -867,17 +962,17 @@
         const FILE_CONFIG = [
             {
                 key: 'file1',
-                label: 'Scrap',
+                label: 'SCRAP DATA',
                 filter: { index: 4, values: ['RM', 'MYR'] }
             },
             {
                 key: 'file2',
-                label: 'Deposit',
+                label: 'DEPOSIT DATA',
                 filter: null
             },
             {
                 key: 'file3',
-                label: 'RHB BANK STATEMENT',
+                label: 'STATEMENT DATA',
                 filter: { index: 4, type: 'numeric' }
             }
         ];
@@ -978,7 +1073,8 @@
 
             'PBB (Paymier)': ['OUTLET'], 'RHB (Paymier)': ['TAN'], 'RHB2 (Paymier)': ['XPOWER'], 'RHB3 (Paymier)': ['JT'], 'RHB4 (Paymier)': ['HL'],
             'RHB5 (Paymier)': ['DS'], 'RHB6 (Paymier)': ['ANGIE'], 'RHB7 (Paymier)': ['JH'], 'RHB8 (Paymier)': ['MG'],
-            'RHB9 (Paymier)': ['DAILY'], 'RHB10 (Paymier)': ['KSC'], 'RHB11 (Paymier)': ['HELMI'], 'RHB12 (Paymier)': ['HLT'], 'RHB13 (Paymier)': ['CC'], 'RHB14 (Paymier)': ['SC'], 'RHB15 (Paymier)': ['NG'], 'RHB16 (Paymier)': ['FF'], 'RHB17 (Paymier)': ['Nice'], 'RHB18 (Paymier)': ['WX']
+            'RHB9 (Paymier)': ['DAILY'], 'RHB10 (Paymier)': ['KSC'], 'RHB11 (Paymier)': ['HELMI'], 'RHB12 (Paymier)': ['HLT'], 'RHB13 (Paymier)': ['CC'], 'RHB14 (Paymier)': ['SC'], 'RHB15 (Paymier)': ['NG'], 'RHB16 (Paymier)': ['FF'], 'RHB17 (Paymier)': ['Nice'], 'RHB18 (Paymier)': ['WX'],
+            'RHB19 (Paymier)': ['LHW'], 'RHB20 (Paymier)': ['CS'], 'RHB21 (Paymier)': ['AA']
         };
 
         const toggleModal = (id, show, txnRef = null, currentValue = '') => {
@@ -1009,6 +1105,11 @@
             setRhbOverride(txnRef, value);
             toggleOverrideModal(false);
         };
+        const setNoMatchOverride = () => {
+            const txnRef = document.getElementById('modalTxnRefContext').value;
+            setRhbOverride(txnRef, UNMAPPED_KEY_SCRAP);
+            toggleOverrideModal(false);
+        };
         const setRhbOverride = (txnRef, value) => {
             const upperTxnRef = txnRef.toUpperCase();
             if (value && value.trim()) {
@@ -1027,14 +1128,27 @@
             const color = 'green';
             const row = document.createElement('div');
             row.id = `row-${id}`;
-            row.className = 'flex items-center space-x-2';
+            row.className = 'flex items-center space-x-2 bg-white/50 p-1 rounded-md border border-green-100 mapping-row';
             row.innerHTML = `
-                <input type="text" value="${initialKey}" placeholder="Prefix Keyword" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-key"/>
-                <input type="text" value="${initialValue}" placeholder="Category" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-sm mapping-value"/>
+                <input type="text" value="${initialKey}" placeholder="Prefix" class="w-1/3 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-xs mapping-key font-mono uppercase"/>
+                <input type="text" value="${initialValue}" placeholder="Category" class="flex-1 py-1.5 px-2 border border-${color}-300 rounded-md shadow-sm focus:ring-${color}-500 focus:border-${color}-500 sm:text-xs mapping-value"/>
                 <button type="button" onclick="if(confirm('Are you sure you want to delete this rule?')) document.getElementById('row-${id}').remove()" title="Remove mapping rule" class="text-red-500 hover:text-red-700 font-bold p-1 w-4 h-4 flex items-center justify-center transition duration-150">×</button>
             `;
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
+        };
+
+        // Helper to sort array into 2-column zig-zag order (column-major in row-major grid)
+        const interleaveArray = (arr) => {
+            const midpoint = Math.ceil(arr.length / 2);
+            const col1 = arr.slice(0, midpoint);
+            const col2 = arr.slice(midpoint);
+            const result = [];
+            for (let i = 0; i < midpoint; i++) {
+                if (col1[i]) result.push(col1[i]);
+                if (col2[i]) result.push(col2[i]);
+            }
+            return result;
         };
         const addMappingRow = (containerId) => createMappingRow(containerId);
         const readMappingInputs = (containerId) => {
@@ -1066,20 +1180,35 @@
 
         const loadSavedMappings = () => {
             const savedData = localStorage.getItem('rhbMappingData');
+            const rhbContainer = document.getElementById('rhbMappingRowsContainer');
+            rhbContainer.innerHTML = '';
+
             if (savedData) {
                 try {
                     const parsedData = JSON.parse(savedData);
-                    if (Object.keys(parsedData).length > 0) {
-                        // Use saved data if present
-                        const rhbContainer = document.getElementById('rhbMappingRowsContainer');
-                        rhbContainer.innerHTML = ''; // Clear default
+                    const currentMappingKeys = new Set(Object.keys(parsedData).map(k => k.toUpperCase()));
 
-                        // Sort by key length descending to preserve priority or just alphabetical
-                        Object.entries(parsedData).forEach(([key, value]) => {
-                            createMappingRow('rhbMappingRowsContainer', key, value);
+                    // --- AUTO-MERGE MISSING DEFAULTS ---
+                    // Check if any keys from INITIAL_RHB_MAPS are missing
+                    Object.keys(INITIAL_RHB_MAPS).forEach(category => {
+                        INITIAL_RHB_MAPS[category].forEach(key => {
+                            const upperKey = key.toUpperCase();
+                            if (!currentMappingKeys.has(upperKey)) {
+                                parsedData[key] = category;
+                            }
                         });
-                        return true;
-                    }
+                    });
+
+                    // Sort by Bank/Category name and interleave for 2-column display
+                    const entries = Object.entries(parsedData).sort((a, b) => {
+                        return a[1].localeCompare(b[1], undefined, { numeric: true, sensitivity: 'base' });
+                    });
+
+                    const interleaved = interleaveArray(entries);
+                    interleaved.forEach(([key, value]) => {
+                        createMappingRow('rhbMappingRowsContainer', key, value);
+                    });
+                    return true;
                 } catch (e) {
                     console.error("Failed to load saved mappings:", e);
                 }
@@ -1087,16 +1216,40 @@
             return false;
         };
 
+        const restoreDefaultMappings = () => {
+            if (confirm("This will replace your current bank mappings with the default rules. Continue?")) {
+                const rhbContainer = document.getElementById('rhbMappingRowsContainer');
+                rhbContainer.innerHTML = '';
+
+                const entries = [];
+                Object.keys(INITIAL_RHB_MAPS).forEach(category => {
+                    INITIAL_RHB_MAPS[category].forEach(key => entries.push([key, category]));
+                });
+
+                // Sort by Category name and interleave
+                entries.sort((a, b) => a[1].localeCompare(b[1], undefined, { numeric: true, sensitivity: 'base' }));
+
+                const interleaved = interleaveArray(entries);
+                interleaved.forEach(([key, value]) => {
+                    createMappingRow('rhbMappingRowsContainer', key, value);
+                });
+                document.getElementById('mappingStatus').textContent = "Defaults restored. Please click 'Apply Changes' to save.";
+            }
+        };
+
         const initializeMappingInputs = () => {
             // Try loading from local storage first
             if (!loadSavedMappings()) {
-                // Determine if we should use defaults or keep empty? 
-                // The original code reset to defaults every time. 
-                // Let's stick to defaults if nothing is saved.
                 const rhbContainer = document.getElementById('rhbMappingRowsContainer');
                 rhbContainer.innerHTML = '';
+                const entries = [];
                 Object.keys(INITIAL_RHB_MAPS).forEach(category => {
-                    INITIAL_RHB_MAPS[category].forEach(key => createMappingRow('rhbMappingRowsContainer', key, category));
+                    INITIAL_RHB_MAPS[category].forEach(key => entries.push([key, category]));
+                });
+                entries.sort((a, b) => a[1].localeCompare(b[1], undefined, { numeric: true, sensitivity: 'base' }));
+                const interleaved = interleaveArray(entries);
+                interleaved.forEach(([key, value]) => {
+                    createMappingRow('rhbMappingRowsContainer', key, value);
                 });
             }
         };
@@ -1247,43 +1400,44 @@
         };
 
         const updateFileSelector = () => {
-            const selector = document.getElementById('fileSelector');
-            const container = document.getElementById('selector-container');
-            selector.innerHTML = '<option value="" disabled selected>-- Select a loaded file --</option>';
+            const container = document.getElementById('view-switcher');
+            const selectorWrapper = document.getElementById('selector-container');
+            container.innerHTML = '';
             let loadedCount = 0;
+
+            const createViewBtn = (key, label) => {
+                const btn = document.createElement('button');
+                btn.className = `view-btn ${fileState.activeFile === key ? 'active' : ''}`;
+                btn.dataset.view = key;
+                btn.onclick = () => handleFileSwitch(key);
+                btn.title = label;
+
+                btn.innerHTML = `<span>${label}</span>`;
+                return btn;
+            };
+
             FILE_CONFIG.forEach(config => {
                 const state = fileState[config.key];
                 if (state.data) {
-                    const option = document.createElement('option');
-                    option.value = config.key;
-                    option.textContent = state.metadata ? state.metadata.name : config.label;
-                    selector.appendChild(option);
+                    const label = config.label;
+                    container.appendChild(createViewBtn(config.key, label));
                     loadedCount++;
                 }
             });
 
-            // Always add KEY SUMMURAY option
-            const rhbMapOption = document.createElement('option');
-            rhbMapOption.value = RHB_MAP_KEY;
-            rhbMapOption.textContent = 'KEY SUMMURAY';
-            selector.appendChild(rhbMapOption);
+            // Add KEY SUMMARY option
+            container.appendChild(createViewBtn(RHB_MAP_KEY, 'KEY SUMMARY'));
             loadedCount++;
 
-            // Always add CHECK UNMATCHED option
-            const reviewOption = document.createElement('option');
-            reviewOption.value = REVIEW_KEY;
-            reviewOption.textContent = 'CHECK UNMATCHED';
-            selector.appendChild(reviewOption);
+            // Add CHECK UNMATCHED option
+            container.appendChild(createViewBtn(REVIEW_KEY, 'CHECK UNMATCHED'));
             loadedCount++;
 
-            // Always add INTELLIGENT ANALYSIS option
-            const analysisOption = document.createElement('option');
-            analysisOption.value = ANALYSIS_KEY;
-            analysisOption.textContent = 'INTELLIGENT ANALYSIS';
-            selector.appendChild(analysisOption);
+            // Add ANALYSIS option
+            container.appendChild(createViewBtn(ANALYSIS_KEY, 'ANALYSIS'));
             loadedCount++;
 
-            container.classList.toggle('hidden', loadedCount === 0);
+            selectorWrapper.classList.toggle('hidden', loadedCount === 0);
         };
 
         const parseFile = (file) => new Promise((resolve, reject) => {
@@ -1330,9 +1484,19 @@
             }
             return { filteredRows, filterDescription };
         };
-        const handleFileSwitch = (event) => {
-            const fileKey = event.target.value;
+        const handleFileSwitch = (fileKey) => {
+            fileState.activeFile = fileKey;
             document.getElementById('searchQuery').value = searchState[fileKey] || '';
+
+            // Update button styles
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                if (btn.dataset.view === fileKey) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
             renderData(fileKey);
         };
 
@@ -1348,12 +1512,41 @@
                 return;
             }
             try {
+                let allFiles = [];
+
+                // Pre-process files to handle ZIPs
+                for (const file of files) {
+                    if (file.name.toLowerCase().endsWith('.zip')) {
+                        try {
+                            const zip = await JSZip.loadAsync(file);
+                            const zipFiles = [];
+                            zip.forEach((relativePath, zipEntry) => {
+                                if (!zipEntry.dir && (zipEntry.name.toLowerCase().endsWith('.csv') ||
+                                    zipEntry.name.toLowerCase().endsWith('.xlsx') ||
+                                    zipEntry.name.toLowerCase().endsWith('.xls'))) {
+                                    zipFiles.push(zipEntry);
+                                }
+                            });
+
+                            for (const zipEntry of zipFiles) {
+                                const content = await zipEntry.async('blob');
+                                const extractedFile = new File([content], zipEntry.name, { type: 'application/octet-stream' });
+                                allFiles.push(extractedFile);
+                            }
+                        } catch (zipError) {
+                            console.error('Error unzipping file:', file.name, zipError);
+                        }
+                    } else {
+                        allFiles.push(file);
+                    }
+                }
+
                 let aoaData = [];
-                if (fileKey === 'file3' && files.length > 0) {
-                    const results = await Promise.all(files.map(parseFile));
+                if (fileKey === 'file3' && allFiles.length > 0) {
+                    const results = await Promise.all(allFiles.map(parseFile));
                     if (results.length > 0 && results[0].length > 0) {
-                        aoaData.push(...results[0].slice(0, 1));
-                        results.forEach(data => aoaData.push(...data.slice(1)));
+                        aoaData.push(...results[0].slice(0, 1)); // Header
+                        results.forEach(data => aoaData.push(...data.slice(1))); // Data
                     }
                     if (aoaData.length > 1) {
                         const uniqueTxnRefs = new Set();
@@ -1366,29 +1559,28 @@
                             return false;
                         });
                         aoaData = [aoaData[0], ...uniqueDataRows];
-                        nameDisplay.textContent = `${uniqueDataRows.length} unique records from ${files.length} RHB file(s).`;
+                        nameDisplay.textContent = `${uniqueDataRows.length} unique records from ${allFiles.length} file(s).`;
                         fileState[fileKey].metadata = { name: ` RHB BANK STATEMENT` };
                     } else {
-                        nameDisplay.textContent = `RHB file(s) loaded.`;
-                        fileState[fileKey].metadata = { name: `RHB Files (Combined)` };
+                        nameDisplay.textContent = `Statement file(s) loaded.`;
+                        fileState[fileKey].metadata = { name: `Statements (Combined)` };
                     }
                 } else {
-                    aoaData = await parseFile(files[0]);
-                    fileState[fileKey].name = files[0].name;
-                    nameDisplay.textContent = files[0].name;
-                    fileState[fileKey].metadata = { name: files[0].name };
+                    if (allFiles.length > 0) {
+                        aoaData = await parseFile(allFiles[0]);
+                        fileState[fileKey].name = allFiles[0].name;
+                        nameDisplay.textContent = allFiles[0].name;
+                        fileState[fileKey].metadata = { name: allFiles[0].name };
+                    }
                 }
                 fileState[fileKey].data = aoaData;
                 updateFileSelector();
-                document.getElementById('fileSelector').value = fileKey;
-                document.getElementById('searchQuery').value = searchState[fileKey] || '';
-                renderData(fileKey);
+                handleFileSwitch(fileKey);
             } catch (error) {
                 console.error(`Error processing file(s) for ${slotName}:`, error);
                 nameDisplay.textContent = `Error loading file(s)!`;
                 fileState[fileKey].data = null;
                 updateFileSelector();
-                document.getElementById('fileSelector').value = '';
                 renderData(null);
             }
         }
@@ -1830,7 +2022,13 @@
 
         const getEffectiveScrapRef = (rhbTxnRef, scrapLookupMap, isScrapLookupActive) => {
             const currentOverride = rhbScrapOverrideMap[rhbTxnRef] || '';
-            if (currentOverride) return currentOverride.toUpperCase();
+            if (currentOverride) {
+                // If the override is 'No Match' (case insensitive), return the standard constant
+                if (currentOverride.trim().toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase()) {
+                    return UNMAPPED_KEY_SCRAP;
+                }
+                return currentOverride.trim().toUpperCase();
+            }
             if (isScrapLookupActive) return scrapLookupMap[rhbTxnRef] || UNMAPPED_KEY_SCRAP;
             return 'Requires Scrap File';
         };
@@ -2374,7 +2572,7 @@
             dataTableContainer.innerHTML = '';
             noFileMessage.classList.remove('hidden');
             const isRHBMapSummary = fileKey === RHB_MAP_KEY;
-            const isRHBView = fileKey === RHB_MAP_KEY;
+            const isRHBView = fileKey === 'file3';
             const isReviewView = fileKey === REVIEW_KEY;
             const isAnalysisView = fileKey === ANALYSIS_KEY;
 
@@ -2510,7 +2708,8 @@
                         const noMatchRowsWithScrapCol1 = noMatchRows.map(row => {
                             const rhbTxnRef = String(row[1] || '').trim().toUpperCase();
                             const scrapCol1Value = getScrapCol1Value(rhbTxnRef);
-                            return [scrapCol1Value, ...row];
+                            // Only include first 5 columns from row (Date & Time, Transaction Reference Number, -, Outlet Name, Amount)
+                            return [scrapCol1Value, row[0], row[1], row[2], row[3], row[4]];
                         });
 
                         // Update header to include the new first column
@@ -2520,12 +2719,7 @@
                             'Transaction Reference Number',
                             '-',
                             'Outlet Name',
-                            'Amount',
-                            'Collection Account',
-                            'Refund Status',
-                            'Refund Date & Time',
-                            'Payment Mode',
-                            'Transaction ID'
+                            'Amount'
                         ];
 
                         const unclaimedAoA = [unclaimedHeader, ...noMatchRowsWithScrapCol1];
@@ -2600,14 +2794,13 @@
                 const paginatedRows = getPaginatedRows(processedRows, currentPage);
                 const totalFiltered = processedRows.length;
 
-                const finalHeaderRow = ['Date & Time', 'Transaction Reference Number', '-', 'Outlet Name', 'Amount', 'Collection Account', 'Refund Status', 'Refund Date & Time', 'Payment Mode', 'Bank Mapping', 'Transaction ID', 'Edit'];
+                const finalHeaderRow = ['Edit', 'Date & Time', 'Transaction Reference Number', '-', 'Outlet Name', 'Amount', 'Bank Mapping', 'Transaction ID'];
                 const headerHtml = finalHeaderRow.map(h => `<th class="px-4 py-2 whitespace-nowrap">${h}</th>`).join('');
                 const tableRowsHtml = paginatedRows.map(item => {
                     const { data: row, txnRef, effectiveRef, rhbMapCategory } = item;
-                    const isUnmapped = isScrapLookupActive && (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef === '') && !rhbScrapOverrideMap[txnRef];
+                    const isUnmapped = isScrapLookupActive && (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef === '');
                     const currentOverride = rhbScrapOverrideMap[txnRef] || '';
                     const rowClasses = isUnmapped ? 'unmapped-row' : "bg-white border-b border-gray-100 hover:bg-gray-50";
-                    const rowOnClick = isUnmapped ? `onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"` : "";
                     const dateSerial = row[0];
                     let formattedDate = '';
                     if (typeof dateSerial === 'number' && dateSerial > 1) {
@@ -2619,21 +2812,26 @@
                     } else {
                         formattedDate = String(dateSerial);
                     }
-                    let rowHtml = `<tr ${rowOnClick} class="${rowClasses}">`;
-                    row.slice(0, 9).forEach((cell, index) => {
-                        rowHtml += `<td class="px-4 py-2 whitespace-nowrap">${index === 0 ? formattedDate : cell}</td>`;
-                    });
-                    const mappingClass = rhbMapCategory === UNMAPPED_RHB_KEY ? 'text-red-600 font-bold' : 'text-green-700';
-                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap ${mappingClass}">${rhbMapCategory}</td>`;
-                    const overrideClass = (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef.toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase()) ? 'text-red-600 font-bold' : 'text-gray-700';
-                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-xs font-semibold ${overrideClass}">${effectiveRef}</td>`;
+
+                    let rowHtml = `<tr class="${rowClasses}">`;
+                    // Edit button first
                     rowHtml += `<td class="px-2 py-1 whitespace-nowrap text-center">
                         <button onclick="event.stopPropagation(); toggleOverrideModal(true, '${txnRef}', '${currentOverride}')"
                                 title="Edit Override for ${txnRef}"
                                 class="p-1.5 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 transition duration-150 shadow-md">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                    </td></tr>`;
+                    </td>`;
+
+                    // Date & Time (0), Txn Ref (1), - (2), Outlet Name (3), Amount (4)
+                    row.slice(0, 5).forEach((cell, index) => {
+                        rowHtml += `<td class="px-4 py-2 whitespace-nowrap">${index === 0 ? formattedDate : cell}</td>`;
+                    });
+                    const mappingClass = rhbMapCategory === UNMAPPED_RHB_KEY ? 'text-red-600 font-bold' : 'text-green-700';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap ${mappingClass}">${rhbMapCategory}</td>`;
+                    const overrideClass = (effectiveRef === UNMAPPED_KEY_SCRAP || effectiveRef.toUpperCase() === UNMAPPED_KEY_SCRAP.toUpperCase()) ? 'text-red-600 font-bold' : 'text-gray-700';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-xs font-semibold ${overrideClass}">${effectiveRef}</td>`;
+                    rowHtml += `</tr>`;
                     return rowHtml;
                 }).join('');
                 const htmlContent = `<table id="sheet-data-table" class="w-full text-sm text-left rtl:text-right text-gray-700 divide-y divide-gray-300 rounded-lg overflow-hidden shadow-md"><thead><tr class="bg-green-50 border-b border-gray-300 text-green-700 uppercase font-semibold text-xs sticky top-0 shadow-sm">${headerHtml}</tr></thead><tbody>${tableRowsHtml}</tbody></table>`;
@@ -2645,11 +2843,9 @@
                 const table = document.getElementById('sheet-data-table');
                 if (table) {
                     table.querySelectorAll('tr').forEach(row => {
-                        if (row.cells.length > 11) {
-                            row.cells[10].style.minWidth = '120px';
-                            row.cells[11].classList.remove('text-left');
-                            row.cells[11].classList.add('text-center');
-                            row.cells[11].style.minWidth = '50px';
+                        if (row.cells.length > 7) {
+                            row.cells[0].style.minWidth = '50px';
+                            row.cells[7].style.minWidth = '120px';
                         }
                     });
                 }
@@ -3090,20 +3286,18 @@
             let totalVolume = 0;
             let totalTransactions = 0;
 
-            // Get Bank Summary data using the existing function
+            // Process Bank Data for Bank Distribution (file3)
             if (fileState.file3.data) {
                 const bankSummary = generateRHBMappingSummary(fileState.file3.data);
 
-                // Parse the bank summary data (skip header and grand total rows)
-                const bankData = bankSummary.data.slice(1, -2); // Skip header and last 2 rows (blank + grand total)
+                // Parse individual bank totals (skip header, blank rows, and GRAND TOTAL)
+                bankSummary.data.forEach((row, idx) => {
+                    if (idx === 0 || row[0] === 'GRAND TOTAL' || !row[0]) return;
 
-                bankData.forEach(row => {
-                    const bankName = row[0]; // Bank name
-                    const amount = parseFloat(row[1]); // Total Amount
-
+                    const bankName = row[0];
+                    const amount = parseFloat(row[1]);
                     if (!isNaN(amount) && amount > 0) {
                         bankTotals[bankName] = amount;
-                        totalVolume += amount;
                     }
                 });
 
@@ -3133,10 +3327,17 @@
                 });
             }
 
-            // Process Deposit Data for Merchant Analysis (file2)
+            // Process Deposit Data for Merchant Analysis & Total Volume (file2)
             if (fileState.file2.data) {
-                const depositRows = fileState.file2.data.slice(1);
+                const depositSummary = generateDepositSummary(fileState.file2.data);
 
+                // Set totalVolume from Deposit Summary's Grand Total
+                const grandTotalRow = depositSummary.data.find(row => row[0] === 'GRAND TOTAL');
+                if (grandTotalRow) {
+                    totalVolume = parseFloat(grandTotalRow[2]) || 0;
+                }
+
+                const depositRows = fileState.file2.data.slice(1);
                 depositRows.forEach(row => {
                     const status = String(row[DEPOSIT_COLUMNS.STATUS] || '').trim().toUpperCase();
                     const amount = parseFloat(row[DEPOSIT_COLUMNS.AMOUNT_RM] || 0);
@@ -3369,12 +3570,10 @@
             raindrops = [];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             canvas.style.display = 'none';
-            document.body.classList.remove('dark-mode', 'cyber-mode', 'stars-active');
+            document.body.classList.remove('dark-mode', 'cyber-mode');
 
             // Apply new mode
-            if (mode === 'dark') {
-                document.body.classList.add('dark-mode', 'stars-active');
-            } else if (mode === 'rain') {
+            if (mode === 'rain') {
                 document.body.classList.add('dark-mode');
                 isRaining = true;
                 canvas.style.display = 'block';
@@ -3386,45 +3585,7 @@
 
             // Save to localStorage
             localStorage.setItem('paymier_theme', mode);
-
-            // Manage Stars (Only for standard Dark Mode)
-            if (mode === 'dark') {
-                generateStars();
-            } else {
-                clearStars();
-            }
         };
-
-        // NEW: Function to generate random stars
-        function generateStars() {
-            clearStars(); // Clear existing first
-            const container = document.getElementById('star-container');
-            if (!container) return;
-
-            const starCount = 150; // Number of stars
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-
-                // Random Position
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                star.style.left = `${x}vw`;
-                star.style.top = `${y}vh`;
-
-                // Random Size (1px to 3px)
-                const size = Math.random() * 2 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-
-                // Random Animation Duration and Delay
-                const duration = Math.random() * 3 + 2; // 2s to 5s
-                const delay = Math.random() * 5; // 0s to 5s
-
-                star.style.animation = `twinkle-anim ${duration}s infinite ease-in-out ${delay}s`;
-                container.appendChild(star);
-            }
-        }
 
         // Copy table to clipboard with visual feedback and custom formatting
         function copyTable(tableId) {
@@ -3605,10 +3766,6 @@
             document.body.removeChild(tempDiv);
         }
 
-        function clearStars() {
-            const container = document.getElementById('star-container');
-            if (container) container.innerHTML = '';
-        }
 
         window.onload = () => {
             // Load saved theme
@@ -3628,4 +3785,3 @@
 </body>
 
 </html>
-
