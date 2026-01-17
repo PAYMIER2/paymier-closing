@@ -65,6 +65,30 @@
             transform: scale(1.005);
         }
 
+        /* Dark Mode Unmapped Row - Distinct color from regular rows - High specificity */
+        body.dark-mode #sheet-data-table tbody tr.unmapped-row,
+        body.dark-mode .unmapped-row {
+            background-color: #4c1d24 !important;
+            /* Dark burgundy/maroon - distinct from slate gray regular rows */
+            border-color: #7f1d1d !important;
+            box-shadow: 0 1px 3px 0 rgba(153, 27, 27, 0.5), 0 1px 2px 0 rgba(153, 27, 27, 0.4) !important;
+            color: #fca5a5 !important;
+            /* Light pink text for visibility */
+        }
+
+        body.dark-mode #sheet-data-table tbody tr.unmapped-row:hover,
+        body.dark-mode .unmapped-row:hover {
+            background-color: #5a242d !important;
+            /* Slightly lighter on hover */
+        }
+
+        body.dark-mode #sheet-data-table tbody tr.unmapped-row td,
+        body.dark-mode .unmapped-row td {
+            color: #fca5a5 !important;
+            /* Ensure all cells in unmapped row have visible text */
+            background-color: inherit !important;
+        }
+
         table {
             table-layout: auto !important;
             width: 100%;
@@ -465,6 +489,35 @@
             border-color: #334155 !important;
         }
 
+        /* Fix table row backgrounds in dark mode */
+        body.dark-mode tr.bg-white {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode tr.bg-white td {
+            color: #cbd5e1 !important;
+        }
+
+        /* Ensure all table data cells have proper contrast in dark mode - exclude unmapped rows */
+        body.dark-mode #sheet-data-table tbody tr:not(.unmapped-row) {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        body.dark-mode #sheet-data-table tbody tr:not(.unmapped-row) td {
+            color: #cbd5e1 !important;
+        }
+
+        /* Fix alternating row colors for better visibility - exclude unmapped-row */
+        body.dark-mode #sheet-data-table tbody tr:nth-child(even):not(.unmapped-row) {
+            background-color: #1e293b !important;
+        }
+
+        body.dark-mode #sheet-data-table tbody tr:nth-child(odd):not(.unmapped-row) {
+            background-color: #0f172a !important;
+        }
+
         /* Fix table header white background */
         body.dark-mode thead,
         body.dark-mode thead tr,
@@ -488,11 +541,12 @@
         body.dark-mode .text-rose-700,
         body.dark-mode .text-rose-600,
         body.dark-mode .text-red-800,
-        body.dark-mode .text-red-700 {
-            color: #e2e8f0 !important;
-            /* Standard light text */
+        body.dark-mode .text-red-700,
+        body.dark-mode .text-red-600 {
+            color: #fca5a5 !important;
+            /* Light red/pink for visibility in dark mode */
             font-weight: 700;
-            /* Keep it bold to stand out as a header */
+            /* Keep it bold to stand out */
         }
 
         /* Fix stray white backgrounds and headers */
@@ -1603,11 +1657,25 @@
 
                 let bankMappingResult = 'N/A';
                 let bestMatchLength = -1;
+                let bestMatchIndex = Infinity;
+                const sortedEntries = [...rhbMappingEntries].sort((a, b) => {
+                    // Sort by length (longest first), then alphabetically by key
+                    const lenDiff = b[0].length - a[0].length;
+                    if (lenDiff !== 0) return lenDiff;
+                    return a[0].localeCompare(b[0]);
+                });
 
-                for (const [key, value] of rhbMappingEntries) {
-                    if (bankCodeValue.includes(key) && key.length > bestMatchLength) {
-                        bestMatchLength = key.length;
-                        bankMappingResult = value;
+                for (const [key, value] of sortedEntries) {
+                    const normalizedKey = String(key || '').trim().toUpperCase();
+                    if (bankCodeValue && normalizedKey && bankCodeValue.includes(normalizedKey)) {
+                        const matchIndex = bankCodeValue.indexOf(normalizedKey);
+                        // Prioritize: longer matches first, then earlier position in string
+                        if (normalizedKey.length > bestMatchLength || 
+                            (normalizedKey.length === bestMatchLength && matchIndex < bestMatchIndex)) {
+                            bestMatchLength = normalizedKey.length;
+                            bestMatchIndex = matchIndex;
+                            bankMappingResult = value;
+                        }
                     }
                 }
 
@@ -1814,11 +1882,25 @@
                 const bankcodeValue = String(row[BANKCODE_COLUMN_INDEX] || '').trim().toUpperCase();
                 let paymierBank = 'N/A';
                 let bestMatchLength = -1;
+                let bestMatchIndex = Infinity;
+                const sortedEntries = [...rhbMappingEntries].sort((a, b) => {
+                    // Sort by length (longest first), then alphabetically by key
+                    const lenDiff = b[0].length - a[0].length;
+                    if (lenDiff !== 0) return lenDiff;
+                    return a[0].localeCompare(b[0]);
+                });
 
-                for (const [key, value] of rhbMappingEntries) {
-                    if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
-                        bestMatchLength = key.length;
-                        paymierBank = value;
+                for (const [key, value] of sortedEntries) {
+                    const normalizedKey = String(key || '').trim().toUpperCase();
+                    if (bankcodeValue && normalizedKey && bankcodeValue.includes(normalizedKey)) {
+                        const matchIndex = bankcodeValue.indexOf(normalizedKey);
+                        // Prioritize: longer matches first, then earlier position in string
+                        if (normalizedKey.length > bestMatchLength || 
+                            (normalizedKey.length === bestMatchLength && matchIndex < bestMatchIndex)) {
+                            bestMatchLength = normalizedKey.length;
+                            bestMatchIndex = matchIndex;
+                            paymierBank = value;
+                        }
                     }
                 }
 
@@ -1921,11 +2003,25 @@
                     const bankcodeValue = String(row[SCRAP_COLUMNS.BANKCODE] || '').trim().toUpperCase();
                     let paymierBankResult = 'N/A';
                     let bestMatchLength = -1;
+                    let bestMatchIndex = Infinity;
+                    const sortedEntries = [...rhbMappingEntries].sort((a, b) => {
+                        // Sort by length (longest first), then alphabetically by key
+                        const lenDiff = b[0].length - a[0].length;
+                        if (lenDiff !== 0) return lenDiff;
+                        return a[0].localeCompare(b[0]);
+                    });
 
-                    for (const [key, value] of rhbMappingEntries) {
-                        if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
-                            bestMatchLength = key.length;
-                            paymierBankResult = value;
+                    for (const [key, value] of sortedEntries) {
+                        const normalizedKey = String(key || '').trim().toUpperCase();
+                        if (bankcodeValue && normalizedKey && bankcodeValue.includes(normalizedKey)) {
+                            const matchIndex = bankcodeValue.indexOf(normalizedKey);
+                            // Prioritize: longer matches first, then earlier position in string
+                            if (normalizedKey.length > bestMatchLength || 
+                                (normalizedKey.length === bestMatchLength && matchIndex < bestMatchIndex)) {
+                                bestMatchLength = normalizedKey.length;
+                                bestMatchIndex = matchIndex;
+                                paymierBankResult = value;
+                            }
                         }
                     }
 
@@ -2892,15 +2988,28 @@
                             }
                         }
 
-                        const bankcodeValue = String(row[DEPOSIT_COLUMNS.BANKCODE] || '').trim().toUpperCase();
+                        const bankcodeValue = String(newRow[DEPOSIT_COLUMNS.BANKCODE] || '').trim().toUpperCase();
                         let bankMappingResult = 'N/A';
                         let bestMatchLength = -1;
-                        const rhbMappingEntries = Object.entries(rhbMappingData);
+                        let bestMatchIndex = Infinity;
+                        const rhbMappingEntries = Object.entries(rhbMappingData).sort((a, b) => {
+                            // Sort by length (longest first), then alphabetically by key
+                            const lenDiff = b[0].length - a[0].length;
+                            if (lenDiff !== 0) return lenDiff;
+                            return a[0].localeCompare(b[0]);
+                        });
 
                         for (const [key, value] of rhbMappingEntries) {
-                            if (bankcodeValue.includes(key) && key.length > bestMatchLength) {
-                                bestMatchLength = key.length;
-                                bankMappingResult = value;
+                            const normalizedKey = String(key || '').trim().toUpperCase();
+                            if (bankcodeValue && normalizedKey && bankcodeValue.includes(normalizedKey)) {
+                                const matchIndex = bankcodeValue.indexOf(normalizedKey);
+                                // Prioritize: longer matches first, then earlier position in string
+                                if (normalizedKey.length > bestMatchLength || 
+                                    (normalizedKey.length === bestMatchLength && matchIndex < bestMatchIndex)) {
+                                    bestMatchLength = normalizedKey.length;
+                                    bestMatchIndex = matchIndex;
+                                    bankMappingResult = value;
+                                }
                             }
                         }
 
