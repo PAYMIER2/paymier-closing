@@ -323,6 +323,14 @@
             transform: scale(1.1);
         }
 
+        .check-cross-btn .icon-unchecked {
+            color: #dc2626 !important;
+        }
+
+        .check-cross-btn .icon-checked {
+            color: #16a34a !important;
+        }
+
         /* --- Dark Mode Styles --- */
         body.dark-mode {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -428,6 +436,14 @@
             color: inherit;
         }
 
+        body.dark-mode .check-cross-btn .icon-unchecked {
+            color: #fecaca !important;
+        }
+
+        body.dark-mode .check-cross-btn .icon-checked {
+            color: #bbf7d0 !important;
+        }
+
         body.dark-mode button.text-gray-500:hover {
             color: #f1f5f9 !important;
             background-color: #334155;
@@ -507,6 +523,32 @@
 
         body.dark-mode #sheet-data-table tbody tr:not(.unmapped-row) td {
             color: #cbd5e1 !important;
+        }
+
+        /* Keep status cells readable in rain/dark mode */
+        body.dark-mode #sheet-data-table td.bg-yellow-100 {
+            background-color: #78350f !important;
+            color: #fef3c7 !important;
+            font-weight: 700;
+        }
+
+        body.dark-mode #sheet-data-table td.bg-red-100,
+        body.dark-mode #sheet-data-table td.bg-rose-100 {
+            background-color: #7f1d1d !important;
+            color: #fee2e2 !important;
+            font-weight: 700;
+        }
+
+        body.dark-mode #sheet-data-table td.bg-green-100 {
+            background-color: #14532d !important;
+            color: #dcfce7 !important;
+            font-weight: 700;
+        }
+
+        body.dark-mode #sheet-data-table td.bg-gray-50 {
+            background-color: #334155 !important;
+            color: #f1f5f9 !important;
+            font-weight: 700;
         }
 
         /* Fix alternating row colors for better visibility - exclude unmapped-row */
@@ -681,6 +723,63 @@
         body.cyber-mode .text-green-600 {
             color: #f0f !important;
             text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+        }
+
+        /* High-contrast status text (works in rain/dark mode too) */
+        #sheet-data-table td.status-cell.status-duplicate {
+            background-color: #fef9c3 !important;
+            color: #000000 !important;
+            font-weight: 700;
+        }
+
+        #sheet-data-table td.status-cell.status-not-in-statement,
+        #sheet-data-table td.status-cell.status-not-in-rhb,
+        #sheet-data-table td.status-cell.status-not-in-deposit,
+        #sheet-data-table td.status-cell.status-failed {
+            background-color: #ffffff !important;
+            color: #dc2626 !important;
+            font-weight: 700;
+        }
+
+        #sheet-data-table td.status-cell.status-success {
+            color: #166534 !important;
+            font-weight: 700;
+        }
+
+        body.dark-mode #sheet-data-table td.status-cell.status-duplicate {
+            background-color: #fef9c3 !important;
+            color: #000000 !important;
+        }
+
+        body.dark-mode #sheet-data-table td.status-cell.status-not-in-statement,
+        body.dark-mode #sheet-data-table td.status-cell.status-not-in-rhb,
+        body.dark-mode #sheet-data-table td.status-cell.status-not-in-deposit,
+        body.dark-mode #sheet-data-table td.status-cell.status-failed {
+            background-color: #ffffff !important;
+            color: #dc2626 !important;
+        }
+
+        body.dark-mode #sheet-data-table td.status-cell.status-success {
+            color: #bbf7d0 !important;
+        }
+
+        /* Keep STATUS text consistent in rain/dark mode */
+        body.dark-mode #sheet-data-table tbody tr td.status-cell,
+        body.dark-mode #scrap-review-table tbody tr td.status-cell {
+            opacity: 1 !important;
+            font-weight: 700 !important;
+        }
+
+        body.dark-mode #sheet-data-table tbody tr td.status-cell.status-duplicate,
+        body.dark-mode #scrap-review-table tbody tr td.status-cell.status-duplicate {
+            background-color: #fef9c3 !important;
+            color: #000000 !important;
+        }
+
+        body.dark-mode #sheet-data-table tbody tr td.status-cell.status-not-in-statement,
+        body.dark-mode #scrap-review-table tbody tr td.status-cell.status-not-in-statement {
+            background-color: #ffffff !important;
+            color: #dc2626 !important;
         }
 
         /* --- HELLO KITTY MODE --- */
@@ -990,7 +1089,7 @@
                 </button>
                 <button onclick="setNoMatchOverride()"
                     class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
-                    Set to No Match
+                    Set to Unclaim
                 </button>
                 <button onclick="toggleOverrideModal(false)"
                     class="py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition duration-300 shadow-md">
@@ -1009,7 +1108,7 @@
         const RHB_MAP_KEY = 'rhb-map';
         const REVIEW_KEY = 'review-data';
         const ANALYSIS_KEY = 'analysis-dashboard'; // New Key for Analysis Dashboard
-        const UNMAPPED_KEY_SCRAP = 'No Match';
+        const UNMAPPED_KEY_SCRAP = 'Unclaim';
         const UNMAPPED_RHB_KEY = 'N/A (No Prefix Match)';
 
         // UPDATED: File configuration with new column structures
@@ -1129,7 +1228,8 @@
             'RHB5 (Paymier)': ['DS'], 'RHB6 (Paymier)': ['ANGIE'], 'RHB7 (Paymier)': ['JH'], 'RHB8 (Paymier)': ['MG'],
             'RHB9 (Paymier)': ['DAILY'], 'RHB10 (Paymier)': ['KSC'], 'RHB11 (Paymier)': ['HELMI'], 'RHB12 (Paymier)': ['HLT'], 'RHB13 (Paymier)': ['CC'], 'RHB14 (Paymier)': ['SC'], 'RHB15 (Paymier)': ['NG'], 'RHB16 (Paymier)': ['FF'], 'RHB17 (Paymier)': ['Nice'], 'RHB18 (Paymier)': ['WX'],
             'RHB19 (Paymier)': ['LHW'], 'RHB20 (Paymier)': ['CS'], 'RHB21 (Paymier)': ['AA'], 'RHB22 (Paymier)': ['SERI'],
-            'RHB23 (Paymier)': ['AHHOME'], 'RHB24 (Paymier)': ['onezero']
+            'RHB23 (Paymier)': ['AHHOME'], 'RHB24 (Paymier)': ['onezero'], 'RHB25 (Paymier)': ['ALIGNIFY'], 'RHB26 (Paymier)': ['MODISH'],
+            'RHB27 (Paymier)': ['EUPHORIA'], 'RHB28 (Paymier)': ['PRISM']
         };
 
         const toggleModal = (id, show, txnRef = null, currentValue = '') => {
@@ -1349,8 +1449,8 @@
                 const button = row.querySelector('.check-cross-btn');
                 if (button) {
                     const iconHtml = isChecked
-                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
-                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                        ? `<svg class="w-6 h-6 icon-checked" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                        : `<svg class="w-6 h-6 icon-unchecked" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
                     button.innerHTML = iconHtml;
                 }
             }
@@ -1398,6 +1498,28 @@
 
             // NEW: Save filter dropdown state
             filterDropdownState.expanded = content.classList.contains('expanded');
+        };
+
+        // Format numeric/scientific transaction IDs into plain digit text for display.
+        const formatTransactionIdForDisplay = (value) => {
+            if (value === null || value === undefined) return '';
+
+            if (typeof value === 'number' && Number.isFinite(value)) {
+                return Math.trunc(value).toLocaleString('fullwide', { useGrouping: false });
+            }
+
+            const text = String(value).trim();
+            if (!text) return '';
+
+            const scientificPattern = /^[+-]?\d+(\.\d+)?e[+-]?\d+$/i;
+            if (scientificPattern.test(text)) {
+                const parsed = Number(text);
+                if (Number.isFinite(parsed)) {
+                    return Math.trunc(parsed).toLocaleString('fullwide', { useGrouping: false });
+                }
+            }
+
+            return text;
         };
 
         // NEW: Function to handle rows per page change
@@ -1747,7 +1869,7 @@
                 grandTotal += amount;
             });
 
-            let summaryAoA = [['Bank', 'Total Amount', 'No Match Total']];
+            let summaryAoA = [['Bank', 'Total Amount', 'Total Unclaim']];
 
             Array.from(mappedCategories.keys())
                 .sort((a, b) => {
@@ -1841,8 +1963,9 @@
 
         const generateScrapUnmatchedSummary = () => {
             const scrapData = fileState.file1.data;
+            const statementData = fileState.file3.data;
 
-            if (!scrapData || scrapData.length <= 1) {
+            if (!scrapData || scrapData.length <= 1 || !statementData || statementData.length <= 1) {
                 return {
                     data: [],
                     header: [],
@@ -1854,27 +1977,50 @@
             const headerRow = scrapData[0];
             const scrapRows = scrapData.slice(1);
 
-            const DUPLICATE_COLUMN_INDEX = 9;   // Column 10 (Remarks / duplicate key)
+            const SCRAP_COL10_INDEX = 9;         // Column 10 from Scrap Data
             const BANKCODE_COLUMN_INDEX = 8;    // Bankcode
             const TRANSACTION_ID_COLUMN = 7;    // Transaction ID
             const STATUS_COLUMN = 11;           // ✅ FIXED Status column
+            const STATEMENT_TXN_REF_INDEX = 1;  // Transaction Reference Number in Statement Data
 
-            // Count duplicates
+            // Count duplicates in Scrap column 10
             const valueCountMap = {};
             scrapRows.forEach(row => {
-                const value = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
+                const value = String(row[SCRAP_COL10_INDEX] || '').trim().toUpperCase();
                 if (value) valueCountMap[value] = (valueCountMap[value] || 0) + 1;
             });
 
+            // Build a fast lookup set from Statement Transaction Reference Number
+            const statementTxnRefSet = new Set(
+                statementData
+                    .slice(1)
+                    .map(row => String(row[STATEMENT_TXN_REF_INDEX] || '').trim().toUpperCase())
+                    .filter(Boolean)
+            );
+
             const rhbMappingEntries = Object.entries(rhbMappingData);
-            const duplicateRows = [];
+            const unmatchedRows = [];
 
             scrapRows.forEach((row, index) => {
-                const duplicateValue = String(row[DUPLICATE_COLUMN_INDEX] || '').trim().toUpperCase();
-                if (!duplicateValue || valueCountMap[duplicateValue] <= 1) return;
+                const scrapCol10Value = String(row[SCRAP_COL10_INDEX] || '').trim().toUpperCase();
+                if (!scrapCol10Value) return;
+                const isDuplicate = (valueCountMap[scrapCol10Value] || 0) > 1;
+                const notFoundInStatement = !statementTxnRefSet.has(scrapCol10Value);
 
-                // ✅ Get STATUS correctly
-                const status = String(row[STATUS_COLUMN] || 'DUPLICATE').trim().toUpperCase();
+                // Combine both rules:
+                // 1) duplicates in Scrap col 10, OR
+                // 2) Scrap col 10 not found in Statement Transaction Reference Number
+                if (!isDuplicate && !notFoundInStatement) return;
+
+                // Set status based on combined review rules
+                let status = '';
+                if (isDuplicate && notFoundInStatement) {
+                    status = 'DUPLICATE + NOT IN STATEMENT';
+                } else if (isDuplicate) {
+                    status = 'DUPLICATE';
+                } else {
+                    status = 'NOT IN STATEMENT';
+                }
 
                 // ✅ APPLY STATUS FILTER (FAILED / SUCCESS)
                 if (
@@ -1913,25 +2059,25 @@
                 const rawId = String(row[TRANSACTION_ID_COLUMN] || '').trim().toUpperCase();
                 const transactionId = rawId.replace(/[^A-Z0-9]/g, '');
 
-                duplicateRows.push({
+                unmatchedRows.push({
                     data: row,
                     status,
                     type: 'Scrap',
                     paymierBank,
                     transactionId,
-                    duplicateValue,
+                    duplicateValue: scrapCol10Value,
                     originalIndex: index
                 });
             });
 
-            duplicateRows.sort((a, b) => {
+            unmatchedRows.sort((a, b) => {
                 const cmp = a.duplicateValue.localeCompare(b.duplicateValue);
                 if (cmp !== 0) return cmp;
                 return a.originalIndex - b.originalIndex;
             });
 
             return {
-                data: duplicateRows.map(item => ({
+                data: unmatchedRows.map(item => ({
                     data: item.data,
                     status: item.status,
                     type: 'Scrap',
@@ -1946,7 +2092,7 @@
                     'Type'
                 ],
                 title: 'SCRAP RECORDS FOR REVIEW',
-                totalRows: duplicateRows.length
+                totalRows: unmatchedRows.length
             };
         };
 
@@ -2442,18 +2588,24 @@
                 // STATUS column
                 const statusTd = document.createElement('td');
                 let statusClass = 'bg-gray-50 text-gray-800';
+                let statusTagClass = '';
 
                 if (status.includes('FAILED')) {
                     statusClass = 'bg-red-100 text-red-800';
+                    statusTagClass = 'status-failed';
                 } else if (status.includes('SUCCESS')) {
                     statusClass = 'bg-green-100 text-green-800';
+                    statusTagClass = 'status-success';
                 } else if (status.includes('DUPLICATE')) {
                     statusClass = 'bg-yellow-100 text-yellow-800';
+                    statusTagClass = 'status-duplicate';
                 } else if (status.includes('NOT IN')) {
                     statusClass = 'bg-red-100 text-red-800';
+                    statusTagClass = status.includes('STATEMENT') ? 'status-not-in-statement' :
+                        status.includes('RHB') ? 'status-not-in-rhb' : 'status-not-in-deposit';
                 }
 
-                statusTd.className = `px-4 py-2 text-center ${statusClass}`;
+                statusTd.className = `px-4 py-2 text-center status-cell ${statusTagClass} ${statusClass}`;
                 statusTd.textContent = status;
                 tr.appendChild(statusTd);
 
@@ -2486,10 +2638,10 @@
                     };
 
                     btn.innerHTML = isChecked
-                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ? `<svg class="w-6 h-6 icon-checked" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                    </svg>`
-                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        : `<svg class="w-6 h-6 icon-unchecked" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                    </svg>`;
 
@@ -2560,12 +2712,12 @@
             }
 
             const tableRowsHtml = paginatedRows.map((item, index) => {
-                const { data: row, status, type: itemType, paymierBank } = item;
+                const { data: row, status, type: itemType, paymierBank, duplicateValue = '' } = item;
 
                 // Different rendering logic for Scrap vs Deposit
                 if (type === 'Scrap') {
-                    // Create a unique key based on row data for Scrap using new Transaction ID column
-                    const uniqueKey = `scrap_${row[SCRAP_COLUMNS.TRANSACTION_ID]}_${status}_${paymierBank}`;
+                    // Use the same stable key format as review table-only renderer
+                    const uniqueKey = `scrap_${row[SCRAP_COLUMNS.TRANSACTION_ID]}_${status}_${paymierBank}_${duplicateValue}`;
                     const isChecked = scrapCheckState[uniqueKey] === true;
 
                     // Add green background for checked rows (only for Scrap)
@@ -2585,13 +2737,22 @@
                     rowHtml += dataCells;
 
                     const statusValue = status || '';
-                    const statusClass = status === 'Duplicate' ? 'bg-yellow-100 text-yellow-800' :
-                        status === 'NOT IN RHB' ? 'bg-red-100 text-red-800' :
-                            status === 'NOT IN DEPOSIT' ? 'bg-red-100 text-red-800' :
-                                status === 'IN PROCESS' ? 'bg-blue-100 text-blue-800' :
-                                    status === 'FAILED' ? 'bg-red-100 text-red-800' : // Add color for FAILED
-                                        'bg-gray-50 text-gray-800';
-                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center ${statusClass}">${statusValue}</td>`;
+                    const normalizedStatus = String(statusValue).toUpperCase();
+                    const statusClass = normalizedStatus.includes('DUPLICATE') ? 'bg-yellow-100 text-yellow-800' :
+                        normalizedStatus.includes('NOT IN STATEMENT') ? 'bg-rose-100 text-rose-800' :
+                            normalizedStatus.includes('NOT IN RHB') ? 'bg-red-100 text-red-800' :
+                                normalizedStatus.includes('NOT IN DEPOSIT') ? 'bg-red-100 text-red-800' :
+                                    normalizedStatus.includes('IN PROCESS') ? 'bg-blue-100 text-blue-800' :
+                                        normalizedStatus.includes('FAILED') ? 'bg-red-100 text-red-800' :
+                                            normalizedStatus.includes('SUCCESS') ? 'bg-green-100 text-green-800' :
+                                                'bg-gray-50 text-gray-800';
+                    const statusTagClass = normalizedStatus.includes('DUPLICATE') ? 'status-duplicate' :
+                        normalizedStatus.includes('NOT IN STATEMENT') ? 'status-not-in-statement' :
+                            normalizedStatus.includes('NOT IN RHB') ? 'status-not-in-rhb' :
+                                normalizedStatus.includes('NOT IN DEPOSIT') ? 'status-not-in-deposit' :
+                                    normalizedStatus.includes('FAILED') ? 'status-failed' :
+                                        normalizedStatus.includes('SUCCESS') ? 'status-success' : '';
+                    rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center status-cell ${statusTagClass} ${statusClass}">${statusValue}</td>`;
 
                     const paymierBankValue = paymierBank || 'N/A';
                     const paymierBankClass = paymierBank !== 'N/A' ? 'bg-green-100 text-green-800' : 'bg-gray-50 text-gray-800';
@@ -2602,8 +2763,8 @@
 
                     // Check/Cross button - shows check mark or cross icon (only for Scrap)
                     const checkCrossIcon = isChecked
-                        ? `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
-                        : `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                        ? `<svg class="w-6 h-6 icon-checked" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                        : `<svg class="w-6 h-6 icon-unchecked" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
 
                     rowHtml += `<td class="px-4 py-2 whitespace-nowrap text-center">
                         <button onclick="toggleScrapCheckState('${uniqueKey}')" 
@@ -2841,7 +3002,7 @@
                     } else {
                         finalHtmlContent += `
                             <div class="mt-8 p-4 bg-green-100 border border-green-300 rounded-lg">
-                                <p class="text-sm text-green-700 font-semibold">No RHB rows have Override Scrap Ref = "No Match".</p>
+                                <p class="text-sm text-green-700 font-semibold">No RHB rows have Override Scrap Ref = "Unclaim".</p>
                             </div>
                         `;
                     }
@@ -3028,6 +3189,14 @@
                         paginatedRows[index] = [...newRow, bankMappingResult];
                     });
                     filterDescription += " (with Bank Mapping)";
+                }
+
+                if (fileKey === 'file1') {
+                    paginatedRows.forEach((row, index) => {
+                        const newRow = [...row];
+                        newRow[SCRAP_COLUMNS.TRANSACTION_ID] = formatTransactionIdForDisplay(newRow[SCRAP_COLUMNS.TRANSACTION_ID]);
+                        paginatedRows[index] = newRow;
+                    });
                 }
 
                 const finalDataForSheet = [finalHeaderRow, ...paginatedRows];
