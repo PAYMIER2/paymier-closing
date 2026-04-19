@@ -1816,11 +1816,11 @@
                 const total = compoundSummary[key];
                 grandTotal += total;
                 const [merchant, paymentType, bank] = key.split(' ||| ');
-                summaryAoA.push([merchant, bank, total.toFixed(2), paymentType, 'Deposit', 'Completed']);
+                summaryAoA.push([merchant, bank, Math.round(total), paymentType, 'Deposit', 'Completed']);
             });
 
             summaryAoA.push(['', '', '', '', '', '']);
-            summaryAoA.push(['GRAND TOTAL', '', grandTotal.toFixed(2), '', '', '']);
+            summaryAoA.push(['GRAND TOTAL', '', Math.round(grandTotal), '', '', '']);
 
             return {
                 data: summaryAoA,
@@ -1882,11 +1882,11 @@
                 })
                 .forEach(key => {
                     const totals = mappedCategories.get(key);
-                    summaryAoA.push([key, totals.total.toFixed(2), totals.noMatchTotal.toFixed(2)]);
+                    summaryAoA.push([key, Math.round(totals.total), Math.round(totals.noMatchTotal)]);
                 });
 
             summaryAoA.push(['', '', '']);
-            summaryAoA.push(['GRAND TOTAL', grandTotal.toFixed(2), noMatchGrandTotal.toFixed(2)]);
+            summaryAoA.push(['GRAND TOTAL', Math.round(grandTotal), Math.round(noMatchGrandTotal)]);
 
             return { data: summaryAoA, title: `Bank Summary`, totalRows: mappedCategories.size };
         };
@@ -2971,8 +2971,9 @@
                         const noMatchRowsWithScrapCol1 = noMatchRows.map(row => {
                             const rhbTxnRef = String(row[1] || '').trim().toUpperCase();
                             const scrapCol1Value = getScrapCol1Value(rhbTxnRef);
+                            const roundedAmount = Math.round(parseFloat(row[4]) || 0);
                             // Only include first 5 columns from row (Date & Time, Transaction Reference Number, -, Outlet Name, Amount)
-                            return [scrapCol1Value, row[0], row[1], row[2], row[3], row[4]];
+                            return [scrapCol1Value, row[0], row[1], row[2], row[3], roundedAmount];
                         });
 
                         // Update header to include the new first column
@@ -3935,7 +3936,7 @@
                         if (noMatchTotal === 0 || isNaN(noMatchTotal)) continue;
 
                         // Output format: UNCLAIMED, Bank, No Match Total, [blank], Deposit, Unclaim
-                        copyData += `UNCLAIMED\t${bank}\t${noMatchTotal.toFixed(2)}\t\tDeposit\tUnclaim\n`;
+                        copyData += `UNCLAIMED\t${bank}\t${Math.round(noMatchTotal)}\t\tDeposit\tUnclaim\n`;
                     }
                 }
                 else if (tableId === 'no-match-table') {
